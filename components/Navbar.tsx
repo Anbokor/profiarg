@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Locale, ViewMode } from '@/types';
+import { Locale, ViewMode, Specialist } from '@/types';
 import { translations } from '@/lib/translations';
 import {
   Users,
@@ -11,6 +11,7 @@ import {
   UserPlus,
   Heart,
   ChevronDown,
+  LogOut,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -27,6 +28,8 @@ interface NavbarProps {
   openOrdersCount?: number;
   onOpenCreateOrder?: () => void;
   onOpenCabinet?: () => void;
+  loggedInSpecialist?: Specialist | null;
+  onLogoutSpecialist?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -41,6 +44,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   openOrdersCount = 0,
   onOpenCreateOrder,
   onOpenCabinet,
+  loggedInSpecialist,
+  onLogoutSpecialist,
 }) => {
   const t = translations[locale];
   const [isMasterMenuOpen, setIsMasterMenuOpen] = useState(false);
@@ -216,10 +221,25 @@ export const Navbar: React.FC<NavbarProps> = ({
               aria-label={locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
               title={locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
             >
-              <Briefcase className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-              <span className="hidden md:inline">
-                {locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
-              </span>
+              {loggedInSpecialist ? (
+                <>
+                  <img
+                    src={loggedInSpecialist.avatar}
+                    alt={loggedInSpecialist.name}
+                    className="h-4.5 w-4.5 rounded-full object-cover border border-sky-400"
+                  />
+                  <span className="hidden md:inline max-w-[120px] truncate">
+                    {loggedInSpecialist.name}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Briefcase className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                  <span className="hidden md:inline">
+                    {locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
+                  </span>
+                </>
+              )}
               <ChevronDown
                 className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${
                   isMasterMenuOpen ? 'rotate-180' : ''
@@ -231,10 +251,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl py-2 z-50 animate-fade-in divide-y divide-slate-100 dark:divide-slate-800">
                 <div className="px-4 py-2">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    {locale === 'ru' ? 'Специалистам' : 'Profesionales'}
+                    {loggedInSpecialist
+                      ? (locale === 'ru' ? 'Вы авторизованы' : 'Sesión activa')
+                      : (locale === 'ru' ? 'Специалистам' : 'Profesionales')}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    {locale === 'ru' ? 'Личный кабинет и анкета мастера' : 'Panel de control y registro'}
+                  <p className="text-xs text-slate-800 dark:text-slate-200 font-semibold mt-0.5 truncate">
+                    {loggedInSpecialist
+                      ? loggedInSpecialist.name
+                      : (locale === 'ru' ? 'Личный кабинет и анкета мастера' : 'Panel de control y registro')}
                   </p>
                 </div>
 
@@ -262,26 +286,51 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </button>
                   )}
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMasterMenuOpen(false);
-                      onOpenAddModal();
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-emerald-50/70 dark:hover:bg-emerald-950/40 transition text-left group"
-                  >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 group-hover:scale-105 transition-transform">
-                      <UserPlus className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900 dark:text-white">
-                        {locale === 'ru' ? 'Стать исполнителем' : 'Registrar mi perfil'}
+                  {!loggedInSpecialist ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMasterMenuOpen(false);
+                        onOpenAddModal();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-emerald-50/70 dark:hover:bg-emerald-950/40 transition text-left group"
+                    >
+                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 group-hover:scale-105 transition-transform">
+                        <UserPlus className="h-4 w-4" />
                       </div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {t.addBusinessButton}
+                      <div>
+                        <div className="font-bold text-slate-900 dark:text-white">
+                          {locale === 'ru' ? 'Стать исполнителем' : 'Registrar mi perfil'}
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {t.addBusinessButton}
+                        </div>
                       </div>
-                    </div>
-                  </button>
+                    </button>
+                  ) : (
+                    onLogoutSpecialist && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMasterMenuOpen(false);
+                          onLogoutSpecialist();
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-rose-600 hover:bg-rose-50/70 dark:hover:bg-rose-950/40 transition text-left group"
+                      >
+                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 group-hover:scale-105 transition-transform">
+                          <LogOut className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <div className="font-bold">
+                            {t.cabinetLogoutBtn}
+                          </div>
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                            {locale === 'ru' ? 'Завершить сеанс мастера' : 'Cerrar sesión'}
+                          </div>
+                        </div>
+                      </button>
+                    )
+                  )}
                 </div>
               </div>
             )}

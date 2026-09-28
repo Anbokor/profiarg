@@ -138,6 +138,94 @@ export function setStoredLocale(locale: 'ru' | 'es') {
 }
 
 // ---------------------------------------------------------
+// Specialist Authentication & Session State Management
+// ---------------------------------------------------------
+
+const LOGGED_IN_SPECIALIST_KEY = 'profiarg_logged_in_specialist_id';
+
+export function getLoggedInSpecialist(): Specialist | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const id = localStorage.getItem(LOGGED_IN_SPECIALIST_KEY);
+    if (!id) return null;
+    const all = getStoredSpecialists();
+    return all.find((s) => s.id === id) || null;
+  } catch (e) {
+    console.error('Error reading logged in specialist from storage', e);
+    return null;
+  }
+}
+
+export function loginSpecialist(id: string): Specialist | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const all = getStoredSpecialists();
+    const found = all.find((s) => s.id === id);
+    if (found) {
+      localStorage.setItem(LOGGED_IN_SPECIALIST_KEY, id);
+      return found;
+    }
+    return null;
+  } catch (e) {
+    console.error('Error logging in specialist', e);
+    return null;
+  }
+}
+
+export function loginSpecialistByCredential(credential: string): Specialist | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const q = credential.trim().toLowerCase();
+    if (!q) return null;
+    const cleanUsername = q.replace(/^@/, '');
+    const digits = q.replace(/\D/g, '');
+
+    const all = getStoredSpecialists();
+    const found = all.find((s) => {
+      // 1. Check telegram username (with or without @)
+      if (s.telegram && s.telegram.toLowerCase().replace(/^@/, '') === cleanUsername) {
+        return true;
+      }
+      // 2. Check WhatsApp / Phone digits (handling Argentine +549, local 15, and subscriber numbers)
+      if (s.whatsapp && digits.length >= 6) {
+        const waDigits = s.whatsapp.replace(/\D/g, '');
+        if (waDigits.endsWith(digits) || digits.endsWith(waDigits)) {
+          return true;
+        }
+        // Match subscriber digits (ignoring local 15 / 11 cellular prefix variations)
+        const subDigits = digits.length >= 8 ? digits.slice(-8) : digits;
+        if (subDigits.length >= 6 && waDigits.endsWith(subDigits)) {
+          return true;
+        }
+      }
+      // 3. Check name match (require at least 3 characters to prevent accidental single-letter hits)
+      if (q.length >= 3 && (s.name.toLowerCase().includes(q) || q.includes(s.name.toLowerCase()))) {
+        return true;
+      }
+      return false;
+    });
+
+    if (found) {
+      localStorage.setItem(LOGGED_IN_SPECIALIST_KEY, found.id);
+      return found;
+    }
+    return null;
+  } catch (e) {
+    console.error('Error logging in by credential', e);
+    return null;
+  }
+}
+
+export function logoutSpecialist(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(LOGGED_IN_SPECIALIST_KEY);
+  } catch (e) {
+    console.error('Error logging out specialist', e);
+  }
+}
+
+// ---------------------------------------------------------
 // Two-Sided Marketplace: Orders Storage & 1% Commission
 // ---------------------------------------------------------
 
@@ -239,6 +327,11 @@ export function completeOrderWithFee(
     const completedAt = new Date().toISOString();
     const resolvedCurrency: 'ARS' | 'USD' = currency || (targetOrder.currency === 'USD' ? 'USD' : 'ARS');
 
+    // Use passed specialist or logged in specialist if available
+    const activeSpec = specialistId ? { id: specialistId, name: specialistName } : getLoggedInSpecialist();
+    const resolvedSpecId = specialistId || activeSpec?.id || targetOrder.assignedSpecialistId;
+    const resolvedSpecName = specialistName || activeSpec?.name || targetOrder.assignedSpecialistName;
+
     const updatedOrder: Order = {
       ...targetOrder,
       status: 'completed',
@@ -247,14 +340,14 @@ export function completeOrderWithFee(
       commissionAmount: commission,
       commissionCurrency: resolvedCurrency,
       completedAt,
-      ...(specialistId ? { assignedSpecialistId: specialistId } : {}),
-      ...(specialistName ? { assignedSpecialistName: specialistName } : {}),
+      ...(resolvedSpecId ? { assignedSpecialistId: resolvedSpecId } : {}),
+      ...(resolvedSpecName ? { assignedSpecialistName: resolvedSpecName } : {}),
     };
 
     const updatedOrders = orders.map((o) => (o.id === orderId ? updatedOrder : o));
     localStorage.setItem(ORDERS_KEY, JSON.stringify(updatedOrders));
 
-    // Update specialist cabinet balance and metrics
+    // Update global specialist cabinet balance and metrics
     const cabinetState = getSpecialistCabinetState();
     if (resolvedCurrency === 'USD') {
       cabinetState.totalVolumeUsd = Math.round((cabinetState.totalVolumeUsd + finalSum) * 100) / 100;
@@ -269,6 +362,24 @@ export function completeOrderWithFee(
     }
     cabinetState.completedOrdersCount += 1;
     localStorage.setItem(SPECIALIST_CABINET_KEY, JSON.stringify(cabinetState));
+
+    // Also update per-specialist cabinet state if specialist ID is known
+    if (resolvedSpecId) {
+      const specState = getSpecialistCabinetState(resolvedSpecId);
+      if (resolvedCurrency === 'USD') {
+        specState.totalVolumeUsd = Math.round((specState.totalVolumeUsd + finalSum) * 100) / 100;
+        specState.totalCommissionPaidUsd = Math.round((specState.totalCommissionPaidUsd + commission) * 100) / 100;
+        specState.savedVsTraditionalUsd = Math.round((specState.savedVsTraditionalUsd + savedVsProfiRu) * 100) / 100;
+        specState.balanceUsd = Math.round(Math.max(0, specState.balanceUsd - commission) * 100) / 100;
+      } else {
+        specState.totalVolumeArs = Math.round((specState.totalVolumeArs + finalSum) * 100) / 100;
+        specState.totalCommissionPaidArs = Math.round((specState.totalCommissionPaidArs + commission) * 100) / 100;
+        specState.savedVsTraditionalArs = Math.round((specState.savedVsTraditionalArs + savedVsProfiRu) * 100) / 100;
+        specState.balanceArs = Math.round(Math.max(0, specState.balanceArs - commission) * 100) / 100;
+      }
+      specState.completedOrdersCount += 1;
+      localStorage.setItem(`profiarg_specialist_cabinet_${resolvedSpecId}`, JSON.stringify(specState));
+    }
 
     return { order: updatedOrder, commission, savedVsProfiRu };
   } catch (e) {
@@ -289,16 +400,31 @@ const DEFAULT_CABINET_STATE: SpecialistCabinetState = {
   completedOrdersCount: 1,
 };
 
-export function getSpecialistCabinetState(): SpecialistCabinetState {
+export function getSpecialistCabinetState(specialistId?: string): SpecialistCabinetState {
   if (typeof window === 'undefined') {
     return DEFAULT_CABINET_STATE;
   }
 
   try {
-    const raw = localStorage.getItem(SPECIALIST_CABINET_KEY);
+    const key = specialistId ? `profiarg_specialist_cabinet_${specialistId}` : SPECIALIST_CABINET_KEY;
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      localStorage.setItem(SPECIALIST_CABINET_KEY, JSON.stringify(DEFAULT_CABINET_STATE));
-      return DEFAULT_CABINET_STATE;
+      let initial: SpecialistCabinetState = { ...DEFAULT_CABINET_STATE };
+      // Spec-3 (Romanov) has seed completed order. For other specialists, start volume/count at 0
+      if (specialistId && specialistId !== 'spec-3') {
+        initial = {
+          ...DEFAULT_CABINET_STATE,
+          totalVolumeArs: 0,
+          totalVolumeUsd: 0,
+          totalCommissionPaidArs: 0,
+          totalCommissionPaidUsd: 0,
+          savedVsTraditionalArs: 0,
+          savedVsTraditionalUsd: 0,
+          completedOrdersCount: 0,
+        };
+      }
+      localStorage.setItem(key, JSON.stringify(initial));
+      return initial;
     }
     const parsed = JSON.parse(raw);
     return {
@@ -314,9 +440,10 @@ export function getSpecialistCabinetState(): SpecialistCabinetState {
 export function topUpSpecialistDeposit(
   amount: number,
   currency: 'ARS' | 'USD',
-  _method: 'mercadopago' | 'usdt' | 'rubles_p2p'
+  _method: 'mercadopago' | 'usdt' | 'rubles_p2p',
+  specialistId?: string
 ): SpecialistCabinetState {
-  const current = getSpecialistCabinetState();
+  const current = getSpecialistCabinetState(specialistId);
   const updated: SpecialistCabinetState = {
     ...current,
     ...(currency === 'USD'
@@ -326,7 +453,20 @@ export function topUpSpecialistDeposit(
 
   if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem(SPECIALIST_CABINET_KEY, JSON.stringify(updated));
+      const key = specialistId ? `profiarg_specialist_cabinet_${specialistId}` : SPECIALIST_CABINET_KEY;
+      localStorage.setItem(key, JSON.stringify(updated));
+
+      // Synchronize global key if specialist specific
+      if (specialistId) {
+        const globalState = getSpecialistCabinetState();
+        const globalUpdated: SpecialistCabinetState = {
+          ...globalState,
+          ...(currency === 'USD'
+            ? { balanceUsd: Math.round((globalState.balanceUsd + amount) * 100) / 100 }
+            : { balanceArs: Math.round((globalState.balanceArs + amount) * 100) / 100 }),
+        };
+        localStorage.setItem(SPECIALIST_CABINET_KEY, JSON.stringify(globalUpdated));
+      }
     } catch (e) {
       console.error('Error topping up specialist deposit', e);
     }

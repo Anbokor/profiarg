@@ -29,6 +29,9 @@ import {
   completeOrderWithFee,
   getSpecialistCabinetState,
   topUpSpecialistDeposit,
+  getLoggedInSpecialist,
+  loginSpecialist,
+  logoutSpecialist,
 } from '@/lib/storage';
 import { translations } from '@/lib/translations';
 import { Frown } from 'lucide-react';
@@ -68,6 +71,7 @@ export default function Home() {
   const [isCreateOrderModalOpen, setIsCreateOrderModalOpen] = useState(false);
   const [isCabinetModalOpen, setIsCabinetModalOpen] = useState(false);
   const [orderToComplete, setOrderToComplete] = useState<Order | null>(null);
+  const [loggedInSpecialist, setLoggedInSpecialist] = useState<Specialist | null>(null);
 
   // Load stored state on mount
   useEffect(() => {
@@ -76,8 +80,15 @@ export default function Home() {
 
     setSpecialists(getStoredSpecialists());
     setOrders(getStoredOrders());
-    setCabinetState(getSpecialistCabinetState());
     setFavorites(getFavorites());
+
+    const activeSpec = getLoggedInSpecialist();
+    if (activeSpec) {
+      setLoggedInSpecialist(activeSpec);
+      setCabinetState(getSpecialistCabinetState(activeSpec.id));
+    } else {
+      setCabinetState(getSpecialistCabinetState());
+    }
   }, []);
 
   const handleSetLocale = (newLocale: Locale) => {
@@ -90,10 +101,23 @@ export default function Home() {
     setFavorites(updated);
   };
 
+  const handleLoginSpecialist = (spec: Specialist) => {
+    loginSpecialist(spec.id);
+    setLoggedInSpecialist(spec);
+    setCabinetState(getSpecialistCabinetState(spec.id));
+  };
+
+  const handleLogoutSpecialist = () => {
+    logoutSpecialist();
+    setLoggedInSpecialist(null);
+    setCabinetState(getSpecialistCabinetState());
+  };
+
   const handleAddSpecialist = (newSpec: Specialist) => {
     const updated = saveCustomSpecialist(newSpec);
     setSpecialists(updated);
     setFocusedSpecialist(newSpec);
+    handleLoginSpecialist(newSpec);
   };
 
   const handleAddReview = (specialistId: string, review: Omit<Review, 'id' | 'date'>) => {
@@ -130,8 +154,20 @@ export default function Home() {
     }
   };
 
-  const handleUpdateOrderStatus = (orderId: string, status: OrderStatus) => {
-    updateOrderStatus(orderId, status);
+  const handleUpdateOrderStatus = (
+    orderId: string,
+    status: OrderStatus,
+    specialistId?: string,
+    specialistName?: string
+  ) => {
+    const specId = specialistId || loggedInSpecialist?.id;
+    const specName = specialistName || loggedInSpecialist?.name;
+    updateOrderStatus(
+      orderId,
+      status,
+      status === 'in_progress' ? specId : undefined,
+      status === 'in_progress' ? specName : undefined
+    );
     setOrders(getStoredOrders());
   };
 
@@ -140,18 +176,28 @@ export default function Home() {
     setIsCabinetModalOpen(true);
   };
 
-  const handleCompleteOrder = (orderId: string, finalSum: number, currency?: 'ARS' | 'USD') => {
-    completeOrderWithFee(orderId, finalSum, currency);
+  const handleCompleteOrder = (
+    orderId: string,
+    finalSum: number,
+    currency?: 'ARS' | 'USD',
+    specialistId?: string,
+    specialistName?: string
+  ) => {
+    const specId = specialistId || loggedInSpecialist?.id;
+    const specName = specialistName || loggedInSpecialist?.name;
+    completeOrderWithFee(orderId, finalSum, currency, specId, specName);
     setOrders(getStoredOrders());
-    setCabinetState(getSpecialistCabinetState());
+    setCabinetState(getSpecialistCabinetState(specId));
   };
 
   const handleTopUpDeposit = (
     amount: number,
     currency: 'ARS' | 'USD',
-    method: 'mercadopago' | 'usdt' | 'rubles_p2p'
+    method: 'mercadopago' | 'usdt' | 'rubles_p2p',
+    specialistId?: string
   ) => {
-    const updated = topUpSpecialistDeposit(amount, currency, method);
+    const specId = specialistId || loggedInSpecialist?.id;
+    const updated = topUpSpecialistDeposit(amount, currency, method, specId);
     setCabinetState(updated);
   };
 
@@ -224,6 +270,8 @@ export default function Home() {
         openOrdersCount={openOrdersCount}
         onOpenCreateOrder={() => setIsCreateOrderModalOpen(true)}
         onOpenCabinet={() => setIsCabinetModalOpen(true)}
+        loggedInSpecialist={loggedInSpecialist}
+        onLogoutSpecialist={handleLogoutSpecialist}
       />
 
       {/* Hero Search & Category Pills */}
@@ -456,7 +504,7 @@ export default function Home() {
         onOrderCreated={handleOrderCreated}
       />
 
-      {/* Specialist Cabinet & 1% Commission Modal */}
+      {/* Specialist Cabinet Modal */}
       <SpecialistCabinetModal
         isOpen={isCabinetModalOpen}
         onClose={() => {
@@ -465,11 +513,17 @@ export default function Home() {
         }}
         locale={locale}
         orders={orders}
+        specialists={specialists}
         cabinetState={cabinetState}
         initialOrderToComplete={orderToComplete}
         onUpdateOrderStatus={handleUpdateOrderStatus}
         onCompleteOrderWithFee={handleCompleteOrder}
         onTopUpDeposit={handleTopUpDeposit}
+        onOpenAddSpecialist={() => setIsAddModalOpen(true)}
+        onNavigateToOrders={() => setActiveTab('orders')}
+        loggedInSpecialist={loggedInSpecialist}
+        onLoginSpecialist={handleLoginSpecialist}
+        onLogoutSpecialist={handleLogoutSpecialist}
       />
     </div>
   );

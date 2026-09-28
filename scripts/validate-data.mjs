@@ -360,6 +360,22 @@ assert(
   storageContent.includes('export function topUpSpecialistDeposit'),
   "lib/storage.ts exports topUpSpecialistDeposit with payment simulation"
 );
+assert(
+  storageContent.includes('export function getLoggedInSpecialist'),
+  "lib/storage.ts exports getLoggedInSpecialist"
+);
+assert(
+  storageContent.includes('export function loginSpecialist'),
+  "lib/storage.ts exports loginSpecialist"
+);
+assert(
+  storageContent.includes('export function loginSpecialistByCredential'),
+  "lib/storage.ts exports loginSpecialistByCredential"
+);
+assert(
+  storageContent.includes('export function logoutSpecialist'),
+  "lib/storage.ts exports logoutSpecialist"
+);
 
 // TEST 11: Two-Sided Marketplace UI Integration & Bilingual Parity
 console.log('\n11. Validating Two-Sided Marketplace & 1% Commission UI Integration:');
@@ -411,18 +427,50 @@ assert(
   "OrdersBoard provides comprehensive budget filter (ARS brackets, USD, negotiable)"
 );
 
-// SpecialistCabinetModal checks
+// SpecialistCabinetModal clean financial portal & auth checks
 assert(
   cabinetModalContent.includes('cabinetDepositBalance'),
-  "SpecialistCabinetModal tracks remaining deposit balance"
+  "SpecialistCabinetModal displays deposit balance card"
 );
 assert(
-  cabinetModalContent.includes('cabinetCommissionPaid') && cabinetModalContent.includes('cabinetSavedVs15'),
-  "SpecialistCabinetModal calculates 1% paid fee and savings vs 15% platforms"
+  cabinetModalContent.includes('cabinetCompletedOrders'),
+  "SpecialistCabinetModal displays completed orders count card"
 );
 assert(
-  cabinetModalContent.includes('totalCommissionPaidUsd') && cabinetModalContent.includes('savedVsTraditionalUsd'),
-  "SpecialistCabinetModal tracks and displays both ARS and USD commission and savings metrics"
+  cabinetModalContent.includes('cabinetClosedVolume'),
+  "SpecialistCabinetModal displays revenue/volume card"
+);
+assert(
+  cabinetModalContent.includes('cabinetActiveOrders'),
+  "SpecialistCabinetModal displays active orders card"
+);
+assert(
+  cabinetModalContent.includes('cabinetAuthTitle'),
+  "SpecialistCabinetModal includes elegant specialist authentication gate"
+);
+assert(
+  cabinetModalContent.includes('cabinetAuthQuickDemoTitle'),
+  "SpecialistCabinetModal provides quick-select demo login for registered specialists"
+);
+assert(
+  cabinetModalContent.includes('cabinetLogoutBtn'),
+  "SpecialistCabinetModal provides logout option for authenticated specialists"
+);
+assert(
+  cabinetModalContent.includes('completeDealFeeNotice'),
+  "SpecialistCabinetModal mentions 1% service retention strictly in deal completion"
+);
+assert(
+  cabinetModalContent.includes('cabinetTransactionFeeLine'),
+  "SpecialistCabinetModal statement log line item mentions fee strictly by order"
+);
+assert(
+  !cabinetModalContent.includes('1% FEE'),
+  "SpecialistCabinetModal removes tacky '1% FEE' badge from header"
+);
+assert(
+  !cabinetModalContent.includes('В 15 раз выгоднее!'),
+  "SpecialistCabinetModal removes promotional 15x comparison banner"
 );
 assert(
   cabinetModalContent.includes('initialOrderToComplete'),
@@ -485,6 +533,38 @@ assert(
 assert(
   storageContent.includes('resolvedCurrency'),
   "lib/storage.ts ensures dual currency safety and correct commission currency for deals"
+);
+assert(
+  navbarContent.includes('loggedInSpecialist'),
+  "Navbar supports loggedInSpecialist display and session state"
+);
+assert(
+  pageContent.includes('loggedInSpecialist') && pageContent.includes('handleLoginSpecialist'),
+  "app/page.tsx manages specialist session and passes state to modals"
+);
+assert(
+  cabinetModalContent.includes('t.cabinetAuthLoginAs') && cabinetModalContent.includes('roleName'),
+  "SpecialistCabinetModal formats quick demo items with 'Войти как [Имя] ([Специальность])'"
+);
+assert(
+  !cabinetModalContent.includes('completedOrders.length || cabinetState.completedOrdersCount'),
+  "SpecialistCabinetModal eliminates falsy 0 || 1 bug in completed orders counter"
+);
+assert(
+  storageContent.includes('subDigits') && storageContent.includes('q.length >= 3'),
+  "lib/storage.ts handles Argentine phone numbers with 15 prefix and prevents short accidental name matches"
+);
+assert(
+  pageContent.includes("status === 'in_progress' ? specId : undefined"),
+  "app/page.tsx assigns in_progress marketplace orders to the logged-in specialist"
+);
+assert(
+  pageContent.includes('getSpecialistCabinetState(specId)'),
+  "app/page.tsx refreshes cabinet metrics for the specific specialist completing a deal"
+);
+assert(
+  !transContent.includes('в 15 раз выгоднее Profi.ru') && !transContent.includes('15 veces más económico que otras plataformas'),
+  "lib/translations.ts removes promotional platform comparison slogans"
 );
 
 // Summary
