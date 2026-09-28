@@ -1,10 +1,13 @@
-import { Specialist, Review } from '@/types';
+import { Specialist, Review, Order, OrderStatus, SpecialistCabinetState } from '@/types';
 import { SEED_SPECIALISTS } from '@/data/seedData';
+import { SEED_ORDERS } from '@/data/seedOrders';
 
 const CUSTOM_SPECIALISTS_KEY = 'profiarg_custom_specialists';
 const FAVORITES_KEY = 'profiarg_favorites';
 const CUSTOM_REVIEWS_KEY = 'profiarg_custom_reviews';
 const LOCALE_KEY = 'profiarg_locale';
+const ORDERS_KEY = 'profiarg_orders_list';
+const SPECIALIST_CABINET_KEY = 'profiarg_specialist_cabinet';
 
 export function getStoredSpecialists(): Specialist[] {
   if (typeof window === 'undefined') {
@@ -132,4 +135,202 @@ export function setStoredLocale(locale: 'ru' | 'es') {
   } catch (e) {
     console.error('Error saving locale', e);
   }
+}
+
+// ---------------------------------------------------------
+// Two-Sided Marketplace: Orders Storage & 1% Commission
+// ---------------------------------------------------------
+
+export function getStoredOrders(): Order[] {
+  if (typeof window === 'undefined') {
+    return SEED_ORDERS;
+  }
+
+  try {
+    const raw = localStorage.getItem(ORDERS_KEY);
+    if (!raw) {
+      localStorage.setItem(ORDERS_KEY, JSON.stringify(SEED_ORDERS));
+      return SEED_ORDERS;
+    }
+    const parsed: Order[] = JSON.parse(raw);
+    return parsed && Array.isArray(parsed) && parsed.length > 0 ? parsed : SEED_ORDERS;
+  } catch (e) {
+    console.error('Error reading orders from storage', e);
+    return SEED_ORDERS;
+  }
+}
+
+export function saveCustomOrder(
+  orderData: Omit<Order, 'id' | 'status' | 'createdAt'>
+): Order {
+  const newOrder: Order = {
+    ...orderData,
+    id: `order-${Date.now()}`,
+    status: 'open',
+    createdAt: new Date().toISOString(),
+  };
+
+  if (typeof window === 'undefined') return newOrder;
+
+  try {
+    const currentOrders = getStoredOrders();
+    const updated = [newOrder, ...currentOrders];
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
+    return newOrder;
+  } catch (e) {
+    console.error('Error saving order', e);
+    return newOrder;
+  }
+}
+
+export function updateOrderStatus(
+  orderId: string,
+  status: OrderStatus,
+  specialistId?: string,
+  specialistName?: string
+): Order | null {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const orders = getStoredOrders();
+    let updatedOrder: Order | null = null;
+
+    const updated = orders.map((o) => {
+      if (o.id === orderId) {
+        updatedOrder = {
+          ...o,
+          status,
+          ...(specialistId ? { assignedSpecialistId: specialistId } : {}),
+          ...(specialistName ? { assignedSpecialistName: specialistName } : {}),
+        };
+        return updatedOrder;
+      }
+      return o;
+    });
+
+    if (updatedOrder) {
+      localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
+    }
+    return updatedOrder;
+  } catch (e) {
+    console.error('Error updating order status', e);
+    return null;
+  }
+}
+
+export function completeOrderWithFee(
+  orderId: string,
+  finalSum: number,
+  currency?: 'ARS' | 'USD',
+  specialistId?: string,
+  specialistName?: string
+): { order: Order; commission: number; savedVsProfiRu: number } | null {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const orders = getStoredOrders();
+    const targetOrder = orders.find((o) => o.id === orderId);
+    if (!targetOrder) return null;
+
+    // Platform fee is strictly 1%
+    const commission = Math.round(finalSum * 0.01 * 100) / 100;
+    // 15% traditional platform fee comparison (e.g. Profi.ru)
+    const savedVsProfiRu = Math.round(finalSum * 0.14 * 100) / 100;
+    const completedAt = new Date().toISOString();
+    const resolvedCurrency: 'ARS' | 'USD' = currency || (targetOrder.currency === 'USD' ? 'USD' : 'ARS');
+
+    const updatedOrder: Order = {
+      ...targetOrder,
+      status: 'completed',
+      finalSum,
+      currency: resolvedCurrency,
+      commissionAmount: commission,
+      commissionCurrency: resolvedCurrency,
+      completedAt,
+      ...(specialistId ? { assignedSpecialistId: specialistId } : {}),
+      ...(specialistName ? { assignedSpecialistName: specialistName } : {}),
+    };
+
+    const updatedOrders = orders.map((o) => (o.id === orderId ? updatedOrder : o));
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(updatedOrders));
+
+    // Update specialist cabinet balance and metrics
+    const cabinetState = getSpecialistCabinetState();
+    if (resolvedCurrency === 'USD') {
+      cabinetState.totalVolumeUsd = Math.round((cabinetState.totalVolumeUsd + finalSum) * 100) / 100;
+      cabinetState.totalCommissionPaidUsd = Math.round((cabinetState.totalCommissionPaidUsd + commission) * 100) / 100;
+      cabinetState.savedVsTraditionalUsd = Math.round((cabinetState.savedVsTraditionalUsd + savedVsProfiRu) * 100) / 100;
+      cabinetState.balanceUsd = Math.round(Math.max(0, cabinetState.balanceUsd - commission) * 100) / 100;
+    } else {
+      cabinetState.totalVolumeArs = Math.round((cabinetState.totalVolumeArs + finalSum) * 100) / 100;
+      cabinetState.totalCommissionPaidArs = Math.round((cabinetState.totalCommissionPaidArs + commission) * 100) / 100;
+      cabinetState.savedVsTraditionalArs = Math.round((cabinetState.savedVsTraditionalArs + savedVsProfiRu) * 100) / 100;
+      cabinetState.balanceArs = Math.round(Math.max(0, cabinetState.balanceArs - commission) * 100) / 100;
+    }
+    cabinetState.completedOrdersCount += 1;
+    localStorage.setItem(SPECIALIST_CABINET_KEY, JSON.stringify(cabinetState));
+
+    return { order: updatedOrder, commission, savedVsProfiRu };
+  } catch (e) {
+    console.error('Error completing order with fee', e);
+    return null;
+  }
+}
+
+const DEFAULT_CABINET_STATE: SpecialistCabinetState = {
+  balanceArs: 25000,
+  balanceUsd: 50,
+  totalVolumeArs: 50000,
+  totalVolumeUsd: 0,
+  totalCommissionPaidArs: 500,
+  totalCommissionPaidUsd: 0,
+  savedVsTraditionalArs: 7000,
+  savedVsTraditionalUsd: 0,
+  completedOrdersCount: 1,
+};
+
+export function getSpecialistCabinetState(): SpecialistCabinetState {
+  if (typeof window === 'undefined') {
+    return DEFAULT_CABINET_STATE;
+  }
+
+  try {
+    const raw = localStorage.getItem(SPECIALIST_CABINET_KEY);
+    if (!raw) {
+      localStorage.setItem(SPECIALIST_CABINET_KEY, JSON.stringify(DEFAULT_CABINET_STATE));
+      return DEFAULT_CABINET_STATE;
+    }
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_CABINET_STATE,
+      ...parsed,
+    };
+  } catch (e) {
+    console.error('Error reading specialist cabinet state', e);
+    return DEFAULT_CABINET_STATE;
+  }
+}
+
+export function topUpSpecialistDeposit(
+  amount: number,
+  currency: 'ARS' | 'USD',
+  _method: 'mercadopago' | 'usdt' | 'rubles_p2p'
+): SpecialistCabinetState {
+  const current = getSpecialistCabinetState();
+  const updated: SpecialistCabinetState = {
+    ...current,
+    ...(currency === 'USD'
+      ? { balanceUsd: Math.round((current.balanceUsd + amount) * 100) / 100 }
+      : { balanceArs: Math.round((current.balanceArs + amount) * 100) / 100 }),
+  };
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(SPECIALIST_CABINET_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error topping up specialist deposit', e);
+    }
+  }
+
+  return updated;
 }

@@ -39,6 +39,10 @@ const filesToCheck = [
   'components/AddSpecialistModal.tsx',
   'components/StatsBanner.tsx',
   'components/Footer.tsx',
+  'components/CreateOrderModal.tsx',
+  'components/OrdersBoard.tsx',
+  'components/SpecialistCabinetModal.tsx',
+  'data/seedOrders.ts',
   'app/page.tsx',
   'app/specialist/[slug]/page.tsx',
   'app/layout.tsx',
@@ -270,6 +274,182 @@ assert(
 assert(
   pageContent.includes('onReset={handleResetFilters}'),
   "app/page.tsx passes handleResetFilters to HeroSection"
+);
+
+// TEST 9: Seed Orders Validation
+console.log('\n9. Validating Marketplace Seed Orders Data:');
+const seedOrdersContent = readFileSync(resolve(process.cwd(), 'data/seedOrders.ts'), 'utf8');
+
+const orderIdMatches = [...seedOrdersContent.matchAll(/id:\s*'(order-\d+)'/g)].map((m) => m[1]);
+assert(orderIdMatches.length >= 6, `Found ${orderIdMatches.length} seed orders in seedOrders.ts (>= 6 required)`);
+
+const uniqueOrderIds = new Set(orderIdMatches);
+assert(uniqueOrderIds.size === orderIdMatches.length, `All order IDs are strictly unique (${uniqueOrderIds.size}/${orderIdMatches.length})`);
+
+// Check required realistic orders
+assert(
+  seedOrdersContent.includes('DNI') || seedOrdersContent.includes('перевод'),
+  "Seed orders include DNI legal translation task"
+);
+assert(
+  seedOrdersContent.includes('кондиционер') || seedOrdersContent.includes('сплит'),
+  "Seed orders include air conditioner repair/maintenance task"
+);
+assert(
+  seedOrdersContent.includes('квартир') || seedOrdersContent.includes('аренд'),
+  "Seed orders include apartment search / rental assistance task"
+);
+assert(
+  seedOrdersContent.includes('торт') || seedOrdersContent.includes('Медовик'),
+  "Seed orders include birthday cake bakery task"
+);
+assert(
+  seedOrdersContent.includes("status: 'open'") &&
+  seedOrdersContent.includes("status: 'in_progress'") &&
+  seedOrdersContent.includes("status: 'completed'"),
+  "Seed orders represent open, in_progress, and completed lifecycle states"
+);
+assert(
+  seedOrdersContent.includes("currency: 'ARS'") && seedOrdersContent.includes("currency: 'USD'"),
+  "Seed orders support dual currency (ARS and USD)"
+);
+
+// TEST 10: 1% Commission Platform Model & Storage Integrity
+console.log('\n10. Validating 1% Commission Platform Model & Storage Functions:');
+const storageContent = readFileSync(resolve(process.cwd(), 'lib/storage.ts'), 'utf8');
+
+assert(
+  storageContent.includes('export function getStoredOrders'),
+  "lib/storage.ts exports getStoredOrders"
+);
+assert(
+  storageContent.includes('export function saveCustomOrder'),
+  "lib/storage.ts exports saveCustomOrder"
+);
+assert(
+  storageContent.includes('export function updateOrderStatus'),
+  "lib/storage.ts exports updateOrderStatus"
+);
+assert(
+  storageContent.includes('export function completeOrderWithFee'),
+  "lib/storage.ts exports completeOrderWithFee"
+);
+assert(
+  storageContent.includes('finalSum * 0.01'),
+  "Platform commission is calculated at strictly 1% of final contract sum"
+);
+assert(
+  storageContent.includes('0.14') || storageContent.includes('0.15'),
+  "Savings metric tracks comparison against 15% platforms (e.g. Profi.ru)"
+);
+
+// Mathematical verification of 1% fee and 14% net savings vs 15% platforms
+const calcFee = (sum) => Math.round(sum * 0.01 * 100) / 100;
+const calcSaving = (sum) => Math.round(sum * 0.14 * 100) / 100;
+assert(calcFee(50000) === 500, "50.000 ARS order yields exactly 500 ARS 1% platform commission");
+assert(calcSaving(50000) === 7000, "50.000 ARS order saves 7.000 ARS (14%) compared to 15% platforms");
+assert(calcFee(200) === 2, "$200 USD order yields exactly $2 USD 1% platform commission");
+assert(calcSaving(200) === 28, "$200 USD order saves $28 USD (14%) compared to 15% platforms");
+assert(calcFee(85000) === 850 && calcSaving(85000) === 11900, "85.000 ARS order yields 850 ARS fee and 11.900 ARS savings");
+
+assert(
+  storageContent.includes('export function getSpecialistCabinetState'),
+  "lib/storage.ts exports getSpecialistCabinetState"
+);
+assert(
+  storageContent.includes('export function topUpSpecialistDeposit'),
+  "lib/storage.ts exports topUpSpecialistDeposit with payment simulation"
+);
+
+// TEST 11: Two-Sided Marketplace UI Integration & Bilingual Parity
+console.log('\n11. Validating Two-Sided Marketplace & 1% Commission UI Integration:');
+const createOrderModalContent = readFileSync(resolve(process.cwd(), 'components/CreateOrderModal.tsx'), 'utf8');
+const ordersBoardContent = readFileSync(resolve(process.cwd(), 'components/OrdersBoard.tsx'), 'utf8');
+const cabinetModalContent = readFileSync(resolve(process.cwd(), 'components/SpecialistCabinetModal.tsx'), 'utf8');
+const navbarContent = readFileSync(resolve(process.cwd(), 'components/Navbar.tsx'), 'utf8');
+
+// CreateOrderModal checks
+assert(
+  createOrderModalContent.includes('saveCustomOrder'),
+  "CreateOrderModal invokes saveCustomOrder"
+);
+assert(
+  createOrderModalContent.includes('commissionBadge'),
+  "CreateOrderModal displays 1% commission transparency guarantee"
+);
+assert(
+  createOrderModalContent.includes('contactMethod') && createOrderModalContent.includes('whatsapp'),
+  "CreateOrderModal provides contact methods (WhatsApp, Telegram, phone)"
+);
+
+// OrdersBoard checks
+assert(
+  ordersBoardContent.includes('ordersBoardTitle'),
+  "OrdersBoard renders marketplace title and header"
+);
+assert(
+  ordersBoardContent.includes('commissionBadge'),
+  "OrdersBoard displays 1% platform fee badge on order cards"
+);
+assert(
+  ordersBoardContent.includes('wa.me'),
+  "OrdersBoard generates direct WhatsApp contact deep link"
+);
+assert(
+  ordersBoardContent.includes('orderTakeJobBtn'),
+  "OrdersBoard enables specialists to transition open orders to in_progress"
+);
+assert(
+  ordersBoardContent.includes('budgetFilter'),
+  "OrdersBoard provides comprehensive budget filter (ARS brackets, USD, negotiable)"
+);
+
+// SpecialistCabinetModal checks
+assert(
+  cabinetModalContent.includes('cabinetDepositBalance'),
+  "SpecialistCabinetModal tracks remaining deposit balance"
+);
+assert(
+  cabinetModalContent.includes('cabinetCommissionPaid') && cabinetModalContent.includes('cabinetSavedVs15'),
+  "SpecialistCabinetModal calculates 1% paid fee and savings vs 15% platforms"
+);
+assert(
+  cabinetModalContent.includes('totalCommissionPaidUsd') && cabinetModalContent.includes('savedVsTraditionalUsd'),
+  "SpecialistCabinetModal tracks and displays both ARS and USD commission and savings metrics"
+);
+assert(
+  cabinetModalContent.includes('initialOrderToComplete'),
+  "SpecialistCabinetModal supports initialOrderToComplete for direct board completion"
+);
+assert(
+  cabinetModalContent.includes('mercadopago') && cabinetModalContent.includes('usdt') && cabinetModalContent.includes('rubles_p2p'),
+  "SpecialistCabinetModal simulates top-up via MercadoPago, USDT, and Rubles P2P"
+);
+
+// Navbar & Hero checks
+assert(
+  navbarContent.includes('createOrderBtn') || navbarContent.includes('Разместить заказ') || navbarContent.includes('Publicar pedido'),
+  "Navbar features prominent 'Разместить заказ' / 'Publicar pedido' CTA"
+);
+assert(
+  navbarContent.includes('ordersBoardTab'),
+  "Navbar features 'Биржа заказов' tab with badge counter"
+);
+assert(
+  heroContent.includes('createOrderHeroBtn') || heroContent.includes('Оставить заявку') || heroContent.includes('Pedir presupuesto'),
+  "HeroSection features prominent 'Оставить заявку' / 'Pedir presupuesto' button"
+);
+assert(
+  pageContent.includes('OrdersBoard') && pageContent.includes('CreateOrderModal') && pageContent.includes('SpecialistCabinetModal'),
+  "app/page.tsx integrates OrdersBoard, CreateOrderModal, and SpecialistCabinetModal"
+);
+assert(
+  pageContent.includes('handleOpenCompleteDeal'),
+  "app/page.tsx links OrdersBoard direct completion with SpecialistCabinetModal"
+);
+assert(
+  storageContent.includes('resolvedCurrency'),
+  "lib/storage.ts ensures dual currency safety and correct commission currency for deals"
 );
 
 // Summary

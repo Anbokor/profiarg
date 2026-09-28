@@ -110,3 +110,38 @@ export interface FilterState {
 }
 
 export type ViewMode = 'split' | 'catalog' | 'map';
+
+export type OrderStatus = 'open' | 'in_progress' | 'completed' | 'cancelled';
+
+export interface Order {
+  id: string;
+  title: string;
+  category: CategoryId;
+  barrio: string;
+  description: string;
+  budget: number | null;
+  currency: Currency;
+  contactName: string;
+  contactMethod: 'whatsapp' | 'telegram' | 'phone';
+  contactValue: string;
+  status: OrderStatus;
+  createdAt: string;
+  assignedSpecialistId?: string;
+  assignedSpecialistName?: string;
+  finalSum?: number;
+  commissionAmount?: number;
+  commissionCurrency?: Currency;
+  completedAt?: string;
+}
+
+export interface SpecialistCabinetState {
+  balanceArs: number;
+  balanceUsd: number;
+  totalVolumeArs: number;
+  totalVolumeUsd: number;
+  totalCommissionPaidArs: number;
+  totalCommissionPaidUsd: number;
+  savedVsTraditionalArs: number;
+  savedVsTraditionalUsd: number;
+  completedOrdersCount: number;
+}

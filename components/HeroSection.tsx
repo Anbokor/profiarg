@@ -23,6 +23,8 @@ import {
   LayoutGrid,
   ChevronLeft,
   ChevronRight,
+  PlusCircle,
+  Percent,
 } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -33,6 +35,7 @@ interface HeroSectionProps {
   setSelectedCategory: (cat: CategoryId | 'all') => void;
   totalSpecialists: number;
   onReset?: () => void;
+  onOpenCreateOrder?: () => void;
 }
 
 const getCategoryIcon = (iconName: string, className = 'w-4 h-4') => {
@@ -59,6 +62,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   setSelectedCategory,
   totalSpecialists,
   onReset,
+  onOpenCreateOrder,
 }) => {
   const t = translations[locale];
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -173,6 +177,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             )}
           </div>
         </div>
+
+        {/* Create Order Hero Action & 1% Commission Model Callout */}
+        {onOpenCreateOrder && (
+          <div className="mx-auto mt-4 max-w-2xl flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={onOpenCreateOrder}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-6 py-3 text-sm shadow-md shadow-amber-400/20 transition active:scale-95"
+            >
+              <PlusCircle className="h-4 w-4 text-slate-950" />
+              <span>{t.createOrderHeroBtn}</span>
+            </button>
+
+            <div className="inline-flex items-center gap-1.5 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-xs text-slate-700 dark:text-slate-300 shadow-xs">
+              <Percent className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400 shrink-0" />
+              <span className="font-semibold text-sky-700 dark:text-sky-300">{t.commissionBadge}</span>
+              <span className="text-slate-300 dark:text-slate-600">·</span>
+              <span>{t.directContactNoMarkup}</span>
+            </div>
+          </div>
+        )}
 
         {/* Active Category Filter Badge in Search Area */}
         {selectedCategory !== 'all' && activeCategory && (
