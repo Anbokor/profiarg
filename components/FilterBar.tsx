@@ -4,11 +4,15 @@ import React from 'react';
 import { Locale, CategoryId, WorkFormat } from '@/types';
 import { translations } from '@/lib/translations';
 import { BARRIOS } from '@/data/barrios';
+import { CATEGORIES } from '@/data/categories';
 import {
   CheckCircle2,
   MapPin,
   Briefcase,
   RotateCcw,
+  LayoutGrid,
+  X,
+  ChevronDown,
 } from 'lucide-react';
 
 interface FilterBarProps {
@@ -50,11 +54,42 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     selectedFormat !== 'all' ||
     verifiedOnly;
 
+  const activeCategory = CATEGORIES.find((c) => c.id === selectedCategory);
+
+  const getFormatLabel = (fmt: WorkFormat) => {
+    switch (fmt) {
+      case 'office': return t.officeFormat;
+      case 'home_visit': return t.homeVisitFormat;
+      case 'online': return t.onlineFormat;
+      default: return fmt;
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 sm:px-6">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
         {/* Left: Filter Controls */}
         <div className="flex flex-wrap items-center gap-2.5">
+          {/* Category Dropdown */}
+          <div className="relative">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
+              <LayoutGrid className="h-3.5 w-3.5 text-sky-500" />
+            </div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value as CategoryId | 'all')}
+              className="appearance-none rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-7 text-xs font-medium text-slate-700 hover:bg-slate-100 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 cursor-pointer"
+            >
+              <option value="all">{t.allCategories}</option>
+              {CATEGORIES.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {locale === 'ru' ? c.title_ru : c.title_es}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute inset-y-0 right-2 my-auto h-3.5 w-3.5 text-slate-400" />
+          </div>
+
           {/* Barrio Dropdown */}
           <div className="relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
@@ -63,7 +98,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <select
               value={selectedBarrio}
               onChange={(e) => setSelectedBarrio(e.target.value)}
-              className="appearance-none rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-8 text-xs font-medium text-slate-700 hover:bg-slate-100 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="appearance-none rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-7 text-xs font-medium text-slate-700 hover:bg-slate-100 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 cursor-pointer"
             >
               <option value="all">{t.allBarrios}</option>
               <optgroup label="CABA">
@@ -81,6 +116,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 ))}
               </optgroup>
             </select>
+            <ChevronDown className="pointer-events-none absolute inset-y-0 right-2 my-auto h-3.5 w-3.5 text-slate-400" />
           </div>
 
           {/* Work Format Dropdown */}
@@ -91,17 +127,19 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <select
               value={selectedFormat}
               onChange={(e) => setSelectedFormat(e.target.value as WorkFormat | 'all')}
-              className="appearance-none rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-8 text-xs font-medium text-slate-700 hover:bg-slate-100 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="appearance-none rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-7 text-xs font-medium text-slate-700 hover:bg-slate-100 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 cursor-pointer"
             >
               <option value="all">{t.allFormats}</option>
               <option value="office">{t.officeFormat}</option>
               <option value="home_visit">{t.homeVisitFormat}</option>
               <option value="online">{t.onlineFormat}</option>
             </select>
+            <ChevronDown className="pointer-events-none absolute inset-y-0 right-2 my-auto h-3.5 w-3.5 text-slate-400" />
           </div>
 
           {/* Verified Only Toggle */}
           <button
+            type="button"
             onClick={() => setVerifiedOnly(!verifiedOnly)}
             className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
               verifiedOnly
@@ -116,8 +154,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           {/* Reset Filters button */}
           {hasActiveFilters && (
             <button
+              type="button"
               onClick={onReset}
-              className="flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 ml-1"
+              className="flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 ml-1 transition"
+              title={t.resetFilters}
             >
               <RotateCcw className="h-3 w-3" />
               <span>{t.resetFilters}</span>
@@ -137,16 +177,105 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'rating' | 'reviews' | 'name')}
-                className="appearance-none rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-2.5 pr-7 text-xs font-medium text-slate-700 hover:bg-slate-100 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                className="appearance-none rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-2.5 pr-7 text-xs font-medium text-slate-700 hover:bg-slate-100 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 cursor-pointer"
               >
                 <option value="rating">{t.sortRating}</option>
                 <option value="reviews">{t.sortReviews}</option>
                 <option value="name">{t.sortName}</option>
               </select>
+              <ChevronDown className="pointer-events-none absolute inset-y-0 right-2 my-auto h-3.5 w-3.5 text-slate-400" />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Active Filter Badges Strip */}
+      {hasActiveFilters && (
+        <div className="mx-auto max-w-7xl mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto py-2 px-1 sm:px-2 scrollbar-none animate-fade-in">
+          <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 whitespace-nowrap flex-shrink-0">
+            {t.activeFilters}:
+          </span>
+
+          {/* Active Category badge with (X) deselect button */}
+          {selectedCategory !== 'all' && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 dark:bg-sky-950/70 border border-sky-300 dark:border-sky-700 px-2.5 py-0.5 text-xs font-medium text-sky-800 dark:text-sky-200 flex-shrink-0">
+              <span>{activeCategory ? (locale === 'ru' ? activeCategory.title_ru : activeCategory.title_es) : selectedCategory}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedCategory('all')}
+                className="hover:bg-sky-200/80 dark:hover:bg-sky-800 rounded-full p-0.5 text-sky-700 dark:text-sky-300 transition"
+                title={locale === 'ru' ? 'Сбросить категорию' : 'Quitar filtro de categoría'}
+                aria-label={locale === 'ru' ? 'Сбросить категорию' : 'Quitar filtro de categoría'}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+
+          {/* Active Barrio badge */}
+          {selectedBarrio !== 'all' && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:text-slate-300 flex-shrink-0">
+              <MapPin className="h-3 w-3 text-sky-500" />
+              <span>{selectedBarrio}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedBarrio('all')}
+                className="hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full p-0.5 text-slate-500 dark:text-slate-400 transition"
+                title={locale === 'ru' ? 'Сбросить район' : 'Quitar filtro de barrio'}
+                aria-label={locale === 'ru' ? 'Сбросить район' : 'Quitar filtro de barrio'}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+
+          {/* Active Format badge */}
+          {selectedFormat !== 'all' && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:text-slate-300 flex-shrink-0">
+              <Briefcase className="h-3 w-3 text-amber-500" />
+              <span>{getFormatLabel(selectedFormat)}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedFormat('all')}
+                className="hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full p-0.5 text-slate-500 dark:text-slate-400 transition"
+                title={locale === 'ru' ? 'Сбросить формат' : 'Quitar filtro de modalidad'}
+                aria-label={locale === 'ru' ? 'Сбросить формат' : 'Quitar filtro de modalidad'}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+
+          {/* Active Verified badge */}
+          {verifiedOnly && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:text-emerald-200 flex-shrink-0">
+              <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+              <span>{t.verifiedOnly}</span>
+              <button
+                type="button"
+                onClick={() => setVerifiedOnly(false)}
+                className="hover:bg-emerald-200/80 dark:hover:bg-emerald-900 rounded-full p-0.5 text-emerald-700 dark:text-emerald-300 transition"
+                title={locale === 'ru' ? 'Сбросить фильтр проверенных' : 'Quitar filtro de verificados'}
+                aria-label={locale === 'ru' ? 'Сбросить фильтр проверенных' : 'Quitar filtro de verificados'}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+
+          <button
+            type="button"
+            onClick={onReset}
+            className="flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 ml-1 whitespace-nowrap flex-shrink-0 hover:underline transition"
+          >
+            <RotateCcw className="h-3 w-3" />
+            <span>{t.resetFilters}</span>
+          </button>
+
+          {/* Clear end spacer to prevent clipping at the right edge */}
+          <div className="w-4 flex-shrink-0" aria-hidden="true" />
+        </div>
+      )}
     </div>
   );
 };

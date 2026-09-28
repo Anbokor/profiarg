@@ -197,6 +197,81 @@ assert(
   "Root layout bundles 'leaflet/dist/leaflet.css'"
 );
 
+// TEST 8: Category Scroll Clipping & Deselect UI Integrity
+console.log('\n8. Validating Category Scroll & Deselect UI Implementation:');
+const heroContent = readFileSync(resolve(process.cwd(), 'components/HeroSection.tsx'), 'utf8');
+const filterBarContent = readFileSync(resolve(process.cwd(), 'components/FilterBar.tsx'), 'utf8');
+const pageContent = readFileSync(resolve(process.cwd(), 'app/page.tsx'), 'utf8');
+const globalsContent = readFileSync(resolve(process.cwd(), 'app/globals.css'), 'utf8');
+
+// HeroSection verification
+assert(
+  heroContent.includes('flex-shrink-0'),
+  "HeroSection uses 'flex-shrink-0' on category pill buttons to prevent squishing"
+);
+assert(
+  !heroContent.includes('justify-center gap-2 overflow-x-auto'),
+  "HeroSection removed 'justify-center' from overflow container to prevent negative scroll clipping"
+);
+assert(
+  heroContent.includes('LayoutGrid'),
+  "HeroSection includes 'LayoutGrid' icon for prominent 'All Categories' pill"
+);
+assert(
+  heroContent.includes('setSelectedCategory(isSelected ? \'all\' : cat.id)'),
+  "HeroSection toggles category off back to 'all' when already selected"
+);
+assert(
+  heroContent.includes('scrollCategories'),
+  "HeroSection has horizontal scroll controls for category overflow navigation"
+);
+assert(
+  heroContent.includes('container.scrollTo'),
+  "HeroSection centers active category via container.scrollTo (prevents window scrolling jump)"
+);
+assert(
+  heroContent.includes('aria-pressed'),
+  "HeroSection buttons include aria-pressed for accessible toggle state"
+);
+
+// FilterBar verification
+assert(
+  filterBarContent.includes('CATEGORIES.map'),
+  "FilterBar renders category selection options"
+);
+assert(
+  filterBarContent.includes("setSelectedCategory('all')"),
+  "FilterBar provides clear (X) deselect button for active category filter"
+);
+assert(
+  filterBarContent.includes('activeFilters'),
+  "FilterBar renders active filters chip strip"
+);
+assert(
+  filterBarContent.includes('ChevronDown'),
+  "FilterBar includes ChevronDown dropdown indicators for select controls"
+);
+
+// Scrollbar utility verification
+assert(
+  globalsContent.includes('.scrollbar-none') && globalsContent.includes('scrollbar-width: none'),
+  "app/globals.css provides full cross-browser .scrollbar-none utility"
+);
+
+// app/page.tsx toggle & reset verification
+assert(
+  pageContent.includes('handleToggleCategory'),
+  "app/page.tsx defines handleToggleCategory helper"
+);
+assert(
+  pageContent.includes("setSelectedCategory('all')"),
+  "app/page.tsx handleResetFilters explicitly resets selectedCategory to 'all'"
+);
+assert(
+  pageContent.includes('onReset={handleResetFilters}'),
+  "app/page.tsx passes handleResetFilters to HeroSection"
+);
+
 // Summary
 console.log('\n========================================================');
 console.log(`Total tests: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests}`);

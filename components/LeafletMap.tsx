@@ -321,9 +321,13 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
   // Zoom to Barrio
   const handleZoomToBarrio = (barrioName: string, coords: { lat: number; lng: number }) => {
-    setActiveBarrioFilter(barrioName);
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo([coords.lat, coords.lng], 14, { duration: 1 });
+    if (activeBarrioFilter === barrioName) {
+      handleResetView();
+    } else {
+      setActiveBarrioFilter(barrioName);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.flyTo([coords.lat, coords.lng], 14, { duration: 1 });
+      }
     }
   };
 
@@ -345,12 +349,13 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   return (
     <div className={`relative ${className} overflow-hidden rounded-2xl border border-slate-200 shadow-sm dark:border-slate-800`}>
       {/* Top Barrio Navigation Quick Strip */}
-      <div className="absolute top-3 left-3 right-14 z-10 flex gap-1.5 overflow-x-auto pb-1 scrollbar-none pointer-events-auto">
-        {BARRIOS.slice(0, 7).map((b) => (
+      <div className="absolute top-3 left-3 right-14 z-10 flex gap-1.5 overflow-x-auto py-1 px-1 scrollbar-none pointer-events-auto">
+        {BARRIOS.slice(0, 8).map((b) => (
           <button
             key={b.id}
+            type="button"
             onClick={() => handleZoomToBarrio(b.name, b.coordinates)}
-            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap shadow-md backdrop-blur-md transition-all ${
+            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap flex-shrink-0 shadow-md backdrop-blur-md transition-all ${
               activeBarrioFilter === b.name
                 ? 'bg-sky-600 text-white'
                 : 'bg-white/95 text-slate-700 hover:bg-slate-50 dark:bg-slate-900/90 dark:text-slate-200'
@@ -359,6 +364,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
             {b.name}
           </button>
         ))}
+        <div className="w-2 flex-shrink-0" aria-hidden="true" />
       </div>
 
       {/* Map Action Controls (Right side) */}

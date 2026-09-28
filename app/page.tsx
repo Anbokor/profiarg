@@ -82,6 +82,10 @@ export default function Home() {
     }
   };
 
+  const handleToggleCategory = (cat: CategoryId | 'all') => {
+    setSelectedCategory((prev) => (cat === 'all' ? 'all' : prev === cat ? 'all' : cat));
+  };
+
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
@@ -172,15 +176,16 @@ export default function Home() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
+        setSelectedCategory={handleToggleCategory}
         totalSpecialists={specialists.length}
+        onReset={handleResetFilters}
       />
 
       {/* Filters & Results Counter Bar */}
       <FilterBar
         locale={locale}
         selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
+        setSelectedCategory={handleToggleCategory}
         selectedBarrio={selectedBarrio}
         setSelectedBarrio={setSelectedBarrio}
         selectedFormat={selectedFormat}
@@ -337,7 +342,7 @@ export default function Home() {
       <Footer
         locale={locale}
         onSelectCategory={(catId) => {
-          setSelectedCategory(catId);
+          handleToggleCategory(catId);
           window.scrollTo({ top: 200, behavior: 'smooth' });
         }}
         onSelectBarrio={(barrioName) => {
