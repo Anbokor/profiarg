@@ -144,9 +144,14 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
               <PlusCircle className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                {t.addBusinessTitle}
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                  {t.addBusinessTitle}
+                </h2>
+                <span className="hidden sm:inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  {locale === 'ru' ? 'Комиссия за заказ всего 1%' : 'Comisión por trabajo solo 1%'}
+                </span>
+              </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 {t.addBusinessSubtitle}
               </p>

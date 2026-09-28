@@ -11,7 +11,6 @@ import {
   X,
   FileSpreadsheet,
   PlusCircle,
-  Percent,
   Clock,
   MapPin,
   MessageCircle,
@@ -105,7 +104,7 @@ export const OrdersBoard: React.FC<OrdersBoardProps> = ({
 
   return (
     <div className="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 animate-fade-in">
-      {/* Top Banner: Marketplace Title & 1% Value Prop */}
+      {/* Top Banner: Marketplace Title */}
       <div className="rounded-3xl bg-gradient-to-r from-sky-900 via-sky-800 to-slate-900 text-white p-6 sm:p-8 shadow-xl relative overflow-hidden">
         {/* Background Decorative Glow */}
         <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-sky-500/20 blur-3xl pointer-events-none" />
@@ -114,10 +113,8 @@ export const OrdersBoard: React.FC<OrdersBoardProps> = ({
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="max-w-2xl space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/20 border border-sky-400/30 px-3 py-1 text-xs font-semibold text-sky-200">
-              <Percent className="h-3.5 w-3.5 text-amber-300" />
-              <span>{t.commissionBadge}</span>
-              <span className="text-sky-300">|</span>
-              <span className="text-amber-200">{openOrdersCount} {t.openOrdersCount.toLowerCase()}</span>
+              <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-white font-medium">{openOrdersCount} {t.openOrdersCount.toLowerCase()}</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
@@ -145,7 +142,6 @@ export const OrdersBoard: React.FC<OrdersBoardProps> = ({
             >
               <Briefcase className="h-4 w-4 text-sky-300" />
               <span>{t.specialistCabinetTab}</span>
-              <span className="rounded-full bg-sky-500 px-1.5 py-0.2 text-[10px] font-bold">1%</span>
             </button>
           </div>
         </div>
@@ -285,10 +281,6 @@ export const OrdersBoard: React.FC<OrdersBoardProps> = ({
             const isInProgress = order.status === 'in_progress';
             const isOpen = order.status === 'open';
 
-            // Estimated 1% fee
-            const estimatedFee = order.budget
-              ? Math.round(order.budget * 0.01)
-              : null;
 
             // WhatsApp link: ensure Argentine international prefix
             let waClean = order.contactValue.replace(/\D/g, '');
@@ -366,8 +358,8 @@ export const OrdersBoard: React.FC<OrdersBoardProps> = ({
                   </p>
                 </div>
 
-                {/* Pricing & 1% Fee Transparency Card */}
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 p-3 space-y-1.5">
+                {/* Pricing Card */}
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 p-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-500">
                       {locale === 'ru' ? 'Бюджет клиента:' : 'Presupuesto:'}
@@ -376,19 +368,6 @@ export const OrdersBoard: React.FC<OrdersBoardProps> = ({
                       {order.budget
                         ? `${order.budget.toLocaleString('es-AR')} ${order.currency}`
                         : t.budgetNegotiable}
-                    </span>
-                  </div>
-
-                  {/* 1% Platform Fee Transparency Badge */}
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/50 dark:border-slate-700/50 text-[11px]">
-                    <span className="inline-flex items-center gap-1 font-semibold text-sky-700 dark:text-sky-300">
-                      <Percent className="h-3 w-3" />
-                      <span>{t.commissionBadge}</span>
-                    </span>
-                    <span className="text-slate-500">
-                      {estimatedFee
-                        ? `${locale === 'ru' ? 'комиссия всего' : 'comisión:'} ~${estimatedFee.toLocaleString('es-AR')} ${order.currency}`
-                        : t.cabinetFeeNote}
                     </span>
                   </div>
                 </div>

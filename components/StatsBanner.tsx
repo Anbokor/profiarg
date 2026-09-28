@@ -31,9 +31,9 @@ export const StatsBanner: React.FC<StatsBannerProps> = ({ locale, totalSpecialis
           </div>
         </div>
         <div className="p-2">
-          <div className="text-2xl sm:text-3xl font-extrabold">0%</div>
+          <div className="text-2xl sm:text-3xl font-extrabold">100%</div>
           <div className="text-xs text-sky-100 mt-0.5">
-            {locale === 'ru' ? 'Комиссий за контакты' : 'Comisión de contacto'}
+            {locale === 'ru' ? 'Прямой контакт с мастером' : 'Contacto directo sin intermediarios'}
           </div>
         </div>
       </div>

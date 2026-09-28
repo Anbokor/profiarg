@@ -13,10 +13,8 @@ import {
   Sparkles,
   DollarSign,
   Send,
-  ShieldCheck,
   MessageSquare,
   Phone,
-  Percent,
 } from 'lucide-react';
 
 interface CreateOrderModalProps {
@@ -159,13 +157,6 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
           </button>
         </div>
 
-        {/* 1% Transparency Banner */}
-        <div className="bg-sky-50/80 dark:bg-sky-950/40 border-b border-sky-100 dark:border-sky-900/50 px-6 py-2.5 flex items-center gap-2.5 text-xs text-sky-800 dark:text-sky-300">
-          <ShieldCheck className="h-4 w-4 text-sky-600 dark:text-sky-400 shrink-0" />
-          <span>
-            <strong className="font-semibold">{t.commissionBadge}</strong>. {t.commissionSubtitle}
-          </span>
-        </div>
 
         {/* Form Body (Scrollable) */}
         <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-4 flex-1">
@@ -308,18 +299,6 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
               </div>
             )}
 
-            {!isNegotiable && parseFloat(budgetAmount) > 0 && (
-              <div className="flex items-center justify-between px-2 pt-1 text-[11px] text-slate-500">
-                <span className="flex items-center gap-1 font-semibold text-sky-700 dark:text-sky-300">
-                  <Percent className="h-3 w-3" />
-                  <span>{t.commissionBadge}</span>
-                </span>
-                <span>
-                  {locale === 'ru' ? 'Мастер заплатит всего 1%' : 'El profesional pagará solo 1%'}{' '}
-                  (~{(Math.round(parseFloat(budgetAmount) * 0.01 * 100) / 100).toLocaleString('es-AR')} {currency})
-                </span>
-              </div>
-            )}
           </div>
 
           {/* Contact Details */}

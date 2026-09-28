@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Locale, CategoryId, WorkFormat } from '@/types';
+import { Locale, CategoryId, WorkFormat, ViewMode } from '@/types';
 import { translations } from '@/lib/translations';
 import { BARRIOS } from '@/data/barrios';
 import { CATEGORIES } from '@/data/categories';
@@ -13,6 +13,9 @@ import {
   LayoutGrid,
   X,
   ChevronDown,
+  Columns2,
+  Map,
+  Heart,
 } from 'lucide-react';
 
 interface FilterBarProps {
@@ -25,10 +28,15 @@ interface FilterBarProps {
   setSelectedFormat: (fmt: WorkFormat | 'all') => void;
   verifiedOnly: boolean;
   setVerifiedOnly: (val: boolean) => void;
+  favoritesOnly?: boolean;
+  setFavoritesOnly?: (val: boolean) => void;
+  favoritesCount?: number;
   sortBy: 'rating' | 'reviews' | 'name';
   setSortBy: (sort: 'rating' | 'reviews' | 'name') => void;
   totalFiltered: number;
   onReset: () => void;
+  viewMode?: ViewMode;
+  setViewMode?: (mode: ViewMode) => void;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -41,10 +49,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   setSelectedFormat,
   verifiedOnly,
   setVerifiedOnly,
+  favoritesOnly = false,
+  setFavoritesOnly,
+  favoritesCount = 0,
   sortBy,
   setSortBy,
   totalFiltered,
   onReset,
+  viewMode = 'split',
+  setViewMode,
 }) => {
   const t = translations[locale];
 
@@ -52,7 +65,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     selectedCategory !== 'all' ||
     selectedBarrio !== 'all' ||
     selectedFormat !== 'all' ||
-    verifiedOnly;
+    verifiedOnly ||
+    favoritesOnly;
 
   const activeCategory = CATEGORIES.find((c) => c.id === selectedCategory);
 
@@ -151,6 +165,28 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <span>{t.verifiedOnly}</span>
           </button>
 
+          {/* Favorites Wishlist Toggle */}
+          {setFavoritesOnly && (
+            <button
+              type="button"
+              onClick={() => setFavoritesOnly(!favoritesOnly)}
+              className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
+                favoritesOnly
+                  ? 'border-rose-500 bg-rose-50 text-rose-700 dark:border-rose-600 dark:bg-rose-950/40 dark:text-rose-300'
+                  : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+              }`}
+              title={t.favoritesOnly}
+            >
+              <Heart className={`h-3.5 w-3.5 ${favoritesOnly ? 'fill-rose-500 text-rose-500' : 'text-slate-400'}`} />
+              <span>{t.favoritesOnly}</span>
+              {favoritesCount > 0 && (
+                <span className="ml-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white">
+                  {favoritesCount}
+                </span>
+              )}
+            </button>
+          )}
+
           {/* Reset Filters button */}
           {hasActiveFilters && (
             <button
@@ -186,6 +222,54 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               <ChevronDown className="pointer-events-none absolute inset-y-0 right-2 my-auto h-3.5 w-3.5 text-slate-400" />
             </div>
           </div>
+
+          {/* View Mode Switcher (Split / Catalog / Map) */}
+          {setViewMode && (
+            <div className="flex items-center rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60">
+              <button
+                type="button"
+                onClick={() => setViewMode('split')}
+                className={`hidden md:flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+                  viewMode === 'split'
+                    ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                }`}
+                title={t.splitView}
+                aria-label={t.splitView}
+              >
+                <Columns2 className="h-3.5 w-3.5" />
+                <span className="hidden xl:inline">{t.splitView}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('catalog')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+                  viewMode === 'catalog'
+                    ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                }`}
+                title={t.catalogView}
+                aria-label={t.catalogView}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{t.catalogView}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('map')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+                  viewMode === 'map'
+                    ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white'
+                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                }`}
+                title={t.mapView}
+                aria-label={t.mapView}
+              >
+                <Map className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{t.mapView}</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -257,6 +341,23 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 className="hover:bg-emerald-200/80 dark:hover:bg-emerald-900 rounded-full p-0.5 text-emerald-700 dark:text-emerald-300 transition"
                 title={locale === 'ru' ? 'Сбросить фильтр проверенных' : 'Quitar filtro de verificados'}
                 aria-label={locale === 'ru' ? 'Сбросить фильтр проверенных' : 'Quitar filtro de verificados'}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+
+          {/* Active Favorites badge */}
+          {favoritesOnly && setFavoritesOnly && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-700 px-2.5 py-0.5 text-xs font-medium text-rose-800 dark:text-rose-200 flex-shrink-0">
+              <Heart className="h-3 w-3 fill-rose-500 text-rose-500" />
+              <span>{t.favoritesOnly}</span>
+              <button
+                type="button"
+                onClick={() => setFavoritesOnly(false)}
+                className="hover:bg-rose-200/80 dark:hover:bg-rose-900 rounded-full p-0.5 text-rose-700 dark:text-rose-300 transition"
+                title={locale === 'ru' ? 'Сбросить фильтр избранного' : 'Quitar filtro de favoritos'}
+                aria-label={locale === 'ru' ? 'Сбросить фильтр избранного' : 'Quitar filtro de favoritos'}
               >
                 <X className="h-3 w-3" />
               </button>

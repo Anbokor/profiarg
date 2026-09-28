@@ -367,6 +367,13 @@ const createOrderModalContent = readFileSync(resolve(process.cwd(), 'components/
 const ordersBoardContent = readFileSync(resolve(process.cwd(), 'components/OrdersBoard.tsx'), 'utf8');
 const cabinetModalContent = readFileSync(resolve(process.cwd(), 'components/SpecialistCabinetModal.tsx'), 'utf8');
 const navbarContent = readFileSync(resolve(process.cwd(), 'components/Navbar.tsx'), 'utf8');
+const addSpecialistModalContent = readFileSync(resolve(process.cwd(), 'components/AddSpecialistModal.tsx'), 'utf8');
+
+// Specialist registration subtle fee notice
+assert(
+  addSpecialistModalContent.includes('Комиссия за заказ всего 1%'),
+  "AddSpecialistModal includes subtle 1% fee notice exclusively for registering specialists"
+);
 
 // CreateOrderModal checks
 assert(
@@ -374,8 +381,8 @@ assert(
   "CreateOrderModal invokes saveCustomOrder"
 );
 assert(
-  createOrderModalContent.includes('commissionBadge'),
-  "CreateOrderModal displays 1% commission transparency guarantee"
+  !createOrderModalContent.includes('commissionBadge'),
+  "CreateOrderModal keeps client interface clean without commission distractions"
 );
 assert(
   createOrderModalContent.includes('contactMethod') && createOrderModalContent.includes('whatsapp'),
@@ -388,8 +395,8 @@ assert(
   "OrdersBoard renders marketplace title and header"
 );
 assert(
-  ordersBoardContent.includes('commissionBadge'),
-  "OrdersBoard displays 1% platform fee badge on order cards"
+  !ordersBoardContent.includes('commissionBadge'),
+  "OrdersBoard keeps public order cards clean without tacky commission badges"
 );
 assert(
   ordersBoardContent.includes('wa.me'),
@@ -436,6 +443,14 @@ assert(
   "Navbar features 'Биржа заказов' tab with badge counter"
 );
 assert(
+  navbarContent.includes('isMasterMenuOpen') && navbarContent.includes('specialistCabinetTab'),
+  "Navbar features clean unified master menu dropdown housing cabinet and registration"
+);
+assert(
+  !navbarContent.includes('1%'),
+  "Navbar removes cluttered 1% commission badges for clean spacious header"
+);
+assert(
   heroContent.includes('createOrderHeroBtn') || heroContent.includes('Оставить заявку') || heroContent.includes('Pedir presupuesto'),
   "HeroSection features prominent 'Оставить заявку' / 'Pedir presupuesto' button"
 );
@@ -446,6 +461,26 @@ assert(
 assert(
   pageContent.includes('handleOpenCompleteDeal'),
   "app/page.tsx links OrdersBoard direct completion with SpecialistCabinetModal"
+);
+assert(
+  navbarContent.includes("aria-label={locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}"),
+  "Navbar master menu button includes accessible aria-label"
+);
+assert(
+  navbarContent.includes('[isMasterMenuOpen]'),
+  "Navbar outside-click listener lifecycle is scoped to [isMasterMenuOpen] to prevent memory leaks"
+);
+assert(
+  navbarContent.includes('truncate') && navbarContent.includes('flex-shrink-0'),
+  "Navbar mobile navigation switcher includes truncate and flex-shrink-0 protections"
+);
+assert(
+  filterBarContent.includes('favoritesOnly') && filterBarContent.includes('setFavoritesOnly'),
+  "FilterBar supports favoritesOnly toggle and active chip for catalog filtering"
+);
+assert(
+  pageContent.includes('favoritesOnly={favoritesOnly}'),
+  "app/page.tsx links favorites state with FilterBar"
 );
 assert(
   storageContent.includes('resolvedCurrency'),

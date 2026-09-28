@@ -1,28 +1,27 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Locale, ViewMode } from '@/types';
 import { translations } from '@/lib/translations';
 import {
-  Map,
-  LayoutGrid,
-  Columns2,
-  PlusCircle,
-  Heart,
-  FileSpreadsheet,
-  Briefcase,
   Users,
+  FileSpreadsheet,
+  PlusCircle,
+  Briefcase,
+  UserPlus,
+  Heart,
+  ChevronDown,
 } from 'lucide-react';
 
 interface NavbarProps {
   locale: Locale;
   setLocale: (loc: Locale) => void;
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
+  viewMode?: ViewMode;
+  setViewMode?: (mode: ViewMode) => void;
   onOpenAddModal: () => void;
-  favoritesCount: number;
-  favoritesOnly: boolean;
-  setFavoritesOnly: (val: boolean) => void;
+  favoritesCount?: number;
+  favoritesOnly?: boolean;
+  setFavoritesOnly?: (val: boolean) => void;
   activeTab?: 'specialists' | 'orders';
   setActiveTab?: (tab: 'specialists' | 'orders') => void;
   openOrdersCount?: number;
@@ -33,11 +32,9 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   locale,
   setLocale,
-  viewMode,
-  setViewMode,
   onOpenAddModal,
-  favoritesCount,
-  favoritesOnly,
+  favoritesCount = 0,
+  favoritesOnly = false,
   setFavoritesOnly,
   activeTab = 'specialists',
   setActiveTab,
@@ -46,249 +43,289 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCabinet,
 }) => {
   const t = translations[locale];
+  const [isMasterMenuOpen, setIsMasterMenuOpen] = useState(false);
+  const masterMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click or Escape (only active when dropdown is open)
+  useEffect(() => {
+    if (!isMasterMenuOpen) return;
+
+    const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
+      if (masterMenuRef.current && !masterMenuRef.current.contains(e.target as Node)) {
+        setIsMasterMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsMasterMenuOpen(false);
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMasterMenuOpen]);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95 shadow-xs">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand Logo & Main Tabs */}
-        <div className="flex items-center gap-3 sm:gap-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4">
+        {/* Left Section: Sleek Brand Logo & Compact Navigation Switch */}
+        <div className="flex items-center gap-3 sm:gap-6 flex-shrink-0">
+          {/* Brand Logo */}
           <div
             onClick={() => setActiveTab && setActiveTab('specialists')}
-            className="flex items-center gap-2.5 cursor-pointer"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveTab && setActiveTab('specialists');
+              }
+            }}
+            className="flex items-center gap-2 cursor-pointer select-none group focus-visible:outline-2 focus-visible:outline-sky-500 focus-visible:rounded-xl"
+            role="button"
+            tabIndex={0}
+            aria-label="ProfiARG Home"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-600 via-sky-500 to-amber-400 text-white shadow-md shadow-sky-500/20">
-              <span className="font-extrabold text-xl tracking-tighter">P</span>
-              <span className="text-amber-300 font-black text-xs">🇦🇷</span>
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-600 via-sky-500 to-amber-400 text-white shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
+              <span className="font-extrabold text-lg sm:text-xl tracking-tighter">P</span>
+              <span className="text-amber-300 font-black text-[10px] sm:text-xs">🇦🇷</span>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                <span className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   Profi<span className="text-sky-600 dark:text-sky-400">ARG</span>
                 </span>
-                <span className="hidden sm:inline-flex items-center rounded-md bg-sky-50 px-1.5 py-0.5 text-xs font-semibold text-sky-700 ring-1 ring-inset ring-sky-700/10 dark:bg-sky-950/60 dark:text-sky-300">
+                <span className="hidden sm:inline-flex items-center rounded-md bg-sky-50 px-1.5 py-0.5 text-[10px] font-bold text-sky-700 ring-1 ring-inset ring-sky-700/10 dark:bg-sky-950/60 dark:text-sky-300">
                   BA
                 </span>
               </div>
-              <p className="hidden md:block text-[11px] font-medium text-slate-500 dark:text-slate-400 -mt-0.5">
-                {t.tagline}
-              </p>
             </div>
           </div>
 
-          {/* Primary Marketplace Navigation Links (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-1 border-l border-slate-200 dark:border-slate-800 pl-4">
+          {/* Compact navigation switch: Специалисты | Заказы (Desktop & Tablet) */}
+          <nav
+            className="hidden sm:inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200/60 dark:border-slate-700/60"
+            aria-label="Main Navigation"
+          >
             <button
               type="button"
               onClick={() => setActiveTab && setActiveTab('specialists')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                 activeTab === 'specialists'
-                  ? 'bg-sky-50 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300'
+                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white font-bold'
                   : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }`}
             >
-              <Users className="h-4 w-4" />
+              <Users className="h-3.5 w-3.5" />
               <span>{t.specialistsTab}</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab && setActiveTab('orders')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition relative ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition relative ${
                 activeTab === 'orders'
-                  ? 'bg-sky-50 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300'
+                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white font-bold'
                   : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }`}
             >
-              <FileSpreadsheet className="h-4 w-4" />
+              <FileSpreadsheet className="h-3.5 w-3.5" />
               <span>{t.ordersBoardTab}</span>
               {openOrdersCount > 0 && (
-                <span className="ml-1 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-black text-white shadow-xs">
+                <span className="ml-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-black text-white">
                   {openOrdersCount}
                 </span>
               )}
             </button>
-
-            {onOpenCabinet && (
-              <button
-                type="button"
-                onClick={onOpenCabinet}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition"
-              >
-                <Briefcase className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-                <span>{t.specialistCabinetTab}</span>
-                <span className="rounded-full bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 px-1.5 py-0.2 text-[10px] font-black">
-                  1%
-                </span>
-              </button>
-            )}
           </nav>
         </div>
 
-        {/* View Mode Switcher (Desktop & Tablet) - Active only in Specialists view */}
-        {activeTab === 'specialists' && (
-          <div className="hidden xl:flex items-center rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
-            <button
-              onClick={() => setViewMode('split')}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-                viewMode === 'split'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-            >
-              <Columns2 className="h-4 w-4" />
-              <span>{t.splitView}</span>
-            </button>
-            <button
-              onClick={() => setViewMode('catalog')}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-                viewMode === 'catalog'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-            >
-              <LayoutGrid className="h-4 w-4" />
-              <span>{t.catalogView}</span>
-            </button>
-            <button
-              onClick={() => setViewMode('map')}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-                viewMode === 'map'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-            >
-              <Map className="h-4 w-4" />
-              <span>{t.mapView}</span>
-            </button>
-          </div>
-        )}
-
-        {/* Right Action buttons */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Prominent CTA: Разместить заказ / Оставить заявку */}
+        {/* Center/Right Section: Primary CTA, Language, Unified Master Menu */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-nowrap">
+          {/* Single primary action button for clients: Разместить заказ / Publicar pedido */}
           {onOpenCreateOrder && (
             <button
               type="button"
               onClick={onOpenCreateOrder}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold shadow-xs transition active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition active:scale-95 whitespace-nowrap"
             >
               <PlusCircle className="h-4 w-4 text-slate-950" />
-              <span className="hidden sm:inline">{t.createOrderBtn}</span>
-              <span className="sm:hidden">{t.orderShortBtn}</span>
+              <span className="hidden md:inline">{t.createOrderBtn}</span>
+              <span className="md:hidden">{t.orderShortBtn}</span>
             </button>
           )}
 
-          {/* Favorites Button */}
-          <button
-            onClick={() => setFavoritesOnly(!favoritesOnly)}
-            className={`relative flex items-center justify-center rounded-lg p-2 text-sm font-medium transition-colors ${
-              favoritesOnly
-                ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 ring-1 ring-rose-200'
-                : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-            }`}
-            title={t.favoritesOnly}
-          >
-            <Heart className={`h-5 w-5 ${favoritesOnly ? 'fill-rose-500 text-rose-500' : ''}`} />
-            {favoritesCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
-                {favoritesCount}
-              </span>
-            )}
-          </button>
-
-          {/* Language Switcher */}
-          <div className="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+          {/* Favorites Wishlist Icon (Desktop only, mobile/catalog has it in FilterBar) */}
+          {setFavoritesOnly && (
             <button
+              type="button"
+              onClick={() => setFavoritesOnly(!favoritesOnly)}
+              className={`hidden xl:flex relative items-center justify-center rounded-full p-2 text-sm font-medium transition-colors ${
+                favoritesOnly
+                  ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 ring-1 ring-rose-200'
+                  : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+              }`}
+              title={t.favoritesOnly}
+              aria-label={t.favoritesOnly}
+            >
+              <Heart className={`h-4.5 w-4.5 ${favoritesOnly ? 'fill-rose-500 text-rose-500' : ''}`} />
+              {favoritesCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
+                  {favoritesCount}
+                </span>
+              )}
+            </button>
+          )}
+
+          {/* Language Switcher: Compact Pill */}
+          <div className="flex items-center rounded-full border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-800 flex-shrink-0">
+            <button
+              type="button"
               onClick={() => setLocale('ru')}
-              className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
+              className={`rounded-full px-2.5 py-1 text-xs font-bold transition-all ${
                 locale === 'ru'
                   ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
-              🇷🇺 RU
+              RU
             </button>
             <button
+              type="button"
               onClick={() => setLocale('es')}
-              className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
+              className={`rounded-full px-2.5 py-1 text-xs font-bold transition-all ${
                 locale === 'es'
                   ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
-              🇦🇷 ES
+              ES
             </button>
           </div>
 
-          {/* Add Business / Specialist Profile CTA */}
-          <button
-            onClick={onOpenAddModal}
-            className="hidden sm:flex items-center gap-1.5 rounded-lg bg-sky-600 px-3 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-sky-500 active:scale-95"
-            title={t.addBusinessButton}
-          >
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span>{t.addBusinessButton}</span>
-          </button>
+          {/* Unified Clean "Для мастеров" / "Для бизнеса" Dropdown Menu */}
+          <div className="relative" ref={masterMenuRef}>
+            <button
+              type="button"
+              onClick={() => setIsMasterMenuOpen(!isMasterMenuOpen)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 sm:px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs transition active:scale-95"
+              aria-expanded={isMasterMenuOpen}
+              aria-haspopup="true"
+              aria-label={locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
+              title={locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
+            >
+              <Briefcase className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+              <span className="hidden md:inline">
+                {locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
+              </span>
+              <ChevronDown
+                className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${
+                  isMasterMenuOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {isMasterMenuOpen && (
+              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl py-2 z-50 animate-fade-in divide-y divide-slate-100 dark:divide-slate-800">
+                <div className="px-4 py-2">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    {locale === 'ru' ? 'Специалистам' : 'Profesionales'}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    {locale === 'ru' ? 'Личный кабинет и анкета мастера' : 'Panel de control y registro'}
+                  </p>
+                </div>
+
+                <div className="py-1">
+                  {onOpenCabinet && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMasterMenuOpen(false);
+                        onOpenCabinet();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-sky-50/70 dark:hover:bg-sky-950/40 transition text-left group"
+                    >
+                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 group-hover:scale-105 transition-transform">
+                        <Briefcase className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-900 dark:text-white">
+                          {t.specialistCabinetTab}
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {locale === 'ru' ? 'Баланс депозита и учёт сделок' : 'Saldo de depósito y control'}
+                        </div>
+                      </div>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMasterMenuOpen(false);
+                      onOpenAddModal();
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-emerald-50/70 dark:hover:bg-emerald-950/40 transition text-left group"
+                  >
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 group-hover:scale-105 transition-transform">
+                      <UserPlus className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <div className="font-bold text-slate-900 dark:text-white">
+                        {locale === 'ru' ? 'Стать исполнителем' : 'Registrar mi perfil'}
+                      </div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                        {t.addBusinessButton}
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Mobile Secondary Navigation Sub-bar */}
-      <div className="flex lg:hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90 px-3 py-1.5 justify-around items-center text-xs">
-        <button
-          type="button"
-          onClick={() => setActiveTab && setActiveTab('specialists')}
-          className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-semibold transition ${
-            activeTab === 'specialists'
-              ? 'bg-white text-sky-700 shadow-xs dark:bg-slate-800 dark:text-sky-300'
-              : 'text-slate-600 dark:text-slate-400'
-          }`}
+      {/* Mobile-only Navigation Switcher (compact, clean, centered, no awkward wrapping) */}
+      <div className="sm:hidden border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 px-3 py-1.5 flex justify-center">
+        <nav
+          className="inline-flex items-center rounded-full bg-slate-200/80 dark:bg-slate-800 p-1 w-full max-w-xs border border-slate-200/60 dark:border-slate-700/60"
+          aria-label="Mobile Navigation"
         >
-          <Users className="h-3.5 w-3.5" />
-          <span>{t.catalogShortBtn}</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab && setActiveTab('orders')}
-          className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-semibold transition relative ${
-            activeTab === 'orders'
-              ? 'bg-white text-sky-700 shadow-xs dark:bg-slate-800 dark:text-sky-300'
-              : 'text-slate-600 dark:text-slate-400'
-          }`}
-        >
-          <FileSpreadsheet className="h-3.5 w-3.5" />
-          <span>{t.ordersShortBtn}</span>
-          {openOrdersCount > 0 && (
-            <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-black text-white">
-              {openOrdersCount}
-            </span>
-          )}
-        </button>
-
-        {onOpenCabinet && (
           <button
             type="button"
-            onClick={onOpenCabinet}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-md font-semibold text-slate-600 dark:text-slate-400"
+            onClick={() => setActiveTab && setActiveTab('specialists')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-full text-xs font-semibold transition truncate ${
+              activeTab === 'specialists'
+                ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white font-bold'
+                : 'text-slate-600 dark:text-slate-400'
+            }`}
           >
-            <Briefcase className="h-3.5 w-3.5 text-sky-600" />
-            <span>{t.cabinetShortBtn}</span>
-            <span className="rounded-full bg-sky-100 text-sky-800 px-1 text-[9px] font-black">1%</span>
+            <Users className="h-3.5 w-3.5 flex-shrink-0" />
+            <span className="truncate">{t.specialistsTab}</span>
           </button>
-        )}
 
-        {/* View Mode controls on mobile when in Specialists view */}
-        {activeTab === 'specialists' && (
-          <div className="flex items-center gap-1 border-l border-slate-300 dark:border-slate-700 pl-2">
-            <button
-              onClick={() => setViewMode(viewMode === 'map' ? 'catalog' : 'map')}
-              className="flex items-center gap-1 px-2 py-1 rounded-md text-slate-600 dark:text-slate-300"
-            >
-              {viewMode === 'map' ? <LayoutGrid className="h-3.5 w-3.5" /> : <Map className="h-3.5 w-3.5" />}
-              <span>{viewMode === 'map' ? t.catalogView : t.mapView}</span>
-            </button>
-          </div>
-        )}
+          <button
+            type="button"
+            onClick={() => setActiveTab && setActiveTab('orders')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-full text-xs font-semibold transition relative truncate ${
+              activeTab === 'orders'
+                ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white font-bold'
+                : 'text-slate-600 dark:text-slate-400'
+            }`}
+          >
+            <FileSpreadsheet className="h-3.5 w-3.5 flex-shrink-0" />
+            <span className="truncate">{t.ordersBoardTab}</span>
+            {openOrdersCount > 0 && (
+              <span className="ml-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-black text-white flex-shrink-0">
+                {openOrdersCount}
+              </span>
+            )}
+          </button>
+        </nav>
       </div>
     </header>
   );

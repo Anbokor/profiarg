@@ -263,10 +263,15 @@ export default function Home() {
             setSelectedFormat={setSelectedFormat}
             verifiedOnly={verifiedOnly}
             setVerifiedOnly={setVerifiedOnly}
+            favoritesOnly={favoritesOnly}
+            setFavoritesOnly={setFavoritesOnly}
+            favoritesCount={favorites.length}
             sortBy={sortBy}
             setSortBy={setSortBy}
             totalFiltered={filteredSpecialists.length}
             onReset={handleResetFilters}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
           />
 
           {/* Main Content Area based on ViewMode */}
