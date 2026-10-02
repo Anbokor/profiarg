@@ -731,6 +731,14 @@ assert(
   rootStateBlock && !rootStateBlock.includes('<SpecialistCard'),
   "Root state strictly excludes SpecialistCard (no mixed specialist cards on root home page)"
 );
+assert(
+  rootStateBlock && !rootStateBlock.includes('<StatsBanner'),
+  "Root state strictly excludes StatsBanner (no marketing banner noise on root home page)"
+);
+assert(
+  !pageContent.includes('<StatsBanner'),
+  "app/page.tsx completely purges StatsBanner marketing blocks from page"
+);
 
 // Verify drill-down state renders map and specialist list
 assert(
@@ -768,6 +776,54 @@ assert(
 assert(
   transContent.includes('specialistSingle') && transContent.includes('profileSingle'),
   "lib/translations.ts includes pluralization keys (specialistSingle, profileSingle) in both RU and ES"
+);
+
+// TEST 13: Sleek Functional Footer Integrity (Barrios purge, functional links, language toggle)
+console.log('\n13. Validating Sleek Functional Footer Integrity:');
+assert(
+  !footerContent.includes('BARRIOS') && !footerContent.includes('Barrios destacados'),
+  "Footer purges non-functional barrio links dump"
+);
+assert(
+  footerContent.includes('onNavigateToOrders') && footerContent.includes('ordersBoardTab'),
+  "Footer provides functional direct link to orders board"
+);
+assert(
+  footerContent.includes('onOpenCreateOrder') && footerContent.includes('createOrderBtn'),
+  "Footer provides functional direct trigger for create order modal"
+);
+assert(
+  footerContent.includes('onOpenCabinet') && footerContent.includes('specialistCabinetTab'),
+  "Footer provides functional direct trigger for specialist cabinet"
+);
+assert(
+  footerContent.includes('onSelectCategory') && footerContent.includes('CATEGORIES.map'),
+  "Footer provides direct category shortcuts navigating into category drilldown"
+);
+assert(
+  footerContent.includes('setLocale') && footerContent.includes("setLocale('ru')") && footerContent.includes("setLocale('es')"),
+  "Footer includes bilingual language toggle switch (RU & ES)"
+);
+assert(
+  pageContent.includes('onNavigateToCatalog=') && pageContent.includes('onNavigateToOrders=') && pageContent.includes('setLocale='),
+  "app/page.tsx wires interactive navigation and language handlers to Footer"
+);
+assert(
+  !footerContent.includes('onSelectBarrio'),
+  "Footer cleans up obsolete onSelectBarrio prop interface"
+);
+assert(
+  pageContent.includes('setSelectedCategory(catId)') && pageContent.includes("setSearchQuery('')"),
+  "app/page.tsx footer category shortcuts cleanly reset search and drill down directly"
+);
+const heroSectionContent = readFileSync(resolve(process.cwd(), 'components/HeroSection.tsx'), 'utf8');
+assert(
+  !heroSectionContent.includes('проверенных анкет') && !heroSectionContent.includes('perfiles verificados'),
+  "HeroSection purges redundant marketing trust stats from minimalist home page"
+);
+assert(
+  ordersBoardContent.includes('Откликнуться') || ordersBoardContent.includes('orderRespondBtn'),
+  "OrdersBoard provides clear 'Откликнуться' response action button"
 );
 
 // Summary

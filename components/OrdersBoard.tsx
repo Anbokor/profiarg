@@ -384,16 +384,17 @@ export const OrdersBoard: React.FC<OrdersBoardProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    {/* Action 1: Contact via WhatsApp/Telegram */}
+                    {/* Action 1: Respond / Contact via WhatsApp/Telegram */}
                     {order.contactMethod === 'whatsapp' ? (
                       <a
                         href={waUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 text-xs shadow-xs transition"
+                        title={t.orderRespondBtn}
                       >
                         <MessageCircle className="h-3.5 w-3.5" />
-                        <span>WhatsApp</span>
+                        <span>{locale === 'ru' ? 'Откликнуться' : 'Postularme'}</span>
                       </a>
                     ) : order.contactMethod === 'telegram' ? (
                       <a
@@ -401,17 +402,19 @@ export const OrdersBoard: React.FC<OrdersBoardProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold px-3 py-1.5 text-xs shadow-xs transition"
+                        title={t.orderRespondBtn}
                       >
                         <Send className="h-3.5 w-3.5" />
-                        <span>Telegram</span>
+                        <span>{locale === 'ru' ? 'Откликнуться' : 'Postularme'}</span>
                       </a>
                     ) : (
                       <a
                         href={`tel:${order.contactValue}`}
                         className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold px-3 py-1.5 text-xs shadow-xs transition"
+                        title={t.orderRespondBtn}
                       >
                         <Phone className="h-3.5 w-3.5" />
-                        <span>{order.contactValue}</span>
+                        <span>{locale === 'ru' ? 'Позвонить' : 'Llamar'}</span>
                       </a>
                     )}
 

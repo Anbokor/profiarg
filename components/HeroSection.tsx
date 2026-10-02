@@ -21,9 +21,6 @@ import {
   Briefcase,
   Laptop,
   ShoppingBag,
-  CheckCircle2,
-  MapPin,
-  MessageCircle,
   LayoutGrid,
   ChevronLeft,
   ChevronRight,
@@ -232,21 +229,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </div>
         )}
 
-        {/* Quick Highlights / Trust Stats */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-slate-500 dark:text-slate-400">
-          <div className="flex items-center gap-1.5">
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-            <span>{totalSpecialists} {locale === 'ru' ? 'проверенных анкет' : 'perfiles verificados'}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5 text-sky-500" />
-            <span>{locale === 'ru' ? '15 районов CABA & Zona Norte' : '15 barrios de CABA y Zona Norte'}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <MessageCircle className="h-3.5 w-3.5 text-emerald-600" />
-            <span>{locale === 'ru' ? 'Прямой WhatsApp мастера' : 'Contacto directo por WhatsApp'}</span>
-          </div>
-        </div>
 
         {/* Category Pill Filters with Scroll Controls and Gradient Fades */}
         {showCategoryPills && (

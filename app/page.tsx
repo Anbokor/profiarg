@@ -12,7 +12,6 @@ import { AddSpecialistModal } from '@/components/AddSpecialistModal';
 import { CreateOrderModal } from '@/components/CreateOrderModal';
 import { OrdersBoard } from '@/components/OrdersBoard';
 import { SpecialistCabinetModal } from '@/components/SpecialistCabinetModal';
-import { StatsBanner } from '@/components/StatsBanner';
 import { Footer } from '@/components/Footer';
 import { CategoryDirectory } from '@/components/CategoryDirectory';
 import { CategoryDrilldownHeader } from '@/components/CategoryDrilldownHeader';
@@ -362,9 +361,6 @@ export default function Home() {
               }
             }}
           />
-
-          {/* Stats Banner */}
-          <StatsBanner locale={locale} totalSpecialists={specialists.length} />
         </main>
       ) : (
         /* ================= DRILL-DOWN STATE & SEARCH RESULTS ================= */
@@ -604,25 +600,35 @@ export default function Home() {
               </div>
             )}
           </main>
-
-          {/* Stats Banner */}
-          <StatsBanner locale={locale} totalSpecialists={specialists.length} />
         </div>
       )}
 
       {/* Footer */}
       <Footer
         locale={locale}
+        setLocale={handleSetLocale}
         onSelectCategory={(catId) => {
-          handleToggleCategory(catId);
+          setSelectedCategory(catId);
+          setSelectedSubcategory('all');
+          setSearchQuery('');
           setActiveTab('specialists');
-          window.scrollTo({ top: 200, behavior: 'smooth' });
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         }}
-        onSelectBarrio={(barrioName) => {
-          setSelectedBarrio(barrioName);
+        onNavigateToCatalog={() => {
+          handleBackToCategories();
           setActiveTab('specialists');
-          window.scrollTo({ top: 200, behavior: 'smooth' });
         }}
+        onNavigateToOrders={() => {
+          setActiveTab('orders');
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}
+        onOpenCreateOrder={() => setIsCreateOrderModalOpen(true)}
+        onOpenCabinet={() => setIsCabinetModalOpen(true)}
+        onOpenAddModal={() => setIsAddModalOpen(true)}
       />
 
       {/* Specialist Details Full Modal */}
