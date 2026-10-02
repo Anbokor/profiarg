@@ -14,6 +14,9 @@ import { OrdersBoard } from '@/components/OrdersBoard';
 import { SpecialistCabinetModal } from '@/components/SpecialistCabinetModal';
 import { StatsBanner } from '@/components/StatsBanner';
 import { Footer } from '@/components/Footer';
+import { CategoryDirectory } from '@/components/CategoryDirectory';
+import { CategoryDrilldownHeader } from '@/components/CategoryDrilldownHeader';
+import { CATEGORIES } from '@/data/categories';
 import { SEED_SPECIALISTS } from '@/data/seedData';
 import { SEED_ORDERS } from '@/data/seedOrders';
 import {
@@ -34,7 +37,7 @@ import {
   logoutSpecialist,
 } from '@/lib/storage';
 import { translations } from '@/lib/translations';
-import { Frown } from 'lucide-react';
+import { Frown, ArrowLeft, Search, X } from 'lucide-react';
 
 export default function Home() {
   const [locale, setLocaleState] = useState<Locale>('ru');
@@ -58,6 +61,7 @@ export default function Home() {
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | 'all'>('all');
   const [selectedBarrio, setSelectedBarrio] = useState<string | 'all'>('all');
   const [selectedFormat, setSelectedFormat] = useState<WorkFormat | 'all'>('all');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
@@ -133,15 +137,26 @@ export default function Home() {
 
   const handleToggleCategory = (cat: CategoryId | 'all') => {
     setSelectedCategory((prev) => (cat === 'all' ? 'all' : prev === cat ? 'all' : cat));
+    setSelectedSubcategory('all');
   };
 
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
+    setSelectedSubcategory('all');
     setSelectedBarrio('all');
     setSelectedFormat('all');
     setVerifiedOnly(false);
     setFavoritesOnly(false);
+  };
+
+  const handleBackToCategories = () => {
+    setSelectedCategory('all');
+    setSelectedSubcategory('all');
+    setSearchQuery('');
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Orders Management Handlers
@@ -207,12 +222,28 @@ export default function Home() {
       .filter((s) => {
         if (favoritesOnly && !favorites.includes(s.id)) return false;
         if (selectedCategory !== 'all' && s.category !== selectedCategory) return false;
+        if (selectedSubcategory !== 'all') {
+          const subLower = selectedSubcategory.toLowerCase();
+          const hasSub = (s.subcategories || []).some(
+            (sub) =>
+              sub.toLowerCase() === subLower ||
+              sub.toLowerCase().includes(subLower) ||
+              subLower.includes(sub.toLowerCase())
+          );
+          const hasService = (s.services || []).some(
+            (srv) =>
+              srv.title_ru.toLowerCase().includes(subLower) ||
+              srv.title_es.toLowerCase().includes(subLower)
+          );
+          if (!hasSub && !hasService) return false;
+        }
         if (selectedBarrio !== 'all' && s.barrio !== selectedBarrio) return false;
         if (selectedFormat !== 'all' && !s.formats.includes(selectedFormat)) return false;
         if (verifiedOnly && !s.isVerified) return false;
 
         if (searchQuery.trim()) {
           const queryWords = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+          const categoryObj = CATEGORIES.find((c) => c.id === s.category);
           const searchableText = [
             s.name,
             s.title_ru,
@@ -220,6 +251,7 @@ export default function Home() {
             s.barrio,
             s.description_ru,
             s.description_es,
+            categoryObj ? `${categoryObj.title_ru} ${categoryObj.title_es}` : '',
             ...(s.subcategories || []),
             ...(s.services || []).map((srv) => `${srv.title_ru} ${srv.title_es}`),
           ]
@@ -243,6 +275,7 @@ export default function Home() {
     favorites,
     favoritesOnly,
     selectedCategory,
+    selectedSubcategory,
     selectedBarrio,
     selectedFormat,
     verifiedOnly,
@@ -252,6 +285,8 @@ export default function Home() {
 
   const t = translations[locale];
   const openOrdersCount = orders.filter((o) => o.status === 'open').length;
+  const activeCategory =
+    selectedCategory !== 'all' ? CATEGORIES.find((c) => c.id === selectedCategory) || null : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
@@ -272,21 +307,10 @@ export default function Home() {
         onOpenCabinet={() => setIsCabinetModalOpen(true)}
         loggedInSpecialist={loggedInSpecialist}
         onLogoutSpecialist={handleLogoutSpecialist}
+        onGoHome={handleBackToCategories}
       />
 
-      {/* Hero Search & Category Pills */}
-      <HeroSection
-        locale={locale}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={handleToggleCategory}
-        totalSpecialists={specialists.length}
-        onReset={handleResetFilters}
-        onOpenCreateOrder={() => setIsCreateOrderModalOpen(true)}
-      />
-
-      {/* Main Content: Orders Board or Specialists Directory */}
+      {/* Main Content: Orders Board, Root Category Directory, or Category Drill-down */}
       {activeTab === 'orders' ? (
         <main className="flex-1">
           <OrdersBoard
@@ -298,13 +322,136 @@ export default function Home() {
             onOpenCompleteDeal={handleOpenCompleteDeal}
           />
         </main>
+      ) : selectedCategory === 'all' && !searchQuery.trim() ? (
+        /* ================= ROOT STATE (Главная страница по умолчанию) ================= */
+        /* Extremely concise, clean, and uncluttered.
+           - Top: Clean header with logo, mission statement banner, and quick search.
+           - Main Body: ТОЛЬКО 14 КАТЕГОРИЙ! (Элегантная сетка 14 карточек с иконками, заголовками и краткими подкатегориями).
+           - НИКАКОЙ КАРТЫ на главной странице! Карта не грузится и не показывается на главной.
+           - НИКАКОГО общего списка всех специалистов вперемешку на главной! */
+        <main className="flex-1">
+          {/* Top: Clean mission statement banner and quick search */}
+          <HeroSection
+            locale={locale}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={handleToggleCategory}
+            totalSpecialists={specialists.length}
+            onReset={handleResetFilters}
+            onOpenCreateOrder={() => setIsCreateOrderModalOpen(true)}
+            showCategoryPills={false}
+          />
+
+          {/* Main Body: ТОЛЬКО 14 КАТЕГОРИЙ! */}
+          <CategoryDirectory
+            locale={locale}
+            specialists={specialists}
+            onSelectCategory={(catId) => {
+              setSelectedCategory(catId);
+              setSelectedSubcategory('all');
+              if (typeof window !== 'undefined') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            onSelectSubcategory={(catId, sub) => {
+              setSelectedCategory(catId);
+              setSelectedSubcategory(sub);
+              if (typeof window !== 'undefined') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+          />
+
+          {/* Stats Banner */}
+          <StatsBanner locale={locale} totalSpecialists={specialists.length} />
+        </main>
       ) : (
-        <>
-          {/* Filters & Results Counter Bar */}
+        /* ================= DRILL-DOWN STATE & SEARCH RESULTS ================= */
+        /* При клике на любую из 14 категорий (selectedCategory !== 'all') или поиске:
+           - Появляется кнопка возврата: «← Все категории» ("← Todas las categorías").
+           - Появляется горизонтальная полоса подкатегорий с возможностью кликабельной фильтрации.
+           - И ТОЛЬКО ЗДЕСЬ появляется интерактивная карта и список проверенных контрагентов этой категории!
+           - Здесь доступны фильтры по районам (Palermo, Recoleta...), формату работы (выезд, офис, онлайн) и режимы (Сплит / Карта / Список). */
+        <div className="flex-1 flex flex-col">
+          {activeCategory ? (
+            <CategoryDrilldownHeader
+              locale={locale}
+              category={activeCategory}
+              selectedSubcategory={selectedSubcategory}
+              onSelectSubcategory={(sub) => setSelectedSubcategory(sub)}
+              onBackToCategories={handleBackToCategories}
+              specialistsCount={filteredSpecialists.length}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onOpenCreateOrder={() => setIsCreateOrderModalOpen(true)}
+            />
+          ) : (
+            /* Search across categories banner */
+            <div className="bg-gradient-to-b from-sky-50/60 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950 border-b border-slate-200 dark:border-slate-800 py-6 px-4 sm:px-6 lg:px-8">
+              <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleBackToCategories}
+                    className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition cursor-pointer"
+                  >
+                    <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                    <span>{t.backToCategories}</span>
+                  </button>
+                  <div>
+                    <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+                      {t.searchResultsFor}: <span className="text-sky-600 dark:text-sky-400">«{searchQuery}»</span>
+                    </h1>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {filteredSpecialists.length} {t.resultsFound}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quick Search Modification & Reset */}
+                <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                  <div className="relative flex-1 sm:w-72">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                      <Search className="h-4 w-4 text-sky-600" />
+                    </div>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder={t.searchPlaceholder}
+                      className="block w-full rounded-xl border-0 py-2 pl-9 pr-9 text-xs sm:text-sm text-slate-900 shadow-xs ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-sky-500 dark:bg-slate-800 dark:text-white dark:ring-slate-700 transition"
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+                        aria-label={locale === 'ru' ? 'Очистить поиск' : 'Borrar búsqueda'}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="rounded-lg bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-700 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 transition whitespace-nowrap cursor-pointer"
+                  >
+                    {t.resetFilters}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Filters & Results Counter Bar (Only shown when category or search is active) */}
           <FilterBar
             locale={locale}
             selectedCategory={selectedCategory}
             setSelectedCategory={handleToggleCategory}
+            selectedSubcategory={selectedSubcategory}
+            setSelectedSubcategory={setSelectedSubcategory}
             selectedBarrio={selectedBarrio}
             setSelectedBarrio={setSelectedBarrio}
             selectedFormat={selectedFormat}
@@ -322,7 +469,7 @@ export default function Home() {
             setViewMode={setViewMode}
           />
 
-          {/* Main Content Area based on ViewMode */}
+          {/* Main Content Area based on ViewMode: Split, Catalog, or Map */}
           <main className="flex-1">
             {/* MODE 1: Split View (Catalog on left, Sticky Map on right) */}
             {viewMode === 'split' && (
@@ -368,7 +515,7 @@ export default function Home() {
                     )}
                   </div>
 
-                  {/* Right Column: Sticky Map */}
+                  {/* Right Column: Sticky Map (ONLY in Drill-down!) */}
                   <div className="lg:col-span-6 xl:col-span-7">
                     <div className="sticky top-20 h-[calc(100vh-6.5rem)] min-h-[500px] w-full rounded-2xl shadow-sm overflow-hidden">
                       <LeafletMap
@@ -460,7 +607,7 @@ export default function Home() {
 
           {/* Stats Banner */}
           <StatsBanner locale={locale} totalSpecialists={specialists.length} />
-        </>
+        </div>
       )}
 
       {/* Footer */}

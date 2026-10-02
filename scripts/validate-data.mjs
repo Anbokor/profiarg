@@ -42,6 +42,8 @@ const filesToCheck = [
   'components/CreateOrderModal.tsx',
   'components/OrdersBoard.tsx',
   'components/SpecialistCabinetModal.tsx',
+  'components/CategoryDirectory.tsx',
+  'components/CategoryDrilldownHeader.tsx',
   'data/seedOrders.ts',
   'app/page.tsx',
   'app/specialist/[slug]/page.tsx',
@@ -682,6 +684,90 @@ assert(
 assert(
   specialistCardContent.includes('granularLanguages'),
   "SpecialistCard renders multi-language indicators"
+);
+
+// TEST 12: Two-Level Home Page Flow & Category Directory Integrity
+console.log('\n12. Validating Two-Level Home Page Flow & Category Directory Integrity:');
+const catDirContent = readFileSync(resolve(process.cwd(), 'components/CategoryDirectory.tsx'), 'utf8');
+const drilldownHeaderContent = readFileSync(resolve(process.cwd(), 'components/CategoryDrilldownHeader.tsx'), 'utf8');
+
+assert(
+  catDirContent.includes('CATEGORIES.map'),
+  "CategoryDirectory iterates over and renders the 14 category cards"
+);
+assert(
+  catDirContent.includes('onSelectCategory') && catDirContent.includes('onSelectSubcategory'),
+  "CategoryDirectory supports drill-down triggers on category cards and subcategory tags"
+);
+assert(
+  catDirContent.includes('specialistSubs') && catDirContent.includes('displaySubcategories'),
+  "CategoryDirectory prioritizes populated subcategories from specialists to prevent 0-result dead-ends"
+);
+assert(
+  pageContent.includes("selectedCategory === 'all' && !searchQuery.trim()"),
+  "app/page.tsx strictly isolates root home page state when selectedCategory is 'all' and search is empty"
+);
+assert(
+  pageContent.includes('<CategoryDirectory'),
+  "app/page.tsx renders CategoryDirectory on the root home page"
+);
+assert(
+  pageContent.includes('showCategoryPills={false}'),
+  "app/page.tsx configures HeroSection to hide redundant category pills on root page"
+);
+
+// Verify root state has NO map and NO mixed specialists list
+const rootStateStartIndex = pageContent.indexOf("selectedCategory === 'all' && !searchQuery.trim()");
+const drilldownStartIndex = pageContent.indexOf("/* ================= DRILL-DOWN STATE & SEARCH RESULTS ================= */");
+const rootStateBlock = rootStateStartIndex !== -1 && drilldownStartIndex !== -1
+  ? pageContent.slice(rootStateStartIndex, drilldownStartIndex)
+  : '';
+
+assert(
+  rootStateBlock && !rootStateBlock.includes('<LeafletMap'),
+  "Root state strictly excludes LeafletMap (no map on root home page)"
+);
+assert(
+  rootStateBlock && !rootStateBlock.includes('<SpecialistCard'),
+  "Root state strictly excludes SpecialistCard (no mixed specialist cards on root home page)"
+);
+
+// Verify drill-down state renders map and specialist list
+assert(
+  drilldownHeaderContent.includes('backToCategories') && drilldownHeaderContent.includes('ArrowLeft'),
+  "CategoryDrilldownHeader includes prominent 'backToCategories' return button with arrow icon"
+);
+assert(
+  drilldownHeaderContent.includes('category.subcategories.map'),
+  "CategoryDrilldownHeader renders clickable subcategories horizontal scroll strip"
+);
+assert(
+  pageContent.includes('<CategoryDrilldownHeader'),
+  "app/page.tsx renders CategoryDrilldownHeader during category drill-down"
+);
+assert(
+  pageContent.includes('handleBackToCategories'),
+  "app/page.tsx implements handleBackToCategories to return to root 14-category view"
+);
+assert(
+  pageContent.includes("selectedSubcategory !== 'all'") && pageContent.includes('hasSub && !hasService'),
+  "app/page.tsx filters specialists by selected subcategory and service titles"
+);
+assert(
+  pageContent.includes('categoryObj'),
+  "app/page.tsx indexes category titles in search text for discovery by category name"
+);
+assert(
+  filterBarContent.includes('selectedSubcategory') && filterBarContent.includes('setSelectedSubcategory'),
+  "FilterBar supports selectedSubcategory filter and deselect chip"
+);
+assert(
+  transContent.includes('backToCategories') && transContent.includes('browseCategoriesTitle'),
+  "lib/translations.ts includes backToCategories and browseCategoriesTitle keys in both RU and ES"
+);
+assert(
+  transContent.includes('specialistSingle') && transContent.includes('profileSingle'),
+  "lib/translations.ts includes pluralization keys (specialistSingle, profileSingle) in both RU and ES"
 );
 
 // Summary

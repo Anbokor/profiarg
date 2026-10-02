@@ -30,6 +30,7 @@ interface NavbarProps {
   onOpenCabinet?: () => void;
   loggedInSpecialist?: Specialist | null;
   onLogoutSpecialist?: () => void;
+  onGoHome?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -46,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCabinet,
   loggedInSpecialist,
   onLogoutSpecialist,
+  onGoHome,
 }) => {
   const t = translations[locale];
   const [isMasterMenuOpen, setIsMasterMenuOpen] = useState(false);
@@ -81,11 +83,15 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-3 sm:gap-6 flex-shrink-0">
           {/* Brand Logo */}
           <div
-            onClick={() => setActiveTab && setActiveTab('specialists')}
+            onClick={() => {
+              setActiveTab && setActiveTab('specialists');
+              onGoHome && onGoHome();
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 setActiveTab && setActiveTab('specialists');
+                onGoHome && onGoHome();
               }
             }}
             className="flex items-center gap-2 cursor-pointer select-none group focus-visible:outline-2 focus-visible:outline-sky-500 focus-visible:rounded-xl"
@@ -116,7 +122,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <button
               type="button"
-              onClick={() => setActiveTab && setActiveTab('specialists')}
+              onClick={() => {
+                setActiveTab && setActiveTab('specialists');
+                onGoHome && onGoHome();
+              }}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
                 activeTab === 'specialists'
                   ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white font-bold'

@@ -22,6 +22,8 @@ interface FilterBarProps {
   locale: Locale;
   selectedCategory: CategoryId | 'all';
   setSelectedCategory: (cat: CategoryId | 'all') => void;
+  selectedSubcategory?: string | 'all';
+  setSelectedSubcategory?: (sub: string | 'all') => void;
   selectedBarrio: string | 'all';
   setSelectedBarrio: (barrio: string | 'all') => void;
   selectedFormat: WorkFormat | 'all';
@@ -43,6 +45,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   locale,
   selectedCategory,
   setSelectedCategory,
+  selectedSubcategory = 'all',
+  setSelectedSubcategory,
   selectedBarrio,
   setSelectedBarrio,
   selectedFormat,
@@ -63,6 +67,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
   const hasActiveFilters =
     selectedCategory !== 'all' ||
+    (selectedSubcategory && selectedSubcategory !== 'all') ||
     selectedBarrio !== 'all' ||
     selectedFormat !== 'all' ||
     verifiedOnly ||
@@ -290,6 +295,22 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 className="hover:bg-sky-200/80 dark:hover:bg-sky-800 rounded-full p-0.5 text-sky-700 dark:text-sky-300 transition"
                 title={locale === 'ru' ? 'Сбросить категорию' : 'Quitar filtro de categoría'}
                 aria-label={locale === 'ru' ? 'Сбросить категорию' : 'Quitar filtro de categoría'}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+
+          {/* Active Subcategory badge */}
+          {selectedSubcategory && selectedSubcategory !== 'all' && setSelectedSubcategory && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-100 dark:bg-sky-900/70 border border-sky-300 dark:border-sky-700 px-2.5 py-0.5 text-xs font-semibold text-sky-800 dark:text-sky-200 flex-shrink-0">
+              <span>{selectedSubcategory}</span>
+              <button
+                type="button"
+                onClick={() => setSelectedSubcategory('all')}
+                className="hover:bg-sky-200/80 dark:hover:bg-sky-800 rounded-full p-0.5 text-sky-700 dark:text-sky-300 transition cursor-pointer"
+                title={locale === 'ru' ? 'Сбросить подкатегорию' : 'Quitar filtro de subcategoría'}
+                aria-label={locale === 'ru' ? 'Сбросить подкатегорию' : 'Quitar filtro de subcategoría'}
               >
                 <X className="h-3 w-3" />
               </button>

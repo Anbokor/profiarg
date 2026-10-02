@@ -39,6 +39,7 @@ interface HeroSectionProps {
   totalSpecialists: number;
   onReset?: () => void;
   onOpenCreateOrder?: () => void;
+  showCategoryPills?: boolean;
 }
 
 const getCategoryIcon = (iconName: string, className = 'w-4 h-4') => {
@@ -70,6 +71,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   totalSpecialists,
   onReset,
   onOpenCreateOrder,
+  showCategoryPills = false,
 }) => {
   const t = translations[locale];
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -247,93 +249,95 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
 
         {/* Category Pill Filters with Scroll Controls and Gradient Fades */}
-        <div className="relative mt-6 max-w-5xl mx-auto px-1 sm:px-2">
-          {/* Left Gradient Fade & Scroll Button */}
-          {canScrollLeft && (
-            <div className="absolute left-0 top-0 bottom-0 z-10 flex items-center w-14 sm:w-16 bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent dark:from-slate-950 dark:via-slate-950/80 dark:to-transparent pointer-events-none">
-              <button
-                type="button"
-                onClick={() => scrollCategories('left')}
-                className="pointer-events-auto ml-1 sm:ml-2 h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
-                aria-label={locale === 'ru' ? 'Прокрутить влево' : 'Desplazar a la izquierda'}
-                title={locale === 'ru' ? 'Прокрутить влево' : 'Desplazar a la izquierda'}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Right Gradient Fade & Scroll Button */}
-          {canScrollRight && (
-            <div className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-end w-14 sm:w-16 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent dark:from-slate-950 dark:via-slate-950/80 dark:to-transparent pointer-events-none">
-              <button
-                type="button"
-                onClick={() => scrollCategories('right')}
-                className="pointer-events-auto mr-1 sm:mr-2 h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
-                aria-label={locale === 'ru' ? 'Прокрутить вправо' : 'Desplazar a la derecha'}
-                title={locale === 'ru' ? 'Прокрутить вправо' : 'Desplazar a la derecha'}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Horizontal Scroll Area */}
-          <div
-            ref={scrollContainerRef}
-            onScroll={handleScroll}
-            className="flex items-center gap-2 overflow-x-auto px-4 sm:px-8 py-3 scrollbar-none scroll-smooth"
-          >
-            {/* Prominent "All Categories" Pill with LayoutGrid icon */}
-            <button
-              type="button"
-              onClick={() => setSelectedCategory('all')}
-              aria-pressed={selectedCategory === 'all'}
-              className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
-                selectedCategory === 'all'
-                  ? 'bg-slate-900 text-white shadow-xs ring-1 ring-slate-900 dark:bg-white dark:text-slate-900 dark:ring-white'
-                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5 flex-shrink-0" />
-              <span>{t.allCategories}</span>
-            </button>
-
-            {CATEGORIES.map((cat) => {
-              const isSelected = selectedCategory === cat.id;
-              return (
+        {showCategoryPills && (
+          <div className="relative mt-6 max-w-5xl mx-auto px-1 sm:px-2">
+            {/* Left Gradient Fade & Scroll Button */}
+            {canScrollLeft && (
+              <div className="absolute left-0 top-0 bottom-0 z-10 flex items-center w-14 sm:w-16 bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent dark:from-slate-950 dark:via-slate-950/80 dark:to-transparent pointer-events-none">
                 <button
-                  key={cat.id}
                   type="button"
-                  data-selected={isSelected}
-                  aria-pressed={isSelected}
-                  onClick={() => setSelectedCategory(isSelected ? 'all' : cat.id)}
-                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
-                    isSelected
-                      ? 'bg-sky-600 text-white shadow-xs ring-1 ring-sky-600'
-                      : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700'
-                  }`}
-                  title={
-                    isSelected
-                      ? locale === 'ru'
-                        ? 'Нажмите, чтобы сбросить выбор категории'
-                        : 'Tocá para quitar el filtro de categoría'
-                      : undefined
-                  }
+                  onClick={() => scrollCategories('left')}
+                  className="pointer-events-auto ml-1 sm:ml-2 h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                  aria-label={locale === 'ru' ? 'Прокрутить влево' : 'Desplazar a la izquierda'}
+                  title={locale === 'ru' ? 'Прокрутить влево' : 'Desplazar a la izquierda'}
                 >
-                  <span className="flex-shrink-0">{getCategoryIcon(cat.iconName, 'w-3.5 h-3.5')}</span>
-                  <span className="whitespace-nowrap flex-shrink-0">{locale === 'ru' ? cat.title_ru : cat.title_es}</span>
-                  {isSelected && (
-                    <X className="w-3 h-3 ml-0.5 opacity-80 hover:opacity-100 flex-shrink-0" />
-                  )}
+                  <ChevronLeft className="h-4 w-4" />
                 </button>
-              );
-            })}
+              </div>
+            )}
 
-            {/* Clear end spacing so the last pill isn't flush against the right edge */}
-            <div className="w-8 flex-shrink-0" aria-hidden="true" />
+            {/* Right Gradient Fade & Scroll Button */}
+            {canScrollRight && (
+              <div className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-end w-14 sm:w-16 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent dark:from-slate-950 dark:via-slate-950/80 dark:to-transparent pointer-events-none">
+                <button
+                  type="button"
+                  onClick={() => scrollCategories('right')}
+                  className="pointer-events-auto mr-1 sm:mr-2 h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                  aria-label={locale === 'ru' ? 'Прокрутить вправо' : 'Desplazar a la derecha'}
+                  title={locale === 'ru' ? 'Прокрутить вправо' : 'Desplazar a la derecha'}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+
+            {/* Horizontal Scroll Area */}
+            <div
+              ref={scrollContainerRef}
+              onScroll={handleScroll}
+              className="flex items-center gap-2 overflow-x-auto px-4 sm:px-8 py-3 scrollbar-none scroll-smooth"
+            >
+              {/* Prominent "All Categories" Pill with LayoutGrid icon */}
+              <button
+                type="button"
+                onClick={() => setSelectedCategory('all')}
+                aria-pressed={selectedCategory === 'all'}
+                className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
+                  selectedCategory === 'all'
+                    ? 'bg-slate-900 text-white shadow-xs ring-1 ring-slate-900 dark:bg-white dark:text-slate-900 dark:ring-white'
+                    : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700'
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>{t.allCategories}</span>
+              </button>
+
+              {CATEGORIES.map((cat) => {
+                const isSelected = selectedCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    data-selected={isSelected}
+                    aria-pressed={isSelected}
+                    onClick={() => setSelectedCategory(isSelected ? 'all' : cat.id)}
+                    className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
+                      isSelected
+                        ? 'bg-sky-600 text-white shadow-xs ring-1 ring-sky-600'
+                        : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700'
+                    }`}
+                    title={
+                      isSelected
+                        ? locale === 'ru'
+                          ? 'Нажмите, чтобы сбросить выбор категории'
+                          : 'Tocá para quitar el filtro de categoría'
+                        : undefined
+                    }
+                  >
+                    <span className="flex-shrink-0">{getCategoryIcon(cat.iconName, 'w-3.5 h-3.5')}</span>
+                    <span className="whitespace-nowrap flex-shrink-0">{locale === 'ru' ? cat.title_ru : cat.title_es}</span>
+                    {isSelected && (
+                      <X className="w-3 h-3 ml-0.5 opacity-80 hover:opacity-100 flex-shrink-0" />
+                    )}
+                  </button>
+                );
+              })}
+
+              {/* Clear end spacing so the last pill isn't flush against the right edge */}
+              <div className="w-8 flex-shrink-0" aria-hidden="true" />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
