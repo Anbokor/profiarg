@@ -1,8 +1,8 @@
 {
-  "name": "profiarg",
+  "name": "quatro-clicks",
   "version": "1.0.0",
   "private": true,
-  "description": "ProfiARG — Bilingual directory and interactive map platform for Russian businesses and specialists in Argentina",
+  "description": "Quatro Clicks — Bilingual directory and interactive map platform for businesses and specialists in Argentina",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

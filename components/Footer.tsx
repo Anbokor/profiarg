@@ -27,11 +27,11 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Brand Col */}
           <div className="md:col-span-1 space-y-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-600 text-white font-bold text-sm">
-                P🇦🇷
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-600 text-white font-bold text-xs">
+                4C🇦🇷
               </div>
               <span className="font-extrabold text-lg text-slate-900 dark:text-white">
-                Profi<span className="text-sky-600">ARG</span>
+                Quatro <span className="text-sky-600">Clicks</span>
               </span>
             </div>
             <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
@@ -109,7 +109,7 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom Bar */}
         <div className="border-t border-slate-100 pt-6 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3">
-          <p>© {new Date().getFullYear()} ProfiARG. Buenos Aires, Argentina. Hecho con ❤️ para la comunidad.</p>
+          <p>© {new Date().getFullYear()} Quatro Clicks. Buenos Aires, Argentina. Hecho con ❤️ para la comunidad.</p>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />

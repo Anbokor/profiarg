@@ -2,12 +2,12 @@ import { Specialist, Review, Order, OrderStatus, SpecialistCabinetState } from '
 import { SEED_SPECIALISTS } from '@/data/seedData';
 import { SEED_ORDERS } from '@/data/seedOrders';
 
-const CUSTOM_SPECIALISTS_KEY = 'profiarg_custom_specialists';
-const FAVORITES_KEY = 'profiarg_favorites';
-const CUSTOM_REVIEWS_KEY = 'profiarg_custom_reviews';
-const LOCALE_KEY = 'profiarg_locale';
-const ORDERS_KEY = 'profiarg_orders_list';
-const SPECIALIST_CABINET_KEY = 'profiarg_specialist_cabinet';
+const CUSTOM_SPECIALISTS_KEY = 'quatroclicks_custom_specialists';
+const FAVORITES_KEY = 'quatroclicks_favorites';
+const CUSTOM_REVIEWS_KEY = 'quatroclicks_custom_reviews';
+const LOCALE_KEY = 'quatroclicks_locale';
+const ORDERS_KEY = 'quatroclicks_orders_list';
+const SPECIALIST_CABINET_KEY = 'quatroclicks_specialist_cabinet';
 
 export function getStoredSpecialists(): Specialist[] {
   if (typeof window === 'undefined') {
@@ -141,12 +141,12 @@ export function setStoredLocale(locale: 'ru' | 'es') {
 // Specialist Authentication & Session State Management
 // ---------------------------------------------------------
 
-const LOGGED_IN_SPECIALIST_KEY = 'profiarg_logged_in_specialist_id';
+const LOGGED_IN_SPECIALIST_KEY = 'quatroclicks_logged_in_specialist_id';
 
 export function getLoggedInSpecialist(): Specialist | null {
   if (typeof window === 'undefined') return null;
   try {
-    const id = localStorage.getItem(LOGGED_IN_SPECIALIST_KEY);
+    const id = localStorage.getItem(LOGGED_IN_SPECIALIST_KEY) || localStorage.getItem('profiarg_logged_in_specialist_id');
     if (!id) return null;
     const all = getStoredSpecialists();
     return all.find((s) => s.id === id) || null;
@@ -378,7 +378,7 @@ export function completeOrderWithFee(
         specState.balanceArs = Math.round(Math.max(0, specState.balanceArs - commission) * 100) / 100;
       }
       specState.completedOrdersCount += 1;
-      localStorage.setItem(`profiarg_specialist_cabinet_${resolvedSpecId}`, JSON.stringify(specState));
+      localStorage.setItem(`quatroclicks_specialist_cabinet_${resolvedSpecId}`, JSON.stringify(specState));
     }
 
     return { order: updatedOrder, commission, savedVsProfiRu };
@@ -406,8 +406,8 @@ export function getSpecialistCabinetState(specialistId?: string): SpecialistCabi
   }
 
   try {
-    const key = specialistId ? `profiarg_specialist_cabinet_${specialistId}` : SPECIALIST_CABINET_KEY;
-    const raw = localStorage.getItem(key);
+    const key = specialistId ? `quatroclicks_specialist_cabinet_${specialistId}` : SPECIALIST_CABINET_KEY;
+    const raw = localStorage.getItem(key) || (specialistId ? localStorage.getItem(`profiarg_specialist_cabinet_${specialistId}`) : localStorage.getItem('profiarg_specialist_cabinet'));
     if (!raw) {
       let initial: SpecialistCabinetState = { ...DEFAULT_CABINET_STATE };
       // Spec-3 (Romanov) has seed completed order. For other specialists, start volume/count at 0
@@ -453,7 +453,7 @@ export function topUpSpecialistDeposit(
 
   if (typeof window !== 'undefined') {
     try {
-      const key = specialistId ? `profiarg_specialist_cabinet_${specialistId}` : SPECIALIST_CABINET_KEY;
+      const key = specialistId ? `quatroclicks_specialist_cabinet_${specialistId}` : SPECIALIST_CABINET_KEY;
       localStorage.setItem(key, JSON.stringify(updated));
 
       // Synchronize global key if specialist specific

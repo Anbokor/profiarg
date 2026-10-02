@@ -294,8 +294,8 @@ export const OrdersBoard: React.FC<OrdersBoardProps> = ({
 
             const waText = encodeURIComponent(
               locale === 'ru'
-                ? `Здравствуйте, ${order.contactName}! Увидел ваш заказ на ProfiARG: «${order.title}». Готов обсудить детали и предложить свои услуги.`
-                : `Hola ${order.contactName}! Vi tu pedido en ProfiARG: "${order.title}". Me gustaría postularme para realizar el trabajo.`
+                ? `Здравствуйте, ${order.contactName}! Увидел ваш заказ на Quatro Clicks: «${order.title}». Готов обсудить детали и предложить свои услуги.`
+                : `Hola ${order.contactName}! Vi tu pedido en Quatro Clicks: "${order.title}". Me gustaría postularme para realizar el trabajo.`
             );
             const waUrl = `https://wa.me/${waClean}?text=${waText}`;
 

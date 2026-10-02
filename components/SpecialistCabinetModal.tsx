@@ -971,8 +971,8 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
         <div className="border-t border-slate-200 px-6 py-3.5 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 flex items-center justify-between">
           <div className="text-[11px] text-slate-500">
             {locale === 'ru'
-              ? 'ProfiARG — платформа для профессионалов и бизнеса в Аргентине'
-              : 'ProfiARG — plataforma para profesionales y empresas en Argentina'}
+              ? 'Quatro Clicks — платформа для профессионалов и бизнеса в Аргентине'
+              : 'Quatro Clicks — plataforma para profesionales y empresas en Argentina'}
           </div>
           <button
             type="button"

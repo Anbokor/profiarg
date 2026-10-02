@@ -1,9 +1,9 @@
-// Comprehensive validation and test script for ProfiARG seed data, categories, barrios, and bilingual translations
+// Comprehensive validation and test script for Quatro Clicks seed data, categories, barrios, and bilingual translations
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 console.log('========================================================');
-console.log('         ProfiARG Full Test & Integrity Suite           ');
+console.log('       Quatro Clicks Full Test & Integrity Suite        ');
 console.log('========================================================\n');
 
 let totalTests = 0;
@@ -65,22 +65,76 @@ for (const f of filesToCheck) {
 console.log('\n2. Validating Categories Data:');
 const categoriesContent = readFileSync(resolve(process.cwd(), 'data/categories.ts'), 'utf8');
 const expectedCategoryIds = [
-  'immigration',
-  'medicine',
-  'real_estate',
+  'repair_construction',
   'beauty',
-  'food',
-  'repair',
+  'transport',
+  'currency_exchange',
+  'translators',
+  'legal_lawyers',
   'education',
-  'it_freelance',
-  'pets',
   'tourism',
+  'appliances_repair',
+  'auto',
+  'real_estate',
+  'jobs',
+  'it_services',
+  'food_shops',
 ];
 
 for (const catId of expectedCategoryIds) {
   assert(
     categoriesContent.includes(`id: '${catId}'`),
     `Category '${catId}' defined in data/categories.ts`
+  );
+}
+assert(expectedCategoryIds.length === 14, 'Exactly 14 client categories defined in data/categories.ts');
+
+const clientRequiredSubcategories = [
+  'Бетонные работы, кладка',
+  'Укладка плитки',
+  'Электрика',
+  'Водоснабжение сантехника',
+  'Двери входные',
+  'Двери межкомнатные',
+  'Сварочные Работы',
+  'Окна',
+  'Штукатурка',
+  'Перегородки гипсокартон',
+  'Кондиционеры',
+  'Газ',
+  'Комплексные работы',
+  'Кухни',
+  'Мебель',
+  'Проект',
+  'Услуги Obras',
+  'Продажа материалов Materiales',
+  'Окрашивание волос / стрижка',
+  'Маникюр / педикюр',
+  'Депиляция',
+  'Косметология',
+  'Массаж',
+  'Ламинирование, окрашивание, коррекция бровей',
+  'Перманентный макияж',
+  'Трансфер Аэропорт',
+  'Лицензированный CTPCBA',
+  'Выездной',
+  'Языки: Испанский',
+  'Дети: Математика',
+  'Танцы: Танго',
+  'Гид',
+  'Телефоны',
+  'Прокат автомобилей',
+  'Аренда: Услуги по подбору',
+  'Вакансии',
+  'Резюме',
+  'Изготовление сайта',
+  'Администрирование',
+];
+
+for (const sub of clientRequiredSubcategories) {
+  assert(
+    categoriesContent.includes(`'${sub}'`),
+    `Client subcategory '${sub}' defined in categories.ts`
   );
 }
 
@@ -150,6 +204,22 @@ for (const wa of waMatches) {
 }
 assert(allWaValid && waMatches.length >= 15, `All ${waMatches.length} WhatsApp numbers have valid Argentine international prefix (549...)`);
 
+// Check premier specialist Alexander Marchenko (spec-1)
+assert(seedContent.includes("contractorId: '0001/001'"), "Premier specialist spec-1 has contractorId '0001/001'");
+assert(seedContent.includes("Александр Марченко"), "Premier specialist name is 'Александр Марченко'");
+assert(seedContent.includes("Ventanas porteñas"), "Premier specialist company is 'Ventanas porteñas'");
+assert(seedContent.includes("ventanasportenas.ar"), "Premier specialist website is configured");
+assert(seedContent.includes("+54 9 11 3015 9399") || seedContent.includes("+5491130159399"), "Premier specialist phone is configured (+54 9 11 3015 9399)");
+assert(seedContent.includes("+54 9 11 3386 7500") || seedContent.includes("+5491133867500"), "Premier specialist WhatsApp is configured (+54 9 11 3386 7500)");
+
+// Check that all 14 categories have specialists in seedData
+for (const catId of expectedCategoryIds) {
+  assert(
+    seedContent.includes(`category: '${catId}'`),
+    `Seed data includes at least one specialist in category '${catId}'`
+  );
+}
+
 // TEST 5: Translation Dictionary Key Parity
 console.log('\n5. Validating Bilingual Translation Dictionary (RU & ES):');
 const transContent = readFileSync(resolve(process.cwd(), 'lib/translations.ts'), 'utf8');
@@ -180,6 +250,15 @@ if (ruBlockMatch && esBlockMatch) {
   );
   assert(ruKeySet.size >= 50, `Dictionary contains ${ruKeySet.size} bilingual UI translation keys`);
 }
+
+// Client mission statement exact text verification
+const expectedRuMission = 'Данная платформа предназначена для бесплатного размещения информации о вашей деятельности и направлена на упрощение поиска необходимой услуги в Аргентине как для русскоязычного населения, так и для испаноговорящих';
+const expectedEsMission = 'Esta plataforma está destinada a la publicación gratuita de información sobre tu actividad profesional y orientada a simplificar la búsqueda de servicios en Argentina tanto para la comunidad hispanohablante como rusoparlante.';
+
+assert(transContent.includes(expectedRuMission), 'lib/translations.ts includes client exact RU mission statement');
+assert(transContent.includes(expectedEsMission), 'lib/translations.ts includes client exact ES mission statement');
+assert(transContent.includes('contractorIdLabel'), 'lib/translations.ts includes contractor profile field translations');
+assert(transContent.includes('Quatro Clicks'), 'lib/translations.ts features Quatro Clicks branding');
 
 // TEST 6: Tailwind Configuration
 console.log('\n6. Validating Tailwind Config:');
@@ -567,6 +646,44 @@ assert(
   "lib/translations.ts removes promotional platform comparison slogans"
 );
 
+// Quatro Clicks Rebranding & Contractor Verification Architecture
+assert(navbarContent.includes('Quatro Clicks'), "Navbar features 'Quatro Clicks' branding");
+const footerContent = readFileSync(resolve(process.cwd(), 'components/Footer.tsx'), 'utf8');
+assert(footerContent.includes('Quatro Clicks'), "Footer features 'Quatro Clicks' branding");
+assert(layoutContent.includes('Quatro Clicks'), "Root layout features 'Quatro Clicks' branding");
+assert(cabinetModalContent.includes('Quatro Clicks'), "SpecialistCabinetModal features 'Quatro Clicks' branding");
+assert(ordersBoardContent.includes('Quatro Clicks'), "OrdersBoard features 'Quatro Clicks' branding");
+assert(
+  addSpecialistModalContent.includes('privateConfidentialNotice') || addSpecialistModalContent.includes('privateDniPhoto'),
+  "AddSpecialistModal includes private identity verification disclosure"
+);
+assert(
+  transContent.includes('Паспорт или DNI фото для исключения мошенничества, не для общего доступа'),
+  "lib/translations.ts includes private identity verification disclosure"
+);
+assert(
+  addSpecialistModalContent.includes('contractorId') || addSpecialistModalContent.includes('0001/001') || addSpecialistModalContent.includes('contractorIdLabel'),
+  "AddSpecialistModal supports contractor identification architecture"
+);
+assert(
+  addSpecialistModalContent.includes('handleToggleSubcategory') || addSpecialistModalContent.includes('selectedSubcategories'),
+  "AddSpecialistModal supports granular subcategory selection during contractor registration"
+);
+const packageJsonContent = readFileSync(resolve(process.cwd(), 'package.json'), 'utf8');
+assert(
+  packageJsonContent.includes('"name": "quatro-clicks"'),
+  "package.json features 'quatro-clicks' platform name"
+);
+const specialistCardContent = readFileSync(resolve(process.cwd(), 'components/SpecialistCard.tsx'), 'utf8');
+assert(
+  specialistCardContent.includes('specialist.phone'),
+  "SpecialistCard provides direct telephone calling channel"
+);
+assert(
+  specialistCardContent.includes('granularLanguages'),
+  "SpecialistCard renders multi-language indicators"
+);
+
 // Summary
 console.log('\n========================================================');
 console.log(`Total tests: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests}`);
@@ -576,5 +693,5 @@ if (failedTests > 0) {
   console.error('\nData integrity and verification check failed!');
   process.exit(1);
 } else {
-  console.log('\nAll ProfiARG tests and data validations passed successfully!');
+  console.log('\nAll Quatro Clicks tests and data validations passed successfully!');
 }

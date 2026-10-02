@@ -1,20 +1,40 @@
 export type Locale = 'ru' | 'es';
 
 export type CategoryId =
-  | 'immigration'
-  | 'medicine'
-  | 'real_estate'
+  | 'repair_construction'
   | 'beauty'
-  | 'food'
-  | 'repair'
+  | 'transport'
+  | 'currency_exchange'
+  | 'translators'
+  | 'legal_lawyers'
   | 'education'
-  | 'it_freelance'
-  | 'pets'
-  | 'tourism';
+  | 'tourism'
+  | 'appliances_repair'
+  | 'auto'
+  | 'real_estate'
+  | 'jobs'
+  | 'it_services'
+  | 'food_shops';
 
 export type WorkFormat = 'office' | 'home_visit' | 'online';
 
 export type Currency = 'ARS' | 'USD' | 'a_convenir';
+
+export type SpanishLevel = 'fluent' | 'good' | 'with_translator';
+export type EnglishLevel = 'fluent' | 'good' | 'with_translator';
+
+export interface GranularLanguages {
+  russian: boolean;
+  spanish?: SpanishLevel;
+  english?: EnglishLevel;
+  portuguese?: boolean;
+}
+
+export interface SubcategoryItem {
+  id: string;
+  title_ru: string;
+  title_es: string;
+}
 
 export interface Category {
   id: CategoryId;
@@ -29,6 +49,8 @@ export interface Category {
   pinBg: string;
   description_ru: string;
   description_es: string;
+  subcategories: string[];
+  subcategoriesDetailed?: SubcategoryItem[];
 }
 
 export interface Barrio {
@@ -62,6 +84,7 @@ export interface Review {
 
 export interface Specialist {
   id: string;
+  contractorId?: string; // e.g. '0001/001', '0154'
   slug: string;
   name: string;
   isCompany: boolean;
@@ -77,6 +100,20 @@ export interface Specialist {
   experienceYears: number; // years operating in Argentina
   isVerified: boolean;
   languages: ('ru' | 'es' | 'en')[];
+  granularLanguages?: GranularLanguages;
+  advantages?: string[]; // e.g. ['Замер', 'Консультация', 'Выезд специалиста', 'Европейские нормы', 'Гарантия', 'Немецкая фурнитура']
+  responseTime?: string; // e.g. '1 час' / '15 минут'
+  workingHoursComm?: string; // e.g. '8-17'
+  preferredContactMethod?: 'whatsapp' | 'telegram' | 'phone';
+  phone?: string;
+  whatsapp: string; // e.g. "+5491133867500"
+  telegram?: string; // e.g. "natalia_traductora"
+  instagram?: string;
+  facebook?: string;
+  website?: string;
+  email?: string;
+  privateDocumentNumber?: string; // DNI / Passport (private verification)
+  privateDocumentPhoto?: string; // Photo of DNI / Passport (private verification)
   barrio: string;
   addressLine: string;
   coordinates: {
@@ -84,10 +121,6 @@ export interface Specialist {
     lng: number;
   };
   formats: WorkFormat[];
-  whatsapp: string; // e.g. "+5491123456789"
-  telegram?: string; // e.g. "natalia_traductora"
-  instagram?: string;
-  website?: string;
   description_ru: string;
   description_es: string;
   services: ServiceItem[];

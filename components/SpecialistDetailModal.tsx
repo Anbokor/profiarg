@@ -17,6 +17,14 @@ import {
   Share2,
   Briefcase,
   Languages,
+  Phone,
+  Globe,
+  Instagram,
+  Facebook,
+  Mail,
+  ShieldCheck,
+  Building2,
+  Check,
 } from 'lucide-react';
 
 interface SpecialistDetailModalProps {
@@ -85,17 +93,17 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-xs animate-fade-in">
       <div
-        className="relative w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 my-8 max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 my-8 max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cover Image & Close Button */}
-        <div className="relative h-44 sm:h-56 w-full shrink-0">
+        <div className="relative h-48 sm:h-60 w-full shrink-0">
           <img
             src={specialist.coverImage || specialist.avatar}
             alt={specialist.name}
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
 
           {/* Top Actions: Close, Favorite, Share */}
           <div className="absolute top-4 right-4 flex items-center gap-2">
@@ -136,12 +144,12 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
               <img
                 src={specialist.avatar}
                 alt={specialist.name}
-                className="h-18 w-18 sm:h-20 sm:w-20 rounded-2xl border-2 border-white object-cover shadow-xl dark:border-slate-800"
+                className="h-18 w-18 sm:h-22 sm:w-22 rounded-2xl border-2 border-white object-cover shadow-xl dark:border-slate-800"
               />
               {specialist.isVerified && (
                 <div
                   className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-white dark:ring-slate-900"
-                  title={t.verifiedBadge}
+                  title={t.verifiedDniBadge || t.verifiedBadge}
                 >
                   <CheckCircle2 className="h-4 w-4" />
                 </div>
@@ -149,9 +157,15 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
             </div>
 
             <div className="flex-1 text-white">
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                {/* Contractor ID Code Badge */}
+                {specialist.contractorId && (
+                  <span className="rounded-md bg-amber-400 px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-black text-slate-950 shadow-xs">
+                    ID {specialist.contractorId}
+                  </span>
+                )}
                 <span
-                  className={`rounded-md px-2 py-0.5 text-[11px] font-bold text-white shadow-xs`}
+                  className="rounded-md px-2 py-0.5 text-[11px] font-bold text-white shadow-xs"
                   style={{ backgroundColor: category?.pinBg || '#0284c7' }}
                 >
                   {locale === 'ru' ? category?.title_ru : category?.title_es}
@@ -160,7 +174,14 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                   {specialist.experienceYears} {t.yearsInArg}
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight">{specialist.name}</h2>
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
+                <span>{specialist.name}</span>
+                {specialist.companyName && (
+                  <span className="text-sm sm:text-base font-medium text-sky-200 hidden sm:inline-flex items-center gap-1">
+                    • <Building2 className="h-4 w-4" /> {specialist.companyName}
+                  </span>
+                )}
+              </h2>
               <p className="text-xs text-slate-200 line-clamp-1">{title}</p>
             </div>
           </div>
@@ -170,7 +191,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           {/* Quick Metrics Bar & Primary CTA */}
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
-            <div className="flex items-center gap-4 text-xs sm:text-sm">
+            <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
               <div className="flex items-center gap-1.5 font-bold text-amber-500">
                 <Star className="h-5 w-5 fill-amber-400" />
                 <span className="text-base text-slate-900 dark:text-white">
@@ -197,6 +218,17 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                 <span>{t.contactWhatsApp}</span>
               </a>
 
+              {specialist.phone && (
+                <a
+                  href={`tel:${specialist.phone}`}
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
+                  title={t.phoneDirect}
+                >
+                  <Phone className="h-4 w-4 text-emerald-600" />
+                  <span className="hidden sm:inline">{specialist.phone}</span>
+                </a>
+              )}
+
               {specialist.telegram && (
                 <a
                   href={`https://t.me/${specialist.telegram.replace('@', '')}`}
@@ -211,6 +243,32 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
             </div>
           </div>
 
+          {/* Response time & Communication parameters strip */}
+          <div className="flex flex-wrap items-center gap-2.5 text-xs">
+            {specialist.responseTime && (
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 px-3 py-1 font-semibold text-emerald-800 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-300">
+                <Clock className="h-3.5 w-3.5 text-emerald-600" />
+                <span>{locale === 'ru' ? `Отвечаю в течение: ${specialist.responseTime}` : `Responde en: ${specialist.responseTime}`}</span>
+              </span>
+            )}
+            {specialist.workingHoursComm && (
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-sky-50 border border-sky-200/80 px-3 py-1 font-semibold text-sky-800 dark:bg-sky-950/50 dark:border-sky-800 dark:text-sky-300">
+                <span>{locale === 'ru' ? `Часы для связи: ${specialist.workingHoursComm}` : `Horario de contacto: ${specialist.workingHoursComm}`}</span>
+              </span>
+            )}
+            {specialist.preferredContactMethod && (
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-amber-50 border border-amber-200/80 px-3 py-1 font-semibold text-amber-900 dark:bg-amber-950/50 dark:border-amber-800 dark:text-amber-200">
+                <span>{locale === 'ru' ? `Связь: ${specialist.preferredContactMethod.toUpperCase()}` : `Canal: ${specialist.preferredContactMethod.toUpperCase()}`}</span>
+              </span>
+            )}
+            {specialist.isVerified && (
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-purple-50 border border-purple-200/80 px-3 py-1 font-semibold text-purple-800 dark:bg-purple-950/50 dark:border-purple-800 dark:text-purple-300">
+                <ShieldCheck className="h-3.5 w-3.5 text-purple-600" />
+                <span>{t.verifiedDniBadge}</span>
+              </span>
+            )}
+          </div>
+
           {/* Navigation Tabs (Overview / Reviews) */}
           <div className="flex border-b border-slate-200 dark:border-slate-800">
             <button
@@ -221,7 +279,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                   : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400'
               }`}
             >
-              {locale === 'ru' ? 'О специалисте и услуги' : 'Información y servicios'}
+              {locale === 'ru' ? 'О мастере и услуги' : 'Información y servicios'}
             </button>
             <button
               onClick={() => setActiveTab('reviews')}
@@ -239,7 +297,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
             <div className="space-y-6">
               {/* Detailed Description */}
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                   {locale === 'ru' ? 'Описание деятельности' : 'Descripción profesional'}
                 </h3>
                 <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line">
@@ -247,7 +305,27 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                 </p>
               </div>
 
-              {/* Subcategory tags */}
+              {/* Contractor Advantages */}
+              {specialist.advantages && specialist.advantages.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+                    {t.advantagesLabel}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {specialist.advantages.map((adv, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-sky-50 border border-sky-200/80 px-3 py-1.5 text-xs font-semibold text-sky-800 dark:bg-sky-950/50 dark:border-sky-800 dark:text-sky-200 shadow-2xs"
+                      >
+                        <Check className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
+                        <span>{adv}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Subcategories tags */}
               {specialist.subcategories && specialist.subcategories.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {specialist.subcategories.map((sub, idx) => (
@@ -263,7 +341,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
 
               {/* Services & Price Menu */}
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                   {t.servicesAndPrices}
                 </h3>
                 <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
@@ -293,7 +371,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                 </div>
               </div>
 
-              {/* Key Practical Info Grid */}
+              {/* Practical Info Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {/* Working hours */}
                 <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
@@ -304,7 +382,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                   </div>
                 </div>
 
-                {/* Address Line */}
+                {/* Address */}
                 <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
                   <MapPin className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
                   <div>
@@ -313,19 +391,44 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                   </div>
                 </div>
 
-                {/* Languages */}
-                <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
+                {/* Languages with Granular Levels */}
+                <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40 sm:col-span-2">
                   <Languages className="h-5 w-5 text-purple-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="block text-xs font-semibold text-slate-400">{t.languages}</span>
-                    <span className="text-xs font-medium text-slate-700 dark:text-slate-200">
-                      {specialist.languages.map((l) => (l === 'ru' ? 'Русский' : l === 'es' ? 'Español' : 'English')).join(', ')}
-                    </span>
+                  <div className="w-full">
+                    <span className="block text-xs font-semibold text-slate-400 mb-1.5">{t.languages}</span>
+                    {specialist.granularLanguages ? (
+                      <div className="flex flex-wrap gap-2 text-xs font-medium">
+                        {specialist.granularLanguages.russian && (
+                          <span className="rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">
+                            🇷🇺 {t.langRussian}
+                          </span>
+                        )}
+                        {specialist.granularLanguages.spanish && (
+                          <span className="rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">
+                            🇦🇷 {t.langSpanish} ({specialist.granularLanguages.spanish === 'fluent' ? t.levelFluent : specialist.granularLanguages.spanish === 'good' ? t.levelGood : t.levelWithTranslator})
+                          </span>
+                        )}
+                        {specialist.granularLanguages.english && (
+                          <span className="rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">
+                            🇬🇧 {t.langEnglish} ({specialist.granularLanguages.english === 'fluent' ? t.levelFluent : specialist.granularLanguages.english === 'good' ? t.levelGood : t.levelWithTranslator})
+                          </span>
+                        )}
+                        {specialist.granularLanguages.portuguese && (
+                          <span className="rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">
+                            🇧🇷 {t.langPortuguese}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs font-medium text-slate-700 dark:text-slate-200">
+                        {specialist.languages.map((l) => (l === 'ru' ? 'Русский' : l === 'es' ? 'Español' : 'English')).join(', ')}
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 {/* Work formats */}
-                <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
+                <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40 sm:col-span-2">
                   <Briefcase className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
                     <span className="block text-xs font-semibold text-slate-400">{t.workFormat}</span>
@@ -338,11 +441,64 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                 </div>
               </div>
 
-              {/* Gallery Photos */}
+              {/* Direct Channels & Social Networks */}
+              {(specialist.website || specialist.instagram || specialist.facebook || specialist.email) && (
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+                    {t.socialNetworks}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {specialist.website && (
+                      <a
+                        href={specialist.website.startsWith('http') ? specialist.website : `https://${specialist.website}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
+                      >
+                        <Globe className="h-3.5 w-3.5 text-sky-600" />
+                        <span>{specialist.website.replace(/^https?:\/\//, '')}</span>
+                      </a>
+                    )}
+                    {specialist.instagram && (
+                      <a
+                        href={`https://instagram.com/${specialist.instagram.replace('@', '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
+                      >
+                        <Instagram className="h-3.5 w-3.5 text-pink-600" />
+                        <span>@{specialist.instagram.replace('@', '')}</span>
+                      </a>
+                    )}
+                    {specialist.facebook && (
+                      <a
+                        href={specialist.facebook.startsWith('http') ? specialist.facebook : `https://facebook.com/${specialist.facebook}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
+                      >
+                        <Facebook className="h-3.5 w-3.5 text-blue-600" />
+                        <span>Facebook</span>
+                      </a>
+                    )}
+                    {specialist.email && (
+                      <a
+                        href={`mailto:${specialist.email}`}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
+                      >
+                        <Mail className="h-3.5 w-3.5 text-amber-600" />
+                        <span>{specialist.email}</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Portfolio / Gallery Photos */}
               {specialist.gallery && specialist.gallery.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">
-                    {locale === 'ru' ? 'Фотографии и примеры работ' : 'Galería y trabajos'}
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                    {t.portfolioTitle}
                   </h3>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                     {specialist.gallery.map((img, idx) => (
@@ -350,7 +506,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                         key={idx}
                         src={img}
                         alt="Portfolio"
-                        className="h-32 w-full rounded-xl object-cover shadow-xs hover:opacity-95 transition"
+                        className="h-36 w-full rounded-2xl object-cover shadow-xs hover:opacity-95 transition"
                       />
                     ))}
                   </div>

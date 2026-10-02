@@ -143,7 +143,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         const isSelected = selectedSpecialist?.id === specialist.id;
 
         const customIcon = L.divIcon({
-          className: 'custom-profiarg-pin',
+          className: 'custom-quatroclicks-pin custom-profiarg-pin',
           html: `
             <div style="
               position: relative;
@@ -241,7 +241,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
           marker.bindPopup(popupHtml, {
             maxWidth: 260,
-            className: 'profiarg-custom-popup',
+            className: 'quatroclicks-custom-popup profiarg-custom-popup',
           });
 
           markersRef.current.set(specialist.id, marker);

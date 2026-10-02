@@ -39,6 +39,7 @@ body {
   background: white !important;
 }
 
+.custom-quatroclicks-pin,
 .custom-profiarg-pin {
   background: transparent !important;
   border: none !important;

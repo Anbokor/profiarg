@@ -12,6 +12,7 @@ import {
   MessageCircle,
   Send,
   Heart,
+  Phone,
 } from 'lucide-react';
 
 interface SpecialistCardProps {
@@ -70,15 +71,22 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-1">
-              <span
-                className={`inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold ${
-                  category?.badgeBg || 'bg-slate-100'
-                } ${category?.badgeText || 'text-slate-800'} border ${
-                  category?.badgeBorder || 'border-slate-200'
-                }`}
-              >
-                {locale === 'ru' ? category?.title_ru : category?.title_es}
-              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {specialist.contractorId && (
+                  <span className="rounded-md bg-amber-400 px-1.5 py-0.5 text-[10px] font-mono font-black text-slate-950 shadow-2xs">
+                    #{specialist.contractorId}
+                  </span>
+                )}
+                <span
+                  className={`inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold ${
+                    category?.badgeBg || 'bg-slate-100'
+                  } ${category?.badgeText || 'text-slate-800'} border ${
+                    category?.badgeBorder || 'border-slate-200'
+                  }`}
+                >
+                  {locale === 'ru' ? category?.title_ru : category?.title_es}
+                </span>
+              </div>
 
               {/* Favorite Button */}
               <button
@@ -101,14 +109,19 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
               className="mt-1 font-bold text-base text-slate-900 group-hover:text-sky-600 transition-colors cursor-pointer dark:text-white line-clamp-1"
             >
               {specialist.name}
+              {specialist.companyName && (
+                <span className="text-xs font-normal text-slate-400 ml-1.5">
+                  • {specialist.companyName}
+                </span>
+              )}
             </h3>
 
             <p className="text-xs font-medium text-slate-500 dark:text-slate-400 line-clamp-1">
               {title}
             </p>
 
-            {/* Rating and Barrio */}
-            <div className="mt-1.5 flex items-center gap-2 text-xs">
+            {/* Rating, Barrio & Response Time */}
+            <div className="mt-1.5 flex items-center gap-2 text-xs flex-wrap">
               <div className="flex items-center gap-1 font-bold text-slate-800 dark:text-slate-200">
                 <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                 <span>{specialist.rating.toFixed(1)}</span>
@@ -119,7 +132,49 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
                 <MapPin className="h-3 w-3 text-sky-500" />
                 <span className="font-medium">{specialist.barrio}</span>
               </div>
+              {specialist.responseTime && (
+                <>
+                  <span className="text-slate-300 dark:text-slate-700">•</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                    ~{specialist.responseTime}
+                  </span>
+                </>
+              )}
+              {specialist.granularLanguages ? (
+                <>
+                  <span className="text-slate-300 dark:text-slate-700">•</span>
+                  <span className="flex items-center gap-0.5 text-xs">
+                    {specialist.granularLanguages.russian && <span title="Русский">🇷🇺</span>}
+                    {specialist.granularLanguages.spanish && <span title="Español">🇦🇷</span>}
+                    {specialist.granularLanguages.english && <span title="English">🇬🇧</span>}
+                    {specialist.granularLanguages.portuguese && <span title="Português">🇧🇷</span>}
+                  </span>
+                </>
+              ) : specialist.languages && (
+                <>
+                  <span className="text-slate-300 dark:text-slate-700">•</span>
+                  <span className="flex items-center gap-0.5 text-xs">
+                    {specialist.languages.includes('ru') && <span title="Русский">🇷🇺</span>}
+                    {specialist.languages.includes('es') && <span title="Español">🇦🇷</span>}
+                    {specialist.languages.includes('en') && <span title="English">🇬🇧</span>}
+                  </span>
+                </>
+              )}
             </div>
+
+            {/* Key Advantages Chips */}
+            {specialist.advantages && specialist.advantages.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {specialist.advantages.slice(0, 3).map((adv, idx) => (
+                  <span
+                    key={idx}
+                    className="rounded-md bg-sky-50 px-1.5 py-0.5 text-[10px] font-medium text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-100 dark:border-sky-900/40"
+                  >
+                    ✓ {adv}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -158,6 +213,18 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
           <MessageCircle className="h-4 w-4" />
           <span>WhatsApp</span>
         </a>
+
+        {/* Direct Phone Call */}
+        {specialist.phone && (
+          <a
+            href={`tel:${specialist.phone}`}
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center justify-center rounded-xl bg-emerald-50 p-2 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 transition"
+            title={t.phoneDirect || 'Позвонить'}
+          >
+            <Phone className="h-4 w-4" />
+          </a>
+        )}
 
         {/* Telegram Direct */}
         {specialist.telegram && (

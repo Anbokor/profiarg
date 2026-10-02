@@ -40,8 +40,8 @@ export function buildWhatsAppUrl(phone: string, specialistName: string, locale: 
 
   const text =
     locale === 'ru'
-      ? `Здравствуйте, ${specialistName}! Нашёл вашу анкету на платформе ProfiARG. Подскажите, пожалуйста, по поводу ваших услуг...`
-      : `Hola ${specialistName}, encontré tu perfil en ProfiARG. Quisiera consultar sobre tus servicios...`;
+      ? `Здравствуйте, ${specialistName}! Нашёл вашу анкету на платформе Quatro Clicks. Подскажите, пожалуйста, по поводу ваших услуг...`
+      : `Hola ${specialistName}, encontré tu perfil en Quatro Clicks. Quisiera consultar sobre tus servicios...`;
 
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
 }

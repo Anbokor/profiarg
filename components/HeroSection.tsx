@@ -7,16 +7,20 @@ import { CATEGORIES } from '@/data/categories';
 import {
   Search,
   X,
-  Scale,
-  HeartPulse,
-  Building,
+  HardHat,
   Sparkles,
-  UtensilsCrossed,
-  Wrench,
+  Truck,
+  ArrowLeftRight,
+  Languages,
+  Scale,
   GraduationCap,
-  Laptop,
-  PawPrint,
   Compass,
+  Tv,
+  Car,
+  Building,
+  Briefcase,
+  Laptop,
+  ShoppingBag,
   CheckCircle2,
   MapPin,
   MessageCircle,
@@ -39,16 +43,20 @@ interface HeroSectionProps {
 
 const getCategoryIcon = (iconName: string, className = 'w-4 h-4') => {
   switch (iconName) {
-    case 'Scale': return <Scale className={className} />;
-    case 'HeartPulse': return <HeartPulse className={className} />;
-    case 'Building': return <Building className={className} />;
+    case 'HardHat': return <HardHat className={className} />;
     case 'Sparkles': return <Sparkles className={className} />;
-    case 'UtensilsCrossed': return <UtensilsCrossed className={className} />;
-    case 'Wrench': return <Wrench className={className} />;
+    case 'Truck': return <Truck className={className} />;
+    case 'ArrowLeftRight': return <ArrowLeftRight className={className} />;
+    case 'Languages': return <Languages className={className} />;
+    case 'Scale': return <Scale className={className} />;
     case 'GraduationCap': return <GraduationCap className={className} />;
-    case 'Laptop': return <Laptop className={className} />;
-    case 'PawPrint': return <PawPrint className={className} />;
     case 'Compass': return <Compass className={className} />;
+    case 'Tv': return <Tv className={className} />;
+    case 'Car': return <Car className={className} />;
+    case 'Building': return <Building className={className} />;
+    case 'Briefcase': return <Briefcase className={className} />;
+    case 'Laptop': return <Laptop className={className} />;
+    case 'ShoppingBag': return <ShoppingBag className={className} />;
     default: return <Sparkles className={className} />;
   }
 };
@@ -147,7 +155,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </h1>
 
         {/* Hero Subtitle */}
-        <p className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-slate-600 dark:text-slate-300">
+        <p className="mx-auto mt-3 max-w-3xl text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
           {t.heroSubtitle}
         </p>
 

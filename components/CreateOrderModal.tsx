@@ -33,7 +33,7 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
   const t = translations[locale];
 
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<CategoryId>('immigration');
+  const [category, setCategory] = useState<CategoryId>('repair_construction');
   const [barrio, setBarrio] = useState<string>('Recoleta');
   const [description, setDescription] = useState('');
   const [isNegotiable, setIsNegotiable] = useState(false);
