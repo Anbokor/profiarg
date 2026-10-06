@@ -125,78 +125,58 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-sky-50/70 via-white to-slate-50 py-8 px-4 sm:px-6 lg:px-8 dark:from-slate-900 dark:via-slate-900/80 dark:to-slate-950 border-b border-slate-200/70 dark:border-slate-800">
-      {/* Background Argentine Sun abstract watermark */}
-      <div className="absolute top-0 right-0 -mr-20 -mt-20 h-96 w-96 rounded-full bg-gradient-to-br from-amber-200/20 via-sky-200/20 to-transparent blur-3xl pointer-events-none" />
-
-      <div className="mx-auto max-w-5xl text-center">
-        {/* Argentina + Community Badge */}
-        <div className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1 text-xs font-semibold text-slate-700 shadow-xs ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700 mb-4 animate-fade-in">
-          <span className="flex h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
-          <span>🇦🇷 Buenos Aires & CABA</span>
-          <span className="text-slate-300 dark:text-slate-600">|</span>
-          <span className="text-sky-700 dark:text-sky-400">
-            {locale === 'ru' ? 'Русскоязычное сообщество' : 'Comunidad de profesionales'}
-          </span>
+    <section className="relative bg-white dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800/80 py-4 sm:py-5 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl">
+        {/* Compact Mission Statement Banner */}
+        <div className="mx-auto max-w-4xl text-center mb-3">
+          <div className="inline-flex items-center gap-2 rounded-full bg-slate-100/90 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 px-3 py-1 text-xs text-slate-600 dark:text-slate-300 shadow-2xs mb-1.5">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse flex-shrink-0" />
+            <span className="font-semibold text-slate-800 dark:text-slate-200 flex-shrink-0">🇦🇷 Buenos Aires & CABA</span>
+            <span className="text-slate-300 dark:text-slate-700 flex-shrink-0">|</span>
+            <span className="text-sky-700 dark:text-sky-400 font-medium">
+              {locale === 'ru' ? 'Каталог проверенных услуг' : 'Directorio de profesionales'}
+            </span>
+          </div>
+          <p className="mx-auto max-w-3xl text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed font-normal text-center px-2">
+            {t.heroSubtitle}
+          </p>
         </div>
 
-        {/* Hero Title */}
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl md:text-5xl dark:text-white">
-          {locale === 'ru' ? (
-            <>
-              Специалисты и бизнес в <span className="bg-gradient-to-r from-sky-600 to-sky-500 bg-clip-text text-transparent">Аргентине</span>
-            </>
-          ) : (
-            <>
-              Especialistas y Servicios en <span className="bg-gradient-to-r from-sky-600 to-sky-500 bg-clip-text text-transparent">Argentina</span>
-            </>
-          )}
-        </h1>
-
-        {/* Hero Subtitle */}
-        <p className="mx-auto mt-3 max-w-3xl text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-          {t.heroSubtitle}
-        </p>
-
-        {/* Large Search Bar */}
-        <div className="mx-auto mt-6 max-w-2xl">
-          <div className="relative flex items-center">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-              <Search className="h-5 w-5 text-sky-600" />
+        {/* Compact Search Bar & Create Order CTA */}
+        <div className="mx-auto max-w-3xl flex flex-col sm:flex-row items-center gap-2.5">
+          <div className="relative flex-1 w-full">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+              <Search className="h-4.5 w-4.5 text-sky-600 dark:text-sky-400" />
             </div>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.searchPlaceholder}
-              className="block w-full rounded-2xl border-0 py-4 pl-12 pr-12 text-sm sm:text-base text-slate-900 shadow-md ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-sky-500 dark:bg-slate-800 dark:text-white dark:ring-slate-700 transition"
+              className="block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 sm:py-3 pl-10 pr-10 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-2xs focus:outline-hidden focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
                 aria-label={locale === 'ru' ? 'Очистить поиск' : 'Borrar búsqueda'}
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             )}
           </div>
-        </div>
-
-        {/* Create Order Hero Action */}
-        {onOpenCreateOrder && (
-          <div className="mx-auto mt-4 flex items-center justify-center">
+          {onOpenCreateOrder && (
             <button
               type="button"
               onClick={onOpenCreateOrder}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-6 py-3 text-sm shadow-md shadow-amber-400/20 transition active:scale-95"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-2.5 sm:py-3 text-xs sm:text-sm shadow-xs transition active:scale-95 whitespace-nowrap cursor-pointer flex-shrink-0"
             >
               <PlusCircle className="h-4 w-4 text-slate-950" />
               <span>{t.createOrderHeroBtn}</span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Active Category Filter Badge in Search Area */}
         {selectedCategory !== 'all' && activeCategory && (

@@ -228,7 +228,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               aria-expanded={isMasterMenuOpen}
               aria-haspopup="true"
               aria-label={locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
-              title={locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
+              title={locale === 'ru' ? 'Вход для мастеров' : 'Para profesionales'}
             >
               {loggedInSpecialist ? (
                 <>
@@ -245,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <>
                   <Briefcase className="h-4 w-4 text-sky-600 dark:text-sky-400" />
                   <span className="hidden md:inline">
-                    {locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
+                    {locale === 'ru' ? 'Вход для мастеров' : 'Para profesionales'}
                   </span>
                 </>
               )}

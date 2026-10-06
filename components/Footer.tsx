@@ -30,7 +30,7 @@ export const Footer: React.FC<FooterProps> = ({
   const t = translations[locale];
 
   return (
-    <footer className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 py-10 px-4 sm:px-6 lg:px-8">
+    <footer className="border-t border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-8">
           {/* Column 1: Brand & Concise Mission Statement */}

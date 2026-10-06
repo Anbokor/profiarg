@@ -393,7 +393,7 @@ export default function Home() {
                     className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition cursor-pointer"
                   >
                     <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-                    <span>{t.backToCategories}</span>
+                    <span>{t.backToCategories.replace(/^[←\s]+/, '')}</span>
                   </button>
                   <div>
                     <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">

@@ -826,6 +826,45 @@ assert(
   "OrdersBoard provides clear 'Откликнуться' response action button"
 );
 
+// TEST 14: Categories-First Ultra-Clean Directory Architecture
+console.log('\n14. Validating Categories-First Minimalist Architecture:');
+assert(
+  catDirContent.includes('indexNumber') && catDirContent.includes("padStart(2, '0')"),
+  "CategoryDirectory implements 01..14 numbered index corresponding to client ТЗ"
+);
+assert(
+  catDirContent.includes('getProfileCountText') && catDirContent.includes('profileSingle'),
+  "CategoryDirectory applies grammatically correct profile counters in RU & ES"
+);
+assert(
+  catDirContent.includes('displaySubcategories.map') && catDirContent.includes('onSelectSubcategory'),
+  "CategoryDirectory renders directly clickable subcategory pills with instant drill-down"
+);
+assert(
+  heroSectionContent.includes('heroSubtitle') && !heroSectionContent.includes('text-5xl'),
+  "HeroSection presents mission statement in compact typography banner without bulky heading bloat"
+);
+assert(
+  navbarContent.includes('Вход для мастеров') && navbarContent.includes('createOrderBtn'),
+  "Navbar provides sleek minimalist controls ('Вход для мастеров', '+ Разместить заказ', language switcher)"
+);
+assert(
+  drilldownHeaderContent.includes('indexNumber'),
+  "CategoryDrilldownHeader preserves 01..14 numbered index continuity"
+);
+assert(
+  catDirContent.includes('grid-cols-2'),
+  "CategoryDirectory renders responsive 2-column mobile grid for above-the-fold visibility"
+);
+assert(
+  catDirContent.includes('specialistSubsList'),
+  "CategoryDirectory balances trade diversity across specialists for prominent core subcategory discovery"
+);
+assert(
+  drilldownHeaderContent.includes('.replace') && pageContent.includes('.replace'),
+  "Drilldown return buttons prevent double-arrow visual defects when rendering backToCategories"
+);
+
 // Summary
 console.log('\n========================================================');
 console.log(`Total tests: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests}`);

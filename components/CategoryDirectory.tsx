@@ -77,78 +77,95 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       {/* Directory Section Header */}
-      <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 px-3 py-1 text-xs font-semibold text-sky-700 dark:text-sky-300 mb-3">
-          <Layers className="w-3.5 h-3.5" />
-          <span>{t.categoryDirectoryHeading}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div>
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 dark:bg-sky-950/60 border border-sky-200/80 dark:border-sky-800/80 px-2.5 py-0.5 text-[11px] font-semibold text-sky-700 dark:text-sky-300 mb-1.5">
+            <Layers className="w-3.5 h-3.5" />
+            <span>{t.categoryDirectoryHeading}</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            {t.browseCategoriesTitle}
+          </h2>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          {t.browseCategoriesTitle}
-        </h2>
-        <p className="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400">
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md">
           {t.browseCategoriesSubtitle}
         </p>
       </div>
 
-      {/* 14 Categories Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-        {CATEGORIES.map((cat) => {
+      {/* 14 Categories Cards Grid (Responsive 2-column mobile, 3-column tablet, 4-column desktop) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
+        {CATEGORIES.map((cat, index) => {
           const categorySpecialists = specialists.filter((s) => s.category === cat.id);
           const count = categorySpecialists.length;
+          const indexNumber = String(index + 1).padStart(2, '0');
 
-          // Prioritize active subcategories from actual specialists first, then pad with category's defined subcategories
-          const specialistSubs = Array.from(
-            new Set(categorySpecialists.flatMap((s) => s.subcategories || []))
-          ).filter((sub) => cat.subcategories.includes(sub));
+          // Prioritize active subcategories from actual specialists first (round-robin across specialists for trade diversity),
+          // then pad with category's defined subcategories
+          const specialistSubsList: string[] = [];
+          const maxSubs = Math.max(...categorySpecialists.map((s) => (s.subcategories || []).length), 0);
+          for (let i = 0; i < maxSubs; i++) {
+            for (const s of categorySpecialists) {
+              const sub = s.subcategories?.[i];
+              if (sub && cat.subcategories.includes(sub) && !specialistSubsList.includes(sub)) {
+                specialistSubsList.push(sub);
+              }
+            }
+          }
+          const specialistSubs = specialistSubsList;
           const allSubs = [
             ...specialistSubs,
             ...cat.subcategories.filter((s) => !specialistSubs.includes(s)),
           ];
-          const displaySubcategories = allSubs.slice(0, 4);
+          const displaySubcategories = allSubs.slice(0, 5);
           const remainingCount = Math.max(0, cat.subcategories.length - displaySubcategories.length);
 
           return (
             <div
               key={cat.id}
               onClick={() => onSelectCategory(cat.id)}
-              className="group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-xs hover:shadow-xl hover:border-sky-400 dark:hover:border-sky-600 transition-all duration-200 cursor-pointer"
+              className="group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs hover:shadow-xl hover:border-sky-400 dark:hover:border-sky-500 transition-all duration-200 cursor-pointer"
             >
               <div>
-                {/* Top: Icon + Specialists Counter Badge */}
-                <div className="flex items-start justify-between gap-3">
+                {/* Top: Icon + Numbered Index (01..14) + Profile Count Badge */}
+                <div className="flex items-start justify-between gap-2">
                   <div
-                    className="flex h-12 w-12 items-center justify-center rounded-xl transition-transform group-hover:scale-110 shadow-xs"
+                    className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl transition-transform group-hover:scale-105 shadow-xs flex-shrink-0"
                     style={{
                       backgroundColor: `${cat.color}15`,
                       color: cat.color,
-                      border: `1px solid ${cat.color}30`,
+                      border: `1px solid ${cat.color}25`,
                     }}
                   >
-                    {getCategoryIcon(cat.iconName, 'w-6 h-6')}
+                    {getCategoryIcon(cat.iconName, 'w-5 h-5 sm:w-6 sm:h-6')}
                   </div>
 
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>{getProfileCountText(count)}</span>
-                  </span>
+                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <span className="text-xs sm:text-sm font-mono font-bold text-slate-400 dark:text-slate-500 tracking-wider">
+                      {indexNumber}
+                    </span>
+                    <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800/90 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>{getProfileCountText(count)}</span>
+                    </span>
+                  </div>
                 </div>
 
                 {/* Title & Description */}
                 <button
                   type="button"
                   onClick={() => onSelectCategory(cat.id)}
-                  className="mt-4 text-left text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors focus:outline-hidden focus-visible:underline cursor-pointer"
+                  className="mt-3 text-left text-sm sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors focus:outline-hidden focus-visible:underline cursor-pointer line-clamp-2 sm:line-clamp-none"
                 >
                   {locale === 'ru' ? cat.title_ru : cat.title_es}
                 </button>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                <p className="mt-1 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                   {locale === 'ru' ? cat.description_ru : cat.description_es}
                 </p>
 
                 {/* Subcategories preview tags */}
-                <div className="mt-4 flex flex-wrap gap-1.5">
+                <div className="mt-3 flex flex-wrap gap-1 sm:gap-1.5">
                   {displaySubcategories.map((sub) => (
                     <button
                       key={sub}
@@ -161,14 +178,14 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                           onSelectCategory(cat.id);
                         }
                       }}
-                      className="inline-flex items-center rounded-lg bg-slate-100/80 dark:bg-slate-800/80 px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:text-slate-300 hover:bg-sky-100 hover:text-sky-800 dark:hover:bg-sky-950 dark:hover:text-sky-300 transition-colors cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
+                      className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/50 dark:border-slate-700/50 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-slate-600 dark:text-slate-300 hover:bg-sky-50 hover:text-sky-800 hover:border-sky-300 dark:hover:bg-sky-950 dark:hover:text-sky-200 transition-colors cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
                       title={locale === 'ru' ? `Открыть подкатегорию "${sub}"` : `Ver subcategoría "${sub}"`}
                     >
                       {sub}
                     </button>
                   ))}
                   {remainingCount > 0 && (
-                    <span className="inline-flex items-center rounded-lg bg-slate-100/50 dark:bg-slate-800/50 px-2 py-0.5 text-[11px] font-medium text-slate-400 dark:text-slate-500">
+                    <span className="inline-flex items-center rounded-lg bg-slate-100/50 dark:bg-slate-800/50 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-slate-400 dark:text-slate-500">
                       +{remainingCount} {t.moreSubcategories}
                     </span>
                   )}
@@ -176,9 +193,9 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
               </div>
 
               {/* Bottom: Action link */}
-              <div className="mt-6 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-semibold text-sky-600 dark:text-sky-400 group-hover:text-sky-700 dark:group-hover:text-sky-300">
+              <div className="mt-4 pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] sm:text-xs font-semibold text-sky-600 dark:text-sky-400 group-hover:text-sky-700 dark:group-hover:text-sky-300">
                 <span>{t.exploreCategoryBtn}</span>
-                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform group-hover:translate-x-1" />
               </div>
             </div>
           );

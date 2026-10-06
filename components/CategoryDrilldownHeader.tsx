@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Locale, Category } from '@/types';
+import { CATEGORIES } from '@/data/categories';
 import { translations } from '@/lib/translations';
 import {
   ArrowLeft,
@@ -71,6 +72,8 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
   onOpenCreateOrder,
 }) => {
   const t = translations[locale];
+  const categoryIndex = CATEGORIES.findIndex((c) => c.id === category.id);
+  const indexNumber = categoryIndex !== -1 ? String(categoryIndex + 1).padStart(2, '0') : '';
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -156,7 +159,7 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
             aria-label={t.backToCategories}
           >
             <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400 group-hover:-translate-x-0.5 transition-transform" />
-            <span>{t.backToCategories}</span>
+            <span>{t.backToCategories.replace(/^[←\s]+/, '')}</span>
           </button>
 
           {onOpenCreateOrder && (
@@ -187,6 +190,11 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
+                {indexNumber && (
+                  <span className="text-xs font-mono font-bold text-slate-400 dark:text-slate-500 tracking-wider">
+                    {indexNumber}
+                  </span>
+                )}
                 <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
                   {locale === 'ru' ? category.title_ru : category.title_es}
                 </h1>
