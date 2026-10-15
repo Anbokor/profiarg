@@ -109,6 +109,24 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
     return `${count} ${t.specialistsMany}`;
   };
 
+  const getShortSpecialistsCountText = (count: number) => {
+    if (locale === 'es') {
+      return `${count} ${count === 1 ? t.specialistShortSingle : t.specialistShortMany}`;
+    }
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+    if (mod100 >= 11 && mod100 <= 19) {
+      return `${count} ${t.specialistShortMany}`;
+    }
+    if (mod10 === 1) {
+      return `${count} ${t.specialistShortSingle}`;
+    }
+    if (mod10 >= 2 && mod10 <= 4) {
+      return `${count} ${t.specialistShortFew}`;
+    }
+    return `${count} ${t.specialistShortMany}`;
+  };
+
   // Find active category if selected
   const activeCategory =
     selectedCategory !== 'all' ? CATEGORIES.find((c) => c.id === selectedCategory) || null : null;
@@ -260,13 +278,13 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                 </div>
 
                 <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-500 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                  <span>
+                  <span className="truncate pr-2">
                     {groupSpecialistsCount > 0
-                      ? getSpecialistsCountText(groupSpecialistsCount)
+                      ? getShortSpecialistsCountText(groupSpecialistsCount)
                       : `${itemsCount} ${t.subsectionsCount}`}
                   </span>
-                  <div className="flex items-center gap-1">
-                    <span>{t.exploreCategoryBtn}</span>
+                  <div className="flex items-center gap-1.5 font-bold text-sky-600 dark:text-sky-400 flex-shrink-0">
+                    <span>{t.selectSectionBtn}</span>
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </div>
                 </div>
@@ -302,7 +320,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
       <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Navigation row: Back button & Breadcrumbs */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button
               type="button"
               onClick={onBackToGroups || onBackToCategories}
@@ -348,15 +366,15 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
           )}
         </div>
 
-        {/* Section Header */}
+        {/* Section Header Plate */}
         <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-2xs">
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight">
                   {groupTitle}
                 </h1>
-                <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 flex-shrink-0">
                   {groupItems.length} {t.subsectionsCount}
                 </span>
               </div>
@@ -389,29 +407,38 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
             const displayTitle = getSubcategoryTitle(item, locale);
 
             return (
-              <div
+              <button
                 key={item}
+                type="button"
                 onClick={() => onSelectSubcategory?.(activeCategory.id, item)}
-                className="group flex items-center justify-between rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[64px]"
+                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[72px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
               >
-                <div className="flex items-center gap-3.5 min-w-0 pr-3">
-                  <span className="flex items-center justify-center h-8 w-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-500 dark:text-slate-400 flex-shrink-0">
+                {/* Left Area: Index + Title Column */}
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-500 dark:text-slate-400 flex-shrink-0 group-hover:bg-sky-50 group-hover:text-sky-600 dark:group-hover:bg-sky-950/60 dark:group-hover:text-sky-400 transition-colors">
                     {String(idx + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-snug whitespace-normal">
-                    {displayTitle}
-                  </span>
+
+                  <div className="min-w-0 flex-1 pr-1">
+                    <span className="block text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-snug break-words">
+                      {displayTitle}
+                    </span>
+                    {specCount > 0 && (
+                      <span className="mt-1 inline-flex items-center gap-1.5 text-xs text-sky-600 dark:text-sky-400 font-medium">
+                        <span className="w-1.5 h-1.5 rounded-full bg-sky-500 flex-shrink-0" />
+                        <span>{getShortSpecialistsCountText(specCount)}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {specCount > 0 && (
-                    <span className="inline-flex items-center rounded-full bg-sky-50 dark:bg-sky-950/60 px-2.5 py-1 text-xs font-semibold text-sky-700 dark:text-sky-300">
-                      {getSpecialistsCountText(specCount)}
-                    </span>
-                  )}
-                  <ArrowRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-sky-600 dark:group-hover:text-sky-400 group-hover:translate-x-1 transition-all" />
+                {/* Right Area: Action button affordance */}
+                <div className="flex items-center flex-shrink-0 self-center">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-sky-500 group-hover:text-white group-hover:shadow-sm transition-all">
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -530,8 +557,8 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
 
               {/* Bottom: Quiet affordance that illuminates on hover */}
               <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs font-semibold text-slate-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                <span>{t.exploreCategoryBtn}</span>
-                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                <span className="truncate pr-1">{t.exploreCategoryBtn}</span>
+                <ArrowRight className="w-3.5 h-3.5 flex-shrink-0 transition-transform group-hover:translate-x-1" />
               </div>
             </div>
           );

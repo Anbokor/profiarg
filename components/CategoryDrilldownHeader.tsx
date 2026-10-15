@@ -169,42 +169,28 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
         {/* Navigation row: Back buttons & Breadcrumb trail & Create Order */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-2 flex-wrap">
-            {/* Primary Return Button (Back to subcategories or groups or catalog) */}
-            {onBackToSubsections ? (
-              <button
-                type="button"
-                onClick={onBackToSubsections}
-                className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition group cursor-pointer"
-                aria-label={t.backToGroups}
-              >
-                <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400 group-hover:-translate-x-0.5 transition-transform" />
-                <span>{t.backToGroups.replace(/^[←\s]+/, '')}</span>
-              </button>
-            ) : onBackToGroups ? (
-              <button
-                type="button"
-                onClick={onBackToGroups}
-                className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition group cursor-pointer"
-                aria-label={t.backToGroups}
-              >
-                <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400 group-hover:-translate-x-0.5 transition-transform" />
-                <span>{t.backToGroups.replace(/^[←\s]+/, '')}</span>
-              </button>
-            ) : null}
-
-            {/* Always accessible Return to Catalog Root button */}
+            {/* Primary Return Button (Back to previous step) */}
             <button
               type="button"
-              onClick={onBackToCategories}
-              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition group cursor-pointer"
-              aria-label={t.backToCategories}
+              onClick={onBackToSubsections || onBackToGroups || onBackToCategories}
+              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition group cursor-pointer flex-shrink-0"
+              aria-label={
+                onBackToSubsections || onBackToGroups
+                  ? t.backToGroups
+                  : t.backToCategories
+              }
             >
               <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400 group-hover:-translate-x-0.5 transition-transform" />
-              <span>{t.backToCategories.replace(/^[←\s]+/, '')}</span>
+              <span>
+                {(onBackToSubsections || onBackToGroups
+                  ? t.backToGroups
+                  : t.backToCategories
+                ).replace(/^[←\s]+/, '')}
+              </span>
             </button>
 
             {/* Breadcrumb path: Каталог > Категория > Раздел > Подраздел */}
-            <nav className="hidden md:flex items-center gap-1.5 text-xs font-medium text-slate-400 ml-2">
+            <nav className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-slate-400 ml-1.5 flex-wrap">
               <button
                 type="button"
                 onClick={onBackToCategories}
@@ -325,28 +311,28 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
         <div className="relative mt-4">
           {/* Left Gradient Fade & Scroll Button */}
           {canScrollLeft && (
-            <div className="absolute left-0 top-0 bottom-0 z-10 flex items-center w-12 bg-gradient-to-r from-slate-50 via-slate-50/90 to-transparent dark:from-slate-900 dark:via-slate-900/90 dark:to-transparent pointer-events-none">
+            <div className="absolute left-0 top-0 bottom-0 z-10 flex items-center w-8 sm:w-10 bg-gradient-to-r from-slate-50/90 via-slate-50/60 to-transparent dark:from-slate-900/90 dark:via-slate-900/60 to-transparent pointer-events-none">
               <button
                 type="button"
                 onClick={() => scrollSubcategories('left')}
-                className="pointer-events-auto ml-1 h-7 w-7 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                className="pointer-events-auto ml-0.5 h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
                 aria-label={locale === 'ru' ? 'Прокрутить влево' : 'Desplazar a la izquierda'}
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
 
           {/* Right Gradient Fade & Scroll Button */}
           {canScrollRight && (
-            <div className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-end w-12 bg-gradient-to-l from-slate-50 via-slate-50/90 to-transparent dark:from-slate-900 dark:via-slate-900/90 dark:to-transparent pointer-events-none">
+            <div className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-end w-8 sm:w-10 bg-gradient-to-l from-slate-50/90 via-slate-50/60 to-transparent dark:from-slate-900/90 dark:via-slate-900/60 to-transparent pointer-events-none">
               <button
                 type="button"
                 onClick={() => scrollSubcategories('right')}
-                className="pointer-events-auto mr-1 h-7 w-7 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                className="pointer-events-auto mr-0.5 h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
                 aria-label={locale === 'ru' ? 'Прокрутить вправо' : 'Desplazar a la derecha'}
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
@@ -355,7 +341,7 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="flex items-center gap-2 overflow-x-auto py-2 px-1 scrollbar-none scroll-smooth"
+            className="flex items-center gap-2 overflow-x-auto py-2 px-3 sm:px-4 scrollbar-none scroll-smooth"
           >
             {/* "All subcategories" Pill with LayoutGrid icon */}
             <button
