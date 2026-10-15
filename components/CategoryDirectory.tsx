@@ -189,7 +189,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
 
         {/* Level 2 Category Header Plate */}
         <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-2xs">
-          <div className="flex items-start gap-4">
+          <div className="flex items-center gap-4">
             <div
               className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl shadow-2xs flex-shrink-0"
               style={{
@@ -200,37 +200,27 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
               {getCategoryIcon(activeCategory.iconName, 'w-6 h-6 sm:w-7 sm:h-7')}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-medium text-slate-400 dark:text-slate-500">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-mono font-bold text-slate-400 dark:text-slate-500">
                   {indexNumber}
                 </span>
-                <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-[11px] font-medium text-slate-600 dark:text-slate-400">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight">
+                  {locale === 'ru' ? activeCategory.title_ru : activeCategory.title_es}
+                </h1>
+                <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-400 flex-shrink-0">
                   {getProfileCountText(categorySpecialists.length)}
                 </span>
               </div>
-              <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight">
-                {locale === 'ru' ? activeCategory.title_ru : activeCategory.title_es}
-              </h1>
-              <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl">
-                {locale === 'ru' ? activeCategory.description_ru : activeCategory.description_es}
+              <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl">
+                {t.level2Subtitle}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Section prompt */}
-        <div className="mb-4">
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-            {t.level2Title}
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            {t.level2Subtitle}
-          </p>
-        </div>
-
-        {/* Groups Plates (Чистые, крупные плашки без визуального шума) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-          {groups.map((group) => {
+        {/* Groups Plates (Такие же лаконичные, как и 3 уровень) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          {groups.map((group, idx) => {
             const rawTitle = locale === 'ru' ? group.title_ru : group.title_es;
             // Clean up title: strictly ensure no language bleed
             const groupTitle = locale === 'ru'
@@ -251,44 +241,43 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
             }).length;
 
             return (
-              <div
+              <button
                 key={group.id}
+                type="button"
                 onClick={() => onSelectGroup?.(group.id)}
-                className="group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-2xs hover:shadow-xl hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-200 cursor-pointer min-h-[170px]"
+                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[72px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
               >
-                <div>
-                  <div className="flex items-center justify-between gap-3 mb-3">
-                    <div
-                      className="flex h-11 w-11 items-center justify-center rounded-xl transition-transform group-hover:scale-105"
-                      style={{
-                        backgroundColor: `${activeCategory.color}15`,
-                        color: activeCategory.color,
-                      }}
-                    >
-                      <Layers className="w-5 h-5" />
-                    </div>
-                    <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      {itemsCount} {t.subsectionsCount}
+                {/* Left Area: Index + Title Column */}
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-500 dark:text-slate-400 flex-shrink-0 group-hover:bg-sky-50 group-hover:text-sky-600 dark:group-hover:bg-sky-950/60 dark:group-hover:text-sky-400 transition-colors">
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+
+                  <div className="min-w-0 flex-1 pr-1">
+                    <span className="block text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-snug break-words">
+                      {groupTitle}
+                    </span>
+                    <span className="mt-1 inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      <span>{itemsCount} {t.subsectionsCount}</span>
+                      {groupSpecialistsCount > 0 && (
+                        <>
+                          <span className="text-slate-300 dark:text-slate-600">•</span>
+                          <span className="text-sky-600 dark:text-sky-400">
+                            {getShortSpecialistsCountText(groupSpecialistsCount)}
+                          </span>
+                        </>
+                      )}
                     </span>
                   </div>
-
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                    {groupTitle}
-                  </h3>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-500 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                  <span className="truncate pr-2">
-                    {groupSpecialistsCount > 0
-                      ? getShortSpecialistsCountText(groupSpecialistsCount)
-                      : `${itemsCount} ${t.subsectionsCount}`}
-                  </span>
-                  <div className="flex items-center gap-1.5 font-bold text-sky-600 dark:text-sky-400 flex-shrink-0">
-                    <span>{t.selectSectionBtn}</span>
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                {/* Right Area: Action button affordance (exact match with Level 3) */}
+                <div className="flex items-center flex-shrink-0 self-center">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-sky-500 group-hover:text-white group-hover:shadow-sm transition-all">
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -448,10 +437,10 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
 
   /* =======================================================================
      LEVEL 1: ROOT CATALOG (14 Категорий услуг)
-     Mockup 1: Ultra-clean, zero clutter, 14 plates
+     Такой же лаконичный, как и 3 уровень: элегантные горизонтальные плашки.
      ======================================================================= */
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       {/* Clean, Decluttered Section Header */}
       <div className="mb-6">
         <h2 className="text-xl sm:text-2xl font-extrabold text-slate-950 dark:text-white tracking-tight">
@@ -462,8 +451,8 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
         </p>
       </div>
 
-      {/* 14 Categories Cards Grid (Responsive 2-column mobile, 3-column tablet, 4-column desktop) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-5">
+      {/* 14 Categories Cards Grid (Responsive 2-column grid matching Level 3) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         {CATEGORIES.map((cat, index) => {
           const categorySpecialists = specialists.filter((s) => s.category === cat.id);
           const count = categorySpecialists.length;
@@ -491,74 +480,81 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
           return (
             <div
               key={cat.id}
+              role="button"
+              tabIndex={0}
               onClick={() => onSelectCategory(cat.id)}
-              className="group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800/80 p-4 sm:p-5 shadow-2xs hover:shadow-lg hover:border-sky-500/50 dark:hover:border-sky-500/50 transition-all duration-200 cursor-pointer"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelectCategory(cat.id);
+                }
+              }}
+              className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[72px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
             >
-              <div>
-                {/* Top: Icon + Numbered Index (01..14) + Profile Count Badge */}
-                <div className="flex items-start justify-between gap-2">
-                  <div
-                    className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl transition-transform group-hover:scale-105 shadow-2xs flex-shrink-0"
-                    style={{
-                      backgroundColor: `${cat.color}15`,
-                      color: cat.color,
-                    }}
-                  >
-                    {getCategoryIcon(cat.iconName, 'w-5 h-5 sm:w-6 sm:h-6')}
-                  </div>
-
-                  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                    <span className="text-xs font-mono font-medium text-slate-400 dark:text-slate-500">
-                      {indexNumber}
-                    </span>
-                    <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2 sm:px-2.5 py-0.5 text-[11px] font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">
-                      {getProfileCountText(count)}
-                    </span>
-                  </div>
+              {/* Left Area: Icon + Title & Meta Column */}
+              <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                <div
+                  className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl flex-shrink-0 transition-transform group-hover:scale-105 shadow-2xs"
+                  style={{
+                    backgroundColor: `${cat.color}15`,
+                    color: cat.color,
+                  }}
+                >
+                  {getCategoryIcon(cat.iconName, 'w-5 h-5 sm:w-6 sm:h-6')}
                 </div>
 
-                {/* Title & Description */}
-                <button
-                  type="button"
-                  onClick={() => onSelectCategory(cat.id)}
-                  className="mt-3.5 text-left text-sm sm:text-base font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors focus:outline-hidden focus-visible:underline cursor-pointer line-clamp-1"
-                >
-                  {locale === 'ru' ? cat.title_ru : cat.title_es}
-                </button>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed">
-                  {locale === 'ru' ? cat.description_ru : cat.description_es}
-                </p>
+                <div className="min-w-0 flex-1 pr-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold text-slate-400 dark:text-slate-500 flex-shrink-0">
+                      {indexNumber}
+                    </span>
+                    <h3 className="text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-snug break-words">
+                      {locale === 'ru' ? cat.title_ru : cat.title_es}
+                    </h3>
+                  </div>
 
-                {/* Subcategories preview tags - Clean, uncluttered, light chips */}
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {displaySubcategories.map((sub) => {
-                    const displaySubTitle = getSubcategoryTitle(sub, locale);
-                    return (
-                      <button
-                        key={sub}
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (onSelectSubcategory) {
-                            onSelectSubcategory(cat.id, sub);
-                          } else {
-                            onSelectCategory(cat.id);
-                          }
-                        }}
-                        className="inline-flex items-center rounded-lg bg-slate-100/70 hover:bg-sky-50 dark:bg-slate-800/60 dark:hover:bg-sky-950/60 px-2 py-0.5 text-[11px] font-medium text-slate-600 hover:text-sky-700 dark:text-slate-300 dark:hover:text-sky-300 transition-colors cursor-pointer focus:outline-hidden focus-visible:ring-1 focus-visible:ring-sky-500"
-                        title={locale === 'ru' ? `Открыть подкатегорию "${displaySubTitle}"` : `Ver subcategoría "${displaySubTitle}"`}
-                      >
-                        {displaySubTitle}
-                      </button>
-                    );
-                  })}
+                  {/* Clean secondary meta row: Profile count + Direct Subcategory Links */}
+                  <div className="mt-1 flex items-center gap-2 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 text-xs text-sky-600 dark:text-sky-400 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-sky-500 flex-shrink-0" />
+                      <span>{getProfileCountText(count)}</span>
+                    </span>
+
+                    {displaySubcategories.length > 0 && (
+                      <div className="hidden sm:inline-flex items-center gap-1 ml-0.5 flex-wrap">
+                        <span className="text-xs text-slate-300 dark:text-slate-600">•</span>
+                        {displaySubcategories.map((sub) => {
+                          const displaySubTitle = getSubcategoryTitle(sub, locale);
+                          return (
+                            <button
+                              key={sub}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onSelectSubcategory) {
+                                  onSelectSubcategory(cat.id, sub);
+                                } else {
+                                  onSelectCategory(cat.id);
+                                }
+                              }}
+                              className="inline-flex items-center rounded-md bg-slate-100 hover:bg-sky-50 dark:bg-slate-800 dark:hover:bg-sky-950/60 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:text-sky-700 dark:text-slate-300 dark:hover:text-sky-300 transition-colors cursor-pointer"
+                              title={locale === 'ru' ? `Открыть подкатегорию "${displaySubTitle}"` : `Ver subcategoría "${displaySubTitle}"`}
+                            >
+                              {displaySubTitle}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Bottom: Quiet affordance that illuminates on hover */}
-              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs font-semibold text-slate-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                <span className="truncate pr-1">{t.exploreCategoryBtn}</span>
-                <ArrowRight className="w-3.5 h-3.5 flex-shrink-0 transition-transform group-hover:translate-x-1" />
+              {/* Right Area: Action button affordance (exact match with Level 2 and Level 3!) */}
+              <div className="flex items-center flex-shrink-0 self-center">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-sky-500 group-hover:text-white group-hover:shadow-sm transition-all">
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </div>
             </div>
           );
