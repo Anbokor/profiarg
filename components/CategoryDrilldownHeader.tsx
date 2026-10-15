@@ -198,8 +198,7 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
                 <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
                   {locale === 'ru' ? category.title_ru : category.title_es}
                 </h1>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">
                   <span>{getSpecialistsCountText(specialistsCount)}</span>
                 </span>
               </div>

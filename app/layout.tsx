@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Quatro Clicks — Каталог и карта специалистов в Аргентине',
+  title: 'Quatro Clicks - Каталог и карта специалистов в Аргентине',
   description:
     'Интерактивная карта и каталог специалистов и бизнеса в Аргентине: ремонт и строительство, красота, транспорт, обмен валют, переводы, юридические услуги, образование, туризм, бытовая техника, авто, недвижимость, работа, IT и еда. Прямая связь через WhatsApp.',
   keywords: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     'аренда Палермо',
   ],
   openGraph: {
-    title: 'Quatro Clicks — Услуги и специалисты в Аргентине',
+    title: 'Quatro Clicks - Услуги и специалисты в Аргентине',
     description: 'Платформа для бесплатного размещения и поиска услуг в Аргентине для русскоязычного и испаноязычного сообщества.',
     locale: 'ru_RU',
     type: 'website',

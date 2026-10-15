@@ -171,27 +171,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           )}
 
-          {/* Favorites Wishlist Icon (Desktop only, mobile/catalog has it in FilterBar) */}
-          {setFavoritesOnly && (
-            <button
-              type="button"
-              onClick={() => setFavoritesOnly(!favoritesOnly)}
-              className={`hidden xl:flex relative items-center justify-center rounded-full p-2 text-sm font-medium transition-colors ${
-                favoritesOnly
-                  ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 ring-1 ring-rose-200'
-                  : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-              }`}
-              title={t.favoritesOnly}
-              aria-label={t.favoritesOnly}
-            >
-              <Heart className={`h-4.5 w-4.5 ${favoritesOnly ? 'fill-rose-500 text-rose-500' : ''}`} />
-              {favoritesCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
-                  {favoritesCount}
-                </span>
-              )}
-            </button>
-          )}
 
           {/* Language Switcher: Compact Pill */}
           <div className="flex items-center rounded-full border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-800 flex-shrink-0">
