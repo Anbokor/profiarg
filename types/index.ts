@@ -36,6 +36,13 @@ export interface SubcategoryItem {
   title_es: string;
 }
 
+export interface CategoryGroup {
+  id: string;
+  title_ru: string;
+  title_es: string;
+  items: string[];
+}
+
 export interface Category {
   id: CategoryId;
   slug: string;
@@ -51,6 +58,7 @@ export interface Category {
   description_es: string;
   subcategories: string[];
   subcategoriesDetailed?: SubcategoryItem[];
+  groups?: CategoryGroup[];
 }
 
 export interface Barrio {

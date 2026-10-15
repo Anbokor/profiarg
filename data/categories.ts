@@ -14,6 +14,45 @@ export const CATEGORIES: Category[] = [
     pinBg: '#D97706',
     description_ru: 'Услуги и продажа материалов: окна и двери ПВХ, электрика, сантехника, плитка, бетон, штукатурка, гипсокартон, кондиционеры, кухни и мебель',
     description_es: 'Servicios de obras y venta de materiales: aberturas PVC, electricidad, plomería, durlock, climatización, gas, cocinas y reformas integrales',
+    groups: [
+      {
+        id: 'services_obras',
+        title_ru: 'Услуги Obras',
+        title_es: 'Servicios Obras',
+        items: [
+          'Проект',
+          'Бетонные работы, кладка',
+          'Укладка плитки',
+          'Электрика',
+          'Водоснабжение сантехника',
+          'Двери входные',
+          'Двери межкомнатные',
+          'Сварочные Работы',
+          'Окна',
+          'Штукатурка',
+          'Перегородки гипсокартон',
+          'Кондиционеры',
+          'Газ',
+          'Комплексные работы',
+          'Кухни',
+          'Мебель',
+        ],
+      },
+      {
+        id: 'materials',
+        title_ru: 'Продажа Материалов Materiales',
+        title_es: 'Venta de Materiales',
+        items: [
+          'Продажа материалов',
+          'Окна и профили ПВХ',
+          'Двери и фурнитура',
+          'Электротовары',
+          'Сантехника и трубы',
+          'Сухие смеси и штукатурка',
+          'Гипсокартон и профили',
+        ],
+      },
+    ],
     subcategories: [
       'Бетонные работы, кладка',
       'Укладка плитки',
@@ -49,6 +88,32 @@ export const CATEGORIES: Category[] = [
     pinBg: '#E11D48',
     description_ru: 'Услуги и материалы: окрашивание волос, стрижка, маникюр, педикюр, депиляция, косметология, массаж, брови, ресницы и перманентный макияж',
     description_es: 'Servicios y venta de materiales: coloración y corte de cabello, manicuría rusa, pedicuría, depilación, cosmetología, masajes y cejas',
+    groups: [
+      {
+        id: 'beauty_services',
+        title_ru: 'Услуги',
+        title_es: 'Servicios',
+        items: [
+          'Окрашивание волос / стрижка',
+          'Маникюр / педикюр',
+          'Депиляция',
+          'Косметология',
+          'Массаж',
+          'Ламинирование, окрашивание, коррекция бровей',
+          'Перманентный макияж',
+        ],
+      },
+      {
+        id: 'beauty_materials',
+        title_ru: 'Продажа материалов',
+        title_es: 'Venta de materiales',
+        items: [
+          'Продажа материалов',
+          'Косметика и уход',
+          'Материалы для мастеров',
+        ],
+      },
+    ],
     subcategories: [
       'Окрашивание волос / стрижка',
       'Маникюр / педикюр',
@@ -74,6 +139,35 @@ export const CATEGORIES: Category[] = [
     pinBg: '#2563EB',
     description_ru: 'Легковой транспорт: трансфер в аэропорт (Ezeiza / Aeroparque), перевозки по Аргентине и CABA; грузовые перевозки и доставка из других стран',
     description_es: 'Vehículos ligeros: transfer aeropuerto Ezeiza, viajes por Argentina y CABA; transporte de carga, fletes y envíos internacionales',
+    groups: [
+      {
+        id: 'transport_passenger',
+        title_ru: 'Легковой транспорт',
+        title_es: 'Transporte de pasajeros',
+        items: [
+          'Трансфер Аэропорт',
+          'Перевозки по Аргентине',
+          'Внутри Буэнос-Айреса',
+        ],
+      },
+      {
+        id: 'transport_cargo',
+        title_ru: 'Грузовой транспорт',
+        title_es: 'Transporte de carga y fletes',
+        items: [
+          'Внутри Буэнос-Айреса',
+          'Перевозки по Аргентине',
+        ],
+      },
+      {
+        id: 'transport_delivery',
+        title_ru: 'Доставка из других стран',
+        title_es: 'Envíos internacionales',
+        items: [
+          'Доставка из других стран',
+        ],
+      },
+    ],
     subcategories: [
       'Трансфер Аэропорт',
       'Перевозки по Аргентине',
@@ -99,6 +193,20 @@ export const CATEGORIES: Category[] = [
     pinBg: '#059669',
     description_ru: 'Обмен наличных USD / ARS, криптовалюта (USDT), рублевые P2P переводы и надежная курьерская доставка по Буэнос-Айресу',
     description_es: 'Cambio de dólares en efectivo y pesos, USDT cripto, transferencias P2P en rublos y entrega segura por mensajería',
+    groups: [
+      {
+        id: 'exchange_cash',
+        title_ru: 'Наличный обмен',
+        title_es: 'Efectivo USD / ARS',
+        items: ['Обмен USD / ARS', 'Доставка наличных курьером'],
+      },
+      {
+        id: 'exchange_digital',
+        title_ru: 'Криптовалюта и P2P',
+        title_es: 'Cripto y Transferencias P2P',
+        items: ['Криптовалюта USDT', 'Рубли P2P переводы'],
+      },
+    ],
     subcategories: [
       'Обмен USD / ARS',
       'Криптовалюта USDT',
@@ -119,6 +227,20 @@ export const CATEGORIES: Category[] = [
     pinBg: '#7C3AED',
     description_ru: 'Лицензированные присяжные переводчики коллегии CTPCBA с официальной печатью и выездные переводчики для сопровождения',
     description_es: 'Traductores públicos matriculados en CTPCBA con firma legalizada, traducciones juradas y acompañamiento presencial',
+    groups: [
+      {
+        id: 'trans_certified',
+        title_ru: 'Лицензированный CTPCBA',
+        title_es: 'Traductor público CTPCBA',
+        items: ['Лицензированный CTPCBA', 'Перевод справок и апостилей'],
+      },
+      {
+        id: 'trans_onsite',
+        title_ru: 'Выездной переводчик',
+        title_es: 'Acompañamiento presencial',
+        items: ['Выездной', 'Сопровождение в инстанциях'],
+      },
+    ],
     subcategories: [
       'Лицензированный CTPCBA',
       'Выездной',
@@ -139,6 +261,27 @@ export const CATEGORIES: Category[] = [
     pinBg: '#1E40AF',
     description_ru: 'Гражданство Аргентины через федеральный суд, ВНЖ и DNI, апелляции, открытие бизнеса и регистрация в налоговой AFIP (ARCA)',
     description_es: 'Juicio judicial de ciudadanía argentina, radicación y DNI, apelaciones, constitución de sociedades y AFIP/ARCA',
+    groups: [
+      {
+        id: 'legal_citizenship',
+        title_ru: 'Гражданство и легализация',
+        title_es: 'Ciudadanía y Radicación',
+        items: [
+          'Гражданство через федеральный суд',
+          'ВНЖ и DNI (Radicación)',
+        ],
+      },
+      {
+        id: 'legal_business',
+        title_ru: 'Бизнес, налоги и нотариусы',
+        title_es: 'Sociedades, AFIP y Escribanos',
+        items: [
+          'Регистрация компаний и Monotributo',
+          'Налоги AFIP / ARCA',
+          'Нотариусы и доверенности',
+        ],
+      },
+    ],
     subcategories: [
       'Гражданство через федеральный суд',
       'ВНЖ и DNI (Radicación)',
@@ -160,6 +303,40 @@ export const CATEGORIES: Category[] = [
     pinBg: '#9333EA',
     description_ru: 'Языки (испанский, английский, китайский, португальский, греческий), детские кружки (математика, ИЗО, русский, лепка) и танцы (танго)',
     description_es: 'Idiomas (español rioplatense, inglés, chino, portugués, griego), clases infantiles (matemática, arte, ruso, modelado) y tango',
+    groups: [
+      {
+        id: 'edu_languages',
+        title_ru: 'Языки',
+        title_es: 'Idiomas',
+        items: [
+          'Испанский язык',
+          'Английский язык',
+          'Китайский язык',
+          'Португальский язык',
+          'Греческий язык',
+        ],
+      },
+      {
+        id: 'edu_kids',
+        title_ru: 'Дети',
+        title_es: 'Clases para niños',
+        items: [
+          'Дети: Математика',
+          'Дети: ИЗО',
+          'Дети: Русский язык',
+          'Дети: Лепка',
+        ],
+      },
+      {
+        id: 'edu_dance',
+        title_ru: 'Танцы',
+        title_es: 'Danza',
+        items: [
+          'Танцы: Танго',
+          'Танцы: Другое',
+        ],
+      },
+    ],
     subcategories: [
       'Испанский язык',
       'Английский язык',
@@ -192,6 +369,20 @@ export const CATEGORIES: Category[] = [
     pinBg: '#16A34A',
     description_ru: 'Индивидуальные гиды, авторские туры, бронирование отелей, рыбалка, охота, организация путешествий под ключ и рекомендации ресторанов',
     description_es: 'Guías privados, tours en Buenos Aires y provincias, reservas hoteleras, pesca, caza, paquetes todo incluido y gastronomía',
+    groups: [
+      {
+        id: 'tourism_tours',
+        title_ru: 'Экскурсии и туры',
+        title_es: 'Excursiones y tours',
+        items: ['Гид', 'Туры', 'Под ключ'],
+      },
+      {
+        id: 'tourism_leisure',
+        title_ru: 'Отдых и бронирование',
+        title_es: 'Alojamiento y ocio',
+        items: ['Отели', 'Рыбалка', 'Охота', 'Рестораны/кафе'],
+      },
+    ],
     subcategories: [
       'Гид',
       'Туры',
@@ -215,6 +406,29 @@ export const CATEGORIES: Category[] = [
     pinBg: '#0284C7',
     description_ru: 'Ремонт смартфонов, планшетов, стиральных машин, телевизоров, кондиционеров и бытовой электроники с выездом и гарантией',
     description_es: 'Reparación técnica de teléfonos, lavarropas, televisores Smart TV, heladeras y electrodomésticos con garantía',
+    groups: [
+      {
+        id: 'appliances_gadgets',
+        title_ru: 'Телефоны и электроника',
+        title_es: 'Celulares y electrónica',
+        items: [
+          'Телефоны',
+          'Телефоны и планшеты',
+          'Телевизоры',
+          'Мелкая бытовая техника',
+        ],
+      },
+      {
+        id: 'appliances_home',
+        title_ru: 'Крупная бытовая техника',
+        title_es: 'Línea blanca y climatización',
+        items: [
+          'Стиральные машины',
+          'Холодильники',
+          'Кондиционеры',
+        ],
+      },
+    ],
     subcategories: [
       'Телефоны',
       'Телефоны и планшеты',
@@ -238,6 +452,32 @@ export const CATEGORIES: Category[] = [
     pinBg: '#EA580C',
     description_ru: 'Прокат автомобилей, диагностика и ремонт, продажа автозапчастей и профессиональный подбор авто с проверкой по DNRPA и VTV',
     description_es: 'Alquiler de autos, taller mecánico y reparaciones, repuestos originales y peritaje especializado con verificación VTV',
+    groups: [
+      {
+        id: 'auto_rent',
+        title_ru: 'Прокат автомобилей',
+        title_es: 'Alquiler de autos',
+        items: ['Прокат автомобилей'],
+      },
+      {
+        id: 'auto_repair',
+        title_ru: 'Ремонт и сервис',
+        title_es: 'Taller mecánico',
+        items: ['Ремонт'],
+      },
+      {
+        id: 'auto_parts',
+        title_ru: 'Продажа запчастей',
+        title_es: 'Venta de repuestos',
+        items: ['Продажа запчастей'],
+      },
+      {
+        id: 'auto_selection',
+        title_ru: 'Услуги по подбору авто',
+        title_es: 'Peritaje y selección',
+        items: ['Услуги по подбору авто'],
+      },
+    ],
     subcategories: [
       'Прокат автомобилей',
       'Ремонт',
@@ -258,6 +498,26 @@ export const CATEGORIES: Category[] = [
     pinBg: '#0D9488',
     description_ru: 'Аренда: услуги по подбору и свои объявления; Продажа: услуги по подбору и свои объявления. Посуточно и на длительный срок',
     description_es: 'Alquiler: búsqueda y publicaciones directas sin garantía; Venta: asesoría y publicaciones propias. Temporal y contrato extendido',
+    groups: [
+      {
+        id: 're_rent',
+        title_ru: 'Аренда',
+        title_es: 'Alquiler',
+        items: [
+          'Аренда: Услуги по подбору',
+          'Аренда: Свои объявления',
+        ],
+      },
+      {
+        id: 're_sale',
+        title_ru: 'Продажа',
+        title_es: 'Venta',
+        items: [
+          'Продажа: Услуги по подбору',
+          'Продажа: Свои объявления',
+        ],
+      },
+    ],
     subcategories: [
       'Аренда: Услуги по подбору',
       'Аренда: Свои объявления',
@@ -278,6 +538,26 @@ export const CATEGORIES: Category[] = [
     pinBg: '#4F46E5',
     description_ru: 'Вакансии для экспатов, публикация резюме, поиск проверенных сотрудников и удаленная занятость в Аргентине',
     description_es: 'Vacantes y ofertas laborales, publicación de CVs, reclutamiento y oportunidades de trabajo remoto en Argentina',
+    groups: [
+      {
+        id: 'jobs_vacancies',
+        title_ru: 'Вакансии',
+        title_es: 'Ofertas de empleo',
+        items: [
+          'Вакансии',
+          'Подработка и стажировки',
+        ],
+      },
+      {
+        id: 'jobs_resumes',
+        title_ru: 'Резюме',
+        title_es: 'Curriculums y búsqueda',
+        items: [
+          'Резюме',
+          'Удалённая работа',
+        ],
+      },
+    ],
     subcategories: [
       'Вакансии',
       'Резюме',
@@ -298,6 +578,26 @@ export const CATEGORIES: Category[] = [
     pinBg: '#0891B2',
     description_ru: 'Изготовление сайтов под ключ, администрирование серверов, создание Telegram-ботов и интеграция оплат MercadoPago',
     description_es: 'Desarrollo y diseño de sitios web, administración de servidores, bots para Telegram e integraciones con Mercado Pago',
+    groups: [
+      {
+        id: 'it_dev',
+        title_ru: 'Разработка и боты',
+        title_es: 'Desarrollo web y bots',
+        items: [
+          'Изготовление сайта',
+          'Telegram боты',
+          'Интеграция оплат MercadoPago',
+        ],
+      },
+      {
+        id: 'it_admin',
+        title_ru: 'Администрирование',
+        title_es: 'Soporte y servidores',
+        items: [
+          'Администрирование',
+        ],
+      },
+    ],
     subcategories: [
       'Изготовление сайта',
       'Администрирование',
@@ -318,6 +618,27 @@ export const CATEGORIES: Category[] = [
     pinBg: '#CA8A04',
     description_ru: 'Домашняя кулинария, торты на заказ (медовик, наполеон), пельмени и вареники ручной лепки, кейтеринг и продуктовые лавки',
     description_es: 'Comida casera, pastelería artesanal, pastas congeladas y rellenas, tiendas de productos seleccionados y viandas',
+    groups: [
+      {
+        id: 'food_homemade',
+        title_ru: 'Домашняя кухня и выпечка',
+        title_es: 'Comida casera y pastelería',
+        items: [
+          'Торты на заказ',
+          'Пельмени и полуфабрикаты',
+          'Доставка домашней еды',
+        ],
+      },
+      {
+        id: 'food_shops',
+        title_ru: 'Магазины и кейтеринг',
+        title_es: 'Tiendas y catering',
+        items: [
+          'Продуктовые магазины',
+          'Кейтеринг',
+        ],
+      },
+    ],
     subcategories: [
       'Торты на заказ',
       'Пельмени и полуфабрикаты',

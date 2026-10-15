@@ -31,9 +31,12 @@ import {
 interface CategoryDrilldownHeaderProps {
   locale: Locale;
   category: Category;
+  selectedGroup?: string | null;
   selectedSubcategory: string | 'all';
   onSelectSubcategory: (sub: string | 'all') => void;
   onBackToCategories: () => void;
+  onBackToGroups?: () => void;
+  onBackToSubsections?: () => void;
   specialistsCount: number;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -63,9 +66,12 @@ const getCategoryIcon = (iconName: string, className = 'w-6 h-6') => {
 export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = ({
   locale,
   category,
+  selectedGroup,
   selectedSubcategory,
   onSelectSubcategory,
   onBackToCategories,
+  onBackToGroups,
+  onBackToSubsections,
   specialistsCount,
   searchQuery,
   setSearchQuery,
@@ -74,6 +80,13 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
   const t = translations[locale];
   const categoryIndex = CATEGORIES.findIndex((c) => c.id === category.id);
   const indexNumber = categoryIndex !== -1 ? String(categoryIndex + 1).padStart(2, '0') : '';
+  const activeGroup = category.groups?.find((g) => g.id === selectedGroup) || null;
+  const groupTitle = activeGroup
+    ? locale === 'ru'
+      ? activeGroup.title_ru
+      : activeGroup.title_es
+    : null;
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -150,17 +163,82 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
   return (
     <div className="bg-gradient-to-b from-sky-50/60 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950 border-b border-slate-200 dark:border-slate-800 py-6 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Navigation row: Back to all categories button + Create Order button */}
+        {/* Navigation row: Back buttons & Breadcrumb trail & Create Order */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <button
-            type="button"
-            onClick={onBackToCategories}
-            className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition group cursor-pointer"
-            aria-label={t.backToCategories}
-          >
-            <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400 group-hover:-translate-x-0.5 transition-transform" />
-            <span>{t.backToCategories.replace(/^[←\s]+/, '')}</span>
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Primary Return Button (Back to subcategories or groups or catalog) */}
+            {onBackToSubsections ? (
+              <button
+                type="button"
+                onClick={onBackToSubsections}
+                className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition group cursor-pointer"
+                aria-label={t.backToGroups}
+              >
+                <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400 group-hover:-translate-x-0.5 transition-transform" />
+                <span>{t.backToGroups.replace(/^[←\s]+/, '')}</span>
+              </button>
+            ) : onBackToGroups ? (
+              <button
+                type="button"
+                onClick={onBackToGroups}
+                className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition group cursor-pointer"
+                aria-label={t.backToGroups}
+              >
+                <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400 group-hover:-translate-x-0.5 transition-transform" />
+                <span>{t.backToGroups.replace(/^[←\s]+/, '')}</span>
+              </button>
+            ) : null}
+
+            {/* Always accessible Return to Catalog Root button */}
+            <button
+              type="button"
+              onClick={onBackToCategories}
+              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition group cursor-pointer"
+              aria-label={t.backToCategories}
+            >
+              <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400 group-hover:-translate-x-0.5 transition-transform" />
+              <span>{t.backToCategories.replace(/^[←\s]+/, '')}</span>
+            </button>
+
+            {/* Breadcrumb path: Каталог > Категория > Раздел > Подраздел */}
+            <nav className="hidden md:flex items-center gap-1.5 text-xs font-medium text-slate-400 ml-2">
+              <button
+                type="button"
+                onClick={onBackToCategories}
+                className="hover:text-sky-600 transition cursor-pointer"
+              >
+                {t.homeCatalog}
+              </button>
+              <span>/</span>
+              <button
+                type="button"
+                onClick={onBackToGroups || onBackToCategories}
+                className="hover:text-sky-600 transition cursor-pointer"
+              >
+                {locale === 'ru' ? category.title_ru : category.title_es}
+              </button>
+              {groupTitle && (
+                <>
+                  <span>/</span>
+                  <button
+                    type="button"
+                    onClick={onBackToSubsections || onBackToGroups}
+                    className="hover:text-sky-600 transition cursor-pointer font-semibold text-slate-600 dark:text-slate-300"
+                  >
+                    {groupTitle}
+                  </button>
+                </>
+              )}
+              {selectedSubcategory !== 'all' && (
+                <>
+                  <span>/</span>
+                  <span className="text-slate-900 dark:text-white font-bold">
+                    {selectedSubcategory}
+                  </span>
+                </>
+              )}
+            </nav>
+          </div>
 
           {onOpenCreateOrder && (
             <button
@@ -197,6 +275,7 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
                 )}
                 <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
                   {locale === 'ru' ? category.title_ru : category.title_es}
+                  {groupTitle ? ` (${groupTitle})` : ''}
                 </h1>
                 <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">
                   <span>{getSpecialistsCountText(specialistsCount)}</span>
@@ -291,8 +370,9 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
               <span>{t.allSubcategories}</span>
             </button>
 
-            {/* Individual Subcategory Pills */}
+            {/* Individual Subcategory Pills (scoped to active group items if selectedGroup, or all category subcategories) */}
             {category.subcategories.map((sub) => {
+              if (activeGroup && !activeGroup.items.includes(sub)) return null;
               const isSelected = selectedSubcategory === sub;
               return (
                 <button

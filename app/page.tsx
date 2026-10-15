@@ -60,7 +60,9 @@ export default function Home() {
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | 'all'>('all');
+  const [showCategoryMap, setShowCategoryMap] = useState<boolean>(false);
   const [selectedBarrio, setSelectedBarrio] = useState<string | 'all'>('all');
   const [selectedFormat, setSelectedFormat] = useState<WorkFormat | 'all'>('all');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
@@ -134,15 +136,55 @@ export default function Home() {
     }
   };
 
-  const handleToggleCategory = (cat: CategoryId | 'all') => {
-    setSelectedCategory((prev) => (cat === 'all' ? 'all' : prev === cat ? 'all' : cat));
+  const handleSelectCategory = (catId: CategoryId) => {
+    setSelectedCategory(catId);
+    setSelectedGroup(null);
     setSelectedSubcategory('all');
+    setShowCategoryMap(false);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleSelectGroup = (groupId: string | null) => {
+    setSelectedGroup(groupId);
+    setSelectedSubcategory('all');
+    setShowCategoryMap(false);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleSelectSubcategory = (catId: CategoryId, subcategory: string) => {
+    setSelectedCategory(catId);
+    const catObj = CATEGORIES.find((c) => c.id === catId);
+    const matchingGroup = catObj?.groups?.find((g) =>
+      g.items.some((item) => item.toLowerCase() === subcategory.toLowerCase())
+    );
+    if (matchingGroup) {
+      setSelectedGroup(matchingGroup.id);
+    }
+    setSelectedSubcategory(subcategory);
+    setShowCategoryMap(true);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleToggleCategory = (cat: CategoryId | 'all') => {
+    if (cat === 'all') {
+      handleBackToCategories();
+    } else {
+      handleSelectCategory(cat);
+    }
   };
 
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
+    setSelectedGroup(null);
     setSelectedSubcategory('all');
+    setShowCategoryMap(false);
     setSelectedBarrio('all');
     setSelectedFormat('all');
     setVerifiedOnly(false);
@@ -151,8 +193,27 @@ export default function Home() {
 
   const handleBackToCategories = () => {
     setSelectedCategory('all');
+    setSelectedGroup(null);
     setSelectedSubcategory('all');
+    setShowCategoryMap(false);
     setSearchQuery('');
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleBackToGroups = () => {
+    setSelectedGroup(null);
+    setSelectedSubcategory('all');
+    setShowCategoryMap(false);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleBackToSubsections = () => {
+    setSelectedSubcategory('all');
+    setShowCategoryMap(false);
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -346,20 +407,27 @@ export default function Home() {
           <CategoryDirectory
             locale={locale}
             specialists={specialists}
-            onSelectCategory={(catId) => {
-              setSelectedCategory(catId);
-              setSelectedSubcategory('all');
-              if (typeof window !== 'undefined') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
-            onSelectSubcategory={(catId, sub) => {
-              setSelectedCategory(catId);
-              setSelectedSubcategory(sub);
-              if (typeof window !== 'undefined') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
+            selectedCategory="all"
+            selectedGroup={null}
+            onSelectCategory={handleSelectCategory}
+            onSelectSubcategory={handleSelectSubcategory}
+          />
+        </main>
+      ) : (!showCategoryMap && selectedSubcategory === 'all' && !searchQuery.trim()) ? (
+        /* ================= LEVEL 2 & LEVEL 3: GROUPS & SUBSECTIONS ================= */
+        /* Разделение на Материалы / работы и подразделы. Без карты и без шума. */
+        <main className="flex-1">
+          <CategoryDirectory
+            locale={locale}
+            specialists={specialists}
+            selectedCategory={selectedCategory}
+            selectedGroup={selectedGroup}
+            onSelectCategory={handleSelectCategory}
+            onSelectGroup={handleSelectGroup}
+            onSelectSubcategory={handleSelectSubcategory}
+            onBackToCategories={handleBackToCategories}
+            onBackToGroups={handleBackToGroups}
+            onViewAllOnMap={() => setShowCategoryMap(true)}
           />
         </main>
       ) : (
@@ -374,9 +442,15 @@ export default function Home() {
             <CategoryDrilldownHeader
               locale={locale}
               category={activeCategory}
+              selectedGroup={selectedGroup}
               selectedSubcategory={selectedSubcategory}
-              onSelectSubcategory={(sub) => setSelectedSubcategory(sub)}
+              onSelectSubcategory={(sub) => {
+                setSelectedSubcategory(sub);
+                setShowCategoryMap(true);
+              }}
               onBackToCategories={handleBackToCategories}
+              onBackToGroups={handleBackToGroups}
+              onBackToSubsections={selectedGroup ? handleBackToSubsections : undefined}
               specialistsCount={filteredSpecialists.length}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
