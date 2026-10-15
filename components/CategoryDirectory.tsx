@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Locale, CategoryId, Specialist, Category } from '@/types';
-import { CATEGORIES } from '@/data/categories';
+import { CATEGORIES, getSubcategoryTitle } from '@/data/categories';
 import { translations } from '@/lib/translations';
 import {
   HardHat,
@@ -24,7 +24,6 @@ import {
   Layers,
   MapPin,
   ChevronRight,
-  CheckCircle2,
 } from 'lucide-react';
 
 interface CategoryDirectoryProps {
@@ -117,10 +116,10 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
   const activeGroup = groups.find((g) => g.id === selectedGroup) || null;
 
   /* =======================================================================
-     LEVEL 2: CATEGORY GROUPS (Разделение на Материалы / работы)
-     Mockup 2: E.g., for "Ремонт, строительство" ->
-       Plate 1: "Услуги Obras"
-       Plate 2: "Продажа Материалов Materiales"
+     LEVEL 2: CATEGORY GROUPS (Разделение на Работы / Материалы)
+     Чистые, лаконичные плашки без мусора и смешения языков.
+     В RU: "Услуги" и "Продажа материалов"
+     В ES: "Servicios de obras" и "Venta de materiales"
      ======================================================================= */
   if (activeCategory && selectedGroup === null) {
     const categoryIndex = CATEGORIES.findIndex((c) => c.id === activeCategory.id);
@@ -128,7 +127,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
     const categorySpecialists = specialists.filter((s) => s.category === activeCategory.id);
 
     return (
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         {/* Navigation row: Back button & Breadcrumbs */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -171,16 +170,16 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
         </div>
 
         {/* Level 2 Category Header Plate */}
-        <div className="mb-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-7 shadow-2xs">
+        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-2xs">
           <div className="flex items-start gap-4">
             <div
-              className="flex h-14 w-14 items-center justify-center rounded-2xl shadow-2xs flex-shrink-0"
+              className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl shadow-2xs flex-shrink-0"
               style={{
                 backgroundColor: `${activeCategory.color}15`,
                 color: activeCategory.color,
               }}
             >
-              {getCategoryIcon(activeCategory.iconName, 'w-7 h-7')}
+              {getCategoryIcon(activeCategory.iconName, 'w-6 h-6 sm:w-7 sm:h-7')}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
@@ -194,7 +193,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
               <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight">
                 {locale === 'ru' ? activeCategory.title_ru : activeCategory.title_es}
               </h1>
-              <p className="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl">
+              <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl">
                 {locale === 'ru' ? activeCategory.description_ru : activeCategory.description_es}
               </p>
             </div>
@@ -211,12 +210,15 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
           </p>
         </div>
 
-        {/* Groups Plates (Matching Mockup 2: e.g. "Услуги Obras" and "Продажа Материалов Materiales") */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        {/* Groups Plates (Чистые, крупные плашки без визуального шума) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
           {groups.map((group) => {
-            const groupTitle = locale === 'ru' ? group.title_ru : group.title_es;
+            const rawTitle = locale === 'ru' ? group.title_ru : group.title_es;
+            // Clean up title: strictly ensure no language bleed
+            const groupTitle = locale === 'ru'
+              ? rawTitle.replace(/\s+Obras\b/i, '').replace(/\s+Materiales\b/i, '')
+              : rawTitle;
             const itemsCount = group.items.length;
-            const previewItems = group.items.slice(0, 5);
 
             // Count specialists matching any item in this group
             const groupSpecialistsCount = categorySpecialists.filter((s) => {
@@ -234,18 +236,18 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
               <div
                 key={group.id}
                 onClick={() => onSelectGroup?.(group.id)}
-                className="group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-xs hover:shadow-xl hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-200 cursor-pointer"
+                className="group relative flex flex-col justify-between rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-2xs hover:shadow-xl hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-200 cursor-pointer min-h-[170px]"
               >
                 <div>
-                  <div className="flex items-center justify-between gap-3 mb-4">
+                  <div className="flex items-center justify-between gap-3 mb-3">
                     <div
-                      className="flex h-12 w-12 items-center justify-center rounded-xl transition-transform group-hover:scale-105"
+                      className="flex h-11 w-11 items-center justify-center rounded-xl transition-transform group-hover:scale-105"
                       style={{
                         backgroundColor: `${activeCategory.color}15`,
                         color: activeCategory.color,
                       }}
                     >
-                      <Layers className="w-6 h-6" />
+                      <Layers className="w-5 h-5" />
                     </div>
                     <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
                       {itemsCount} {t.subsectionsCount}
@@ -255,25 +257,9 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                   <h3 className="text-xl sm:text-2xl font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                     {groupTitle}
                   </h3>
-
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {previewItems.map((item) => (
-                      <span
-                        key={item}
-                        className="inline-flex items-center rounded-lg bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-300"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                    {group.items.length > previewItems.length && (
-                      <span className="inline-flex items-center rounded-lg bg-slate-50 dark:bg-slate-800 px-2 py-0.5 text-xs text-slate-400">
-                        +{group.items.length - previewItems.length}
-                      </span>
-                    )}
-                  </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-500 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-500 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                   <span>
                     {groupSpecialistsCount > 0
                       ? getSpecialistsCountText(groupSpecialistsCount)
@@ -294,22 +280,26 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
 
   /* =======================================================================
      LEVEL 3: SUBSECTIONS (Разделение на подразделы)
-     Mockup 3: E.g., for "Услуги Obras" ->
-       Plates: Проект, Бетонные работы, Укладка плитки, Электрика, Окна...
+     Широкие, высококонтрастные и 100% читаемые плашки.
+     Никаких обрезанных слов (no truncate), никаких бессмысленных прочерков.
+     Точный перевод на русский или испанский согласно выбранному языку.
      ======================================================================= */
   if (activeCategory && selectedGroup !== null) {
     const categorySpecialists = specialists.filter((s) => s.category === activeCategory.id);
     const groupItems = activeGroup ? activeGroup.items : activeCategory.subcategories;
-    const groupTitle = activeGroup
+    const rawGroupTitle = activeGroup
       ? locale === 'ru'
         ? activeGroup.title_ru
         : activeGroup.title_es
       : locale === 'ru'
       ? activeCategory.title_ru
       : activeCategory.title_es;
+    const groupTitle = locale === 'ru'
+      ? rawGroupTitle.replace(/\s+Obras\b/i, '').replace(/\s+Materiales\b/i, '')
+      : rawGroupTitle;
 
     return (
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Navigation row: Back button & Breadcrumbs */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -359,22 +349,26 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
         </div>
 
         {/* Section Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-950 dark:text-white tracking-tight">
-              {groupTitle}
-            </h1>
-            <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400">
-              {groupItems.length} {t.subsectionsCount}
-            </span>
+        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-2xs">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight">
+                  {groupTitle}
+                </h1>
+                <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {groupItems.length} {t.subsectionsCount}
+                </span>
+              </div>
+              <p className="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl">
+                {t.level3Subtitle}
+              </p>
+            </div>
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl">
-            {t.level3Subtitle}
-          </p>
         </div>
 
-        {/* Subsection Plates Grid (Matching Mockup 3: Проект, Бетон, Плитка, Электрика, Окна...) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+        {/* Subsection Plates: Spacious 2-column or 1-column layout with 100% full readable text */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {groupItems.map((item, idx) => {
             const itemLower = item.toLowerCase();
             const matchingSpecialists = categorySpecialists.filter((s) => {
@@ -392,33 +386,30 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
               return hasSub || hasSrv;
             });
             const specCount = matchingSpecialists.length;
+            const displayTitle = getSubcategoryTitle(item, locale);
 
             return (
               <div
                 key={item}
                 onClick={() => onSelectSubcategory?.(activeCategory.id, item)}
-                className="group flex items-center justify-between rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-4.5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer"
+                className="group flex items-center justify-between rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[64px]"
               >
-                <div className="flex items-center gap-3 min-w-0 pr-2">
-                  <span className="text-xs font-mono font-medium text-slate-400 dark:text-slate-500 w-5 flex-shrink-0">
+                <div className="flex items-center gap-3.5 min-w-0 pr-3">
+                  <span className="flex items-center justify-center h-8 w-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-500 dark:text-slate-400 flex-shrink-0">
                     {String(idx + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors truncate">
-                    {item}
+                  <span className="text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-snug whitespace-normal">
+                    {displayTitle}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  {specCount > 0 ? (
-                    <span className="inline-flex items-center rounded-full bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 text-[11px] font-semibold text-sky-700 dark:text-sky-300">
-                      {specCount}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                      —
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {specCount > 0 && (
+                    <span className="inline-flex items-center rounded-full bg-sky-50 dark:bg-sky-950/60 px-2.5 py-1 text-xs font-semibold text-sky-700 dark:text-sky-300">
+                      {getSpecialistsCountText(specCount)}
                     </span>
                   )}
-                  <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-sky-600 dark:group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-sky-600 dark:group-hover:text-sky-400 group-hover:translate-x-1 transition-all" />
                 </div>
               </div>
             );
@@ -513,24 +504,27 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
 
                 {/* Subcategories preview tags - Clean, uncluttered, light chips */}
                 <div className="mt-3 flex flex-wrap gap-1.5">
-                  {displaySubcategories.map((sub) => (
-                    <button
-                      key={sub}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (onSelectSubcategory) {
-                          onSelectSubcategory(cat.id, sub);
-                        } else {
-                          onSelectCategory(cat.id);
-                        }
-                      }}
-                      className="inline-flex items-center rounded-lg bg-slate-100/70 hover:bg-sky-50 dark:bg-slate-800/60 dark:hover:bg-sky-950/60 px-2 py-0.5 text-[11px] font-medium text-slate-600 hover:text-sky-700 dark:text-slate-300 dark:hover:text-sky-300 transition-colors cursor-pointer focus:outline-hidden focus-visible:ring-1 focus-visible:ring-sky-500"
-                      title={locale === 'ru' ? `Открыть подкатегорию "${sub}"` : `Ver subcategoría "${sub}"`}
-                    >
-                      {sub}
-                    </button>
-                  ))}
+                  {displaySubcategories.map((sub) => {
+                    const displaySubTitle = getSubcategoryTitle(sub, locale);
+                    return (
+                      <button
+                        key={sub}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (onSelectSubcategory) {
+                            onSelectSubcategory(cat.id, sub);
+                          } else {
+                            onSelectCategory(cat.id);
+                          }
+                        }}
+                        className="inline-flex items-center rounded-lg bg-slate-100/70 hover:bg-sky-50 dark:bg-slate-800/60 dark:hover:bg-sky-950/60 px-2 py-0.5 text-[11px] font-medium text-slate-600 hover:text-sky-700 dark:text-slate-300 dark:hover:text-sky-300 transition-colors cursor-pointer focus:outline-hidden focus-visible:ring-1 focus-visible:ring-sky-500"
+                        title={locale === 'ru' ? `Открыть подкатегорию "${displaySubTitle}"` : `Ver subcategoría "${displaySubTitle}"`}
+                      >
+                        {displaySubTitle}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

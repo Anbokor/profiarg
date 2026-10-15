@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Locale, Category } from '@/types';
-import { CATEGORIES } from '@/data/categories';
+import { CATEGORIES, getSubcategoryTitle } from '@/data/categories';
 import { translations } from '@/lib/translations';
 import {
   ArrowLeft,
@@ -81,11 +81,14 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
   const categoryIndex = CATEGORIES.findIndex((c) => c.id === category.id);
   const indexNumber = categoryIndex !== -1 ? String(categoryIndex + 1).padStart(2, '0') : '';
   const activeGroup = category.groups?.find((g) => g.id === selectedGroup) || null;
-  const groupTitle = activeGroup
+  const rawGroupTitle = activeGroup
     ? locale === 'ru'
       ? activeGroup.title_ru
       : activeGroup.title_es
     : null;
+  const groupTitle = locale === 'ru' && rawGroupTitle
+    ? rawGroupTitle.replace(/\s+Obras\b/i, '').replace(/\s+Materiales\b/i, '')
+    : rawGroupTitle;
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -233,7 +236,7 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
                 <>
                   <span>/</span>
                   <span className="text-slate-900 dark:text-white font-bold">
-                    {selectedSubcategory}
+                    {getSubcategoryTitle(selectedSubcategory, locale)}
                   </span>
                 </>
               )}
@@ -394,7 +397,7 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
                       : undefined
                   }
                 >
-                  <span className="whitespace-nowrap flex-shrink-0">{sub}</span>
+                  <span className="whitespace-nowrap flex-shrink-0">{getSubcategoryTitle(sub, locale)}</span>
                   {isSelected && (
                     <X className="w-3 h-3 ml-0.5 opacity-80 hover:opacity-100 flex-shrink-0" />
                   )}

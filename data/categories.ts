@@ -1,4 +1,4 @@
-import { Category } from '@/types';
+import { Category, Locale } from '@/types';
 
 export const CATEGORIES: Category[] = [
   {
@@ -17,8 +17,8 @@ export const CATEGORIES: Category[] = [
     groups: [
       {
         id: 'services_obras',
-        title_ru: 'Услуги Obras',
-        title_es: 'Servicios Obras',
+        title_ru: 'Услуги',
+        title_es: 'Servicios de obras',
         items: [
           'Проект',
           'Бетонные работы, кладка',
@@ -40,8 +40,8 @@ export const CATEGORIES: Category[] = [
       },
       {
         id: 'materials',
-        title_ru: 'Продажа Материалов Materiales',
-        title_es: 'Venta de Materiales',
+        title_ru: 'Продажа материалов',
+        title_es: 'Venta de materiales',
         items: [
           'Продажа материалов',
           'Окна и профили ПВХ',
@@ -648,3 +648,146 @@ export const CATEGORIES: Category[] = [
     ],
   },
 ];
+
+export const SUBCATEGORY_TRANSLATIONS_ES: Record<string, string> = {
+  // Ремонт, строительство
+  'Проект': 'Proyecto y arquitectura',
+  'Бетонные работы, кладка': 'Hormigón y albañilería',
+  'Укладка плитки': 'Colocación de cerámicos y porcelanato',
+  'Электрика': 'Electricidad e instalaciones',
+  'Водоснабжение сантехника': 'Plomería y sanitarios',
+  'Двери входные': 'Puertas de entrada',
+  'Двери межкомнатные': 'Puertas interiores',
+  'Сварочные Работы': 'Herrería y soldadura',
+  'Окна': 'Aberturas y ventanas PVC',
+  'Штукатурка': 'Revoque y yeso',
+  'Перегородки гипсокартон': 'Tabiques de Durlock',
+  'Кондиционеры': 'Aire acondicionado y climatización',
+  'Газ': 'Gas y conexiones',
+  'Комплексные работы': 'Reformas integrales',
+  'Кухни': 'Muebles de cocina',
+  'Мебель': 'Muebles a medida',
+  'Услуги': 'Servicios',
+  'Услуги Obras': 'Servicios de obras',
+  'Продажа материалов': 'Venta de materiales',
+  'Продажа материалов Materiales': 'Venta de materiales',
+  'Окна и профили ПВХ': 'Perfiles y aberturas PVC',
+  'Двери и фурнитура': 'Puertas y herrajes',
+  'Электротовары': 'Materiales eléctricos',
+  'Сантехника и трубы': 'Caños y grifería',
+  'Сухие смеси и штукатурка': 'Mezclas y revoques',
+  'Гипсокартон и профили': 'Placas Durlock y perfiles',
+
+  // Красота
+  'Окрашивание волос / стрижка': 'Coloración y corte de cabello',
+  'Маникюр / педикюр': 'Manicuría rusa y pedicuría',
+  'Депиляция': 'Depilación',
+  'Косметология': 'Cosmetología',
+  'Массаж': 'Masajes terapéuticos',
+  'Ламинирование, окрашивание, коррекция бровей': 'Laminado y perfilado de cejas',
+  'Перманентный макияж': 'Maquillaje permanente',
+  'Косметика и уход': 'Cosmética y cuidado',
+  'Материалы для мастеров': 'Insumos profesionales',
+
+  // Транспорт
+  'Трансфер Аэропорт': 'Transfer al aeropuerto Ezeiza',
+  'Перевозки по Аргентине': 'Viajes por Argentina',
+  'Внутри Буэнос-Айреса': 'Viajes en CABA / AMBA',
+  'Доставка из других стран': 'Envíos internacionales',
+  'Легковой транспорт: Трансфер Аэропорт': 'Autos: Transfer aeropuerto',
+  'Легковой транспорт: Перевозки по Аргентине': 'Autos: Viajes por el país',
+  'Легковой транспорт: Внутри Буэнос-Айреса': 'Autos: En CABA',
+  'Грузовой транспорт: Внутри Буэнос-Айреса': 'Fletes en CABA',
+  'Грузовой транспорт: Перевозки по Аргентине': 'Fletes y cargas por el país',
+
+  // Обмен валюты
+  'Обмен USD / ARS': 'Cambio USD / ARS en efectivo',
+  'Криптовалюта USDT': 'Criptomonedas USDT',
+  'Рубли P2P переводы': 'Transferencias P2P en rublos',
+  'Доставка наличных курьером': 'Entrega segura por mensajería',
+
+  // Переводчики
+  'Лицензированный CTPCBA': 'Traductor público CTPCBA',
+  'Выездной': 'Acompañamiento presencial',
+  'Перевод справок и апостилей': 'Traducción de partidas y apostillas',
+  'Сопровождение в инстанциях': 'Acompañamiento en trámites públicos',
+
+  // Юристы
+  'Гражданство через федеральный суд': 'Ciudadanía por juicio federal',
+  'ВНЖ и DNI (Radicación)': 'Radicación y DNI argentino',
+  'Регистрация компаний и Monotributo': 'Constitución de sociedades y Monotributo',
+  'Налоги AFIP / ARCA': 'Impuestos AFIP / ARCA',
+  'Нотариусы и доверенности': 'Escribanos y poderes notariales',
+
+  // Обучение
+  'Испанский язык': 'Español rioplatense',
+  'Английский язык': 'Inglés',
+  'Китайский язык': 'Chino',
+  'Португальский язык': 'Portugués',
+  'Греческий язык': 'Griego',
+  'Языки: Испанский': 'Español',
+  'Языки: Английский': 'Inglés',
+  'Языки: Китайский': 'Chino',
+  'Языки: Португальский': 'Portugués',
+  'Языки: Греческий': 'Griego',
+  'Дети: Математика': 'Matemática infantil',
+  'Дети: ИЗО': 'Arte y pintura infantil',
+  'Дети: Русский язык': 'Ruso para niños',
+  'Дети: Лепка': 'Modelado infantil',
+  'Танцы: Танго': 'Clases de tango',
+  'Танцы: Другое': 'Otras danzas',
+
+  // Туризм
+  'Гид': 'Guías privados',
+  'Туры': 'Excursiones y paseos',
+  'Отели': 'Hoteles y hospedaje',
+  'Рыбалка': 'Pesca deportiva',
+  'Охота': 'Caza',
+  'Под ключ': 'Viajes todo incluido',
+  'Рестораны/кафе': 'Restaurantes y gastronomía',
+
+  // Ремонт техники
+  'Телефоны': 'Celulares y smartphones',
+  'Телефоны и планшеты': 'Celulares y tablets',
+  'Стиральные машины': 'Lavarropas y secarropas',
+  'Телевизоры': 'Televisores Smart TV',
+  'Холодильники': 'Heladeras',
+  'Мелкая бытовая техника': 'Pequeños electrodomésticos',
+
+  // Авто
+  'Прокат автомобилей': 'Alquiler de autos',
+  'Ремонт и ТО': 'Mecánica y mantenimiento',
+  'Продажа запчастей': 'Repuestos y autopartes',
+  'Подбор авто': 'Inspección previa a la compra',
+
+  // Недвижимость
+  'Аренда: Услуги по подбору': 'Búsqueda de alquiler',
+  'Аренда: Свои объявления': 'Propiedades en alquiler directo',
+  'Продажа: Услуги по подбору': 'Asesoría para compra',
+  'Продажа: Свои объявления': 'Venta directa de inmuebles',
+
+  // Работа
+  'Вакансии': 'Ofertas laborales',
+  'Резюме': 'Búsqueda de empleo',
+
+  // IT
+  'Изготовление сайта': 'Desarrollo web y landing pages',
+  'Администрирование': 'Soporte IT y servidores',
+
+  // Магазины / еда
+  'Торты на заказ': 'Tortas y pastelería por encargo',
+  'Пельмени и полуфабрикаты': 'Pastas artesanales y congelados',
+  'Доставка домашней еды': 'Viandas y comida casera',
+  'Продуктовые магазины': 'Tiendas de comestibles',
+  'Кейтеринг': 'Catering y eventos',
+};
+
+export const getSubcategoryTitle = (item: string, locale: Locale): string => {
+  if (locale === 'es') {
+    return SUBCATEGORY_TRANSLATIONS_ES[item] || item;
+  }
+  if (item === 'Услуги Obras') return 'Услуги';
+  if (item === 'Продажа материалов Materiales') return 'Продажа материалов';
+  return item;
+};
+
