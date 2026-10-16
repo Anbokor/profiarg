@@ -161,19 +161,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </button>
             )}
           </div>
-
-          {onOpenCreateOrder && (
-            <div className="mt-2.5 flex items-center justify-center">
-              <button
-                type="button"
-                onClick={onOpenCreateOrder}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-300 font-medium transition cursor-pointer"
-              >
-                <span>{locale === 'ru' ? 'Нужна индивидуальная услуга?' : '¿Buscás un servicio a medida?'}</span>
-                <span className="font-bold underline text-amber-600 dark:text-amber-400">{t.createOrderHeroBtn}</span>
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Active Category Filter Badge in Search Area */}

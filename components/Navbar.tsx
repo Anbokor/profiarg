@@ -4,9 +4,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Locale, ViewMode, Specialist } from '@/types';
 import { translations } from '@/lib/translations';
 import {
-  Users,
-  FileSpreadsheet,
-  PlusCircle,
   Briefcase,
   UserPlus,
   Heart,
@@ -114,62 +111,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <span className="sr-only">Quatro Clicks</span>
           </div>
-
-          {/* Compact navigation switch: Специалисты | Заказы (Desktop & Tablet) */}
-          <nav
-            className="hidden sm:inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200/60 dark:border-slate-700/60"
-            aria-label="Main Navigation"
-          >
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab && setActiveTab('specialists');
-                onGoHome && onGoHome();
-              }}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition ${
-                activeTab === 'specialists'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white font-bold'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-            >
-              <Users className="h-3.5 w-3.5" />
-              <span>{t.specialistsTab}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab && setActiveTab('orders')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition relative ${
-                activeTab === 'orders'
-                  ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white font-bold'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-            >
-              <FileSpreadsheet className="h-3.5 w-3.5" />
-              <span>{t.ordersBoardTab}</span>
-              {openOrdersCount > 0 && (
-                <span className="ml-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-black text-white">
-                  {openOrdersCount}
-                </span>
-              )}
-            </button>
-          </nav>
         </div>
 
-        {/* Center/Right Section: Primary CTA, Language, Unified Master Menu */}
+        {/* Center/Right Section: Unified Master Menu & Language Switcher */}
         <div className="flex items-center gap-2 sm:gap-3 flex-nowrap">
-          {/* Single primary action button for clients: Разместить заказ / Publicar pedido */}
-          {onOpenCreateOrder && (
-            <button
-              type="button"
-              onClick={onOpenCreateOrder}
-              className="inline-flex items-center gap-1.5 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition active:scale-95 whitespace-nowrap"
-            >
-              <PlusCircle className="h-4 w-4 text-slate-950" />
-              <span className="hidden md:inline">{t.createOrderBtn}</span>
-              <span className="md:hidden">{t.orderShortBtn}</span>
-            </button>
-          )}
 
 
           {/* Language Switcher: Compact Pill */}
@@ -324,45 +269,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
         </div>
-      </div>
-
-      {/* Mobile-only Navigation Switcher (compact, clean, centered, no awkward wrapping) */}
-      <div className="sm:hidden border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 px-3 py-1.5 flex justify-center">
-        <nav
-          className="inline-flex items-center rounded-full bg-slate-200/80 dark:bg-slate-800 p-1 w-full max-w-xs border border-slate-200/60 dark:border-slate-700/60"
-          aria-label="Mobile Navigation"
-        >
-          <button
-            type="button"
-            onClick={() => setActiveTab && setActiveTab('specialists')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-full text-xs font-semibold transition truncate ${
-              activeTab === 'specialists'
-                ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white font-bold'
-                : 'text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            <Users className="h-3.5 w-3.5 flex-shrink-0" />
-            <span className="truncate">{t.specialistsTab}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab && setActiveTab('orders')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-full text-xs font-semibold transition relative truncate ${
-              activeTab === 'orders'
-                ? 'bg-white text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white font-bold'
-                : 'text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            <FileSpreadsheet className="h-3.5 w-3.5 flex-shrink-0" />
-            <span className="truncate">{t.ordersBoardTab}</span>
-            {openOrdersCount > 0 && (
-              <span className="ml-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-black text-white flex-shrink-0">
-                {openOrdersCount}
-              </span>
-            )}
-          </button>
-        </nav>
       </div>
     </header>
   );

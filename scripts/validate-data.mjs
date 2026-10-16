@@ -561,14 +561,14 @@ assert(
   "SpecialistCabinetModal simulates top-up via MercadoPago, USDT, and Rubles P2P"
 );
 
-// Navbar & Hero checks
+// Navbar & Hero checks (Concise, uncluttered, no orders board)
 assert(
-  navbarContent.includes('createOrderBtn') || navbarContent.includes('Разместить заказ') || navbarContent.includes('Publicar pedido'),
-  "Navbar features prominent 'Разместить заказ' / 'Publicar pedido' CTA"
+  !navbarContent.includes('createOrderBtn') && !navbarContent.includes('Publicar pedido'),
+  "Navbar removes public create order CTA in line with maximum conciseness"
 );
 assert(
-  navbarContent.includes('ordersBoardTab'),
-  "Navbar features 'Биржа заказов' tab with badge counter"
+  !navbarContent.includes('ordersBoardTab'),
+  "Navbar removes orders board tab in line with maximum conciseness"
 );
 assert(
   navbarContent.includes('isMasterMenuOpen') && navbarContent.includes('specialistCabinetTab'),
@@ -579,16 +579,12 @@ assert(
   "Navbar removes cluttered 1% commission badges for clean spacious header"
 );
 assert(
-  heroContent.includes('createOrderHeroBtn') || heroContent.includes('Оставить заявку') || heroContent.includes('Pedir presupuesto'),
-  "HeroSection features prominent 'Оставить заявку' / 'Pedir presupuesto' button"
+  !heroContent.includes('createOrderHeroBtn') && !heroContent.includes('Pedir presupuesto'),
+  "HeroSection removes order request button in line with maximum conciseness"
 );
 assert(
-  pageContent.includes('OrdersBoard') && pageContent.includes('CreateOrderModal') && pageContent.includes('SpecialistCabinetModal'),
-  "app/page.tsx integrates OrdersBoard, CreateOrderModal, and SpecialistCabinetModal"
-);
-assert(
-  pageContent.includes('handleOpenCompleteDeal'),
-  "app/page.tsx links OrdersBoard direct completion with SpecialistCabinetModal"
+  !pageContent.includes('<OrdersBoard') && !pageContent.includes('<CreateOrderModal') && pageContent.includes('SpecialistCabinetModal'),
+  "app/page.tsx removes OrdersBoard and CreateOrderModal while retaining SpecialistCabinetModal"
 );
 assert(
   navbarContent.includes("aria-label={locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}"),
@@ -784,12 +780,12 @@ assert(
   "Footer purges non-functional barrio links dump"
 );
 assert(
-  footerContent.includes('onNavigateToOrders') && footerContent.includes('ordersBoardTab'),
-  "Footer provides functional direct link to orders board"
+  !footerContent.includes('ordersBoardTab'),
+  "Footer purges orders board tab in line with maximum conciseness"
 );
 assert(
-  footerContent.includes('onOpenCreateOrder') && footerContent.includes('createOrderBtn'),
-  "Footer provides functional direct trigger for create order modal"
+  !footerContent.includes('createOrderBtn'),
+  "Footer purges create order modal trigger in line with maximum conciseness"
 );
 assert(
   footerContent.includes('onOpenCabinet') && footerContent.includes('specialistCabinetTab'),
@@ -804,7 +800,7 @@ assert(
   "Footer includes bilingual language toggle switch (RU & ES)"
 );
 assert(
-  pageContent.includes('onNavigateToCatalog=') && pageContent.includes('onNavigateToOrders=') && pageContent.includes('setLocale='),
+  pageContent.includes('onNavigateToCatalog=') && pageContent.includes('setLocale='),
   "app/page.tsx wires interactive navigation and language handlers to Footer"
 );
 assert(
@@ -819,10 +815,6 @@ const heroSectionContent = readFileSync(resolve(process.cwd(), 'components/HeroS
 assert(
   !heroSectionContent.includes('проверенных анкет') && !heroSectionContent.includes('perfiles verificados'),
   "HeroSection purges redundant marketing trust stats from minimalist home page"
-);
-assert(
-  ordersBoardContent.includes('Откликнуться') || ordersBoardContent.includes('orderRespondBtn'),
-  "OrdersBoard provides clear 'Откликнуться' response action button"
 );
 
 // TEST 14: Categories-First Ultra-Clean Directory Architecture
@@ -844,16 +836,16 @@ assert(
   "HeroSection presents mission statement in compact typography banner without bulky heading bloat"
 );
 assert(
-  navbarContent.includes('Вход для мастеров') && navbarContent.includes('createOrderBtn'),
-  "Navbar provides sleek minimalist controls ('Вход для мастеров', '+ Разместить заказ', language switcher)"
+  navbarContent.includes('Вход для мастеров') && navbarContent.includes('setLocale'),
+  "Navbar provides sleek minimalist controls ('Вход для мастеров' and language switcher)"
 );
 assert(
   drilldownHeaderContent.includes('indexNumber'),
   "CategoryDrilldownHeader preserves 01..14 numbered index continuity"
 );
 assert(
-  catDirContent.includes('grid-cols-2'),
-  "CategoryDirectory renders responsive 2-column mobile grid for above-the-fold visibility"
+  catDirContent.includes('flex flex-col gap-2.5 sm:gap-3'),
+  "CategoryDirectory renders single-column layout for maximum conciseness and above-the-fold visibility"
 );
 assert(
   catDirContent.includes('specialistSubsList'),
@@ -873,6 +865,33 @@ assert(existsSync('public/favicon-32x32.png') && existsSync('public/apple-touch-
 assert(navbarContent.includes('logo-horizontal.png') && navbarContent.includes('logo-dark.png'), "Navbar renders official responsive Quatro Clicks logo for light & dark modes");
 assert(footerContent.includes('logo-horizontal.png') && footerContent.includes('logo-dark.png'), "Footer renders official responsive Quatro Clicks logo for light & dark modes");
 assert(layoutContent.includes('logo-icon.png') && layoutContent.includes('favicon.ico'), "Root layout links to official Quatro Clicks logo emblem favicon and favicon.ico");
+
+// TEST 16: Price-Free Large Cards, Compact On-Demand Map & Filter Overload Purge
+console.log('\n16. Validating Concise Specialist Cards, Compact Map & Minimalist Architecture:');
+assert(
+  !specialistCardContent.includes('formatCurrency') && !specialistCardContent.includes('srv.price'),
+  "SpecialistCard is completely price-free in line with client guidelines"
+);
+assert(
+  specialistCardContent.includes('h-20 w-20') || specialistCardContent.includes('h-24 sm:w-24'),
+  "SpecialistCard features enlarged avatar (h-20/h-24) for superior readability"
+);
+assert(
+  specialistCardContent.includes('text-lg sm:text-xl') || specialistCardContent.includes('text-xl'),
+  "SpecialistCard features larger, prominent typography for contractor names"
+);
+assert(
+  pageContent.includes('h-64 sm:h-72') && pageContent.includes('showCategoryMap'),
+  "app/page.tsx features compact, reduced-height map (h-64 sm:h-72) triggered by on-demand button"
+);
+assert(
+  !pageContent.includes('<FilterBar'),
+  "app/page.tsx purges bulky FilterBar component in favor of clean 3-level hierarchical navigation"
+);
+assert(
+  pageContent.includes('max-w-4xl') && pageContent.includes('space-y-4'),
+  "app/page.tsx lays out specialist cards in a single, spacious, highly readable column"
+);
 
 // Summary
 console.log('\n========================================================');

@@ -11,7 +11,6 @@ import {
   LayoutGrid,
   ChevronLeft,
   ChevronRight,
-  PlusCircle,
   HardHat,
   Sparkles,
   Truck,
@@ -40,7 +39,6 @@ interface CategoryDrilldownHeaderProps {
   specialistsCount: number;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  onOpenCreateOrder?: () => void;
 }
 
 const getCategoryIcon = (iconName: string, className = 'w-6 h-6') => {
@@ -75,7 +73,6 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
   specialistsCount,
   searchQuery,
   setSearchQuery,
-  onOpenCreateOrder,
 }) => {
   const t = translations[locale];
   const categoryIndex = CATEGORIES.findIndex((c) => c.id === category.id);
@@ -228,17 +225,6 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
               )}
             </nav>
           </div>
-
-          {onOpenCreateOrder && (
-            <button
-              type="button"
-              onClick={onOpenCreateOrder}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-2 text-xs sm:text-sm shadow-xs transition active:scale-95 cursor-pointer"
-            >
-              <PlusCircle className="h-4 w-4" />
-              <span>{t.createOrderHeroBtn}</span>
-            </button>
-          )}
         </div>
 
         {/* Category Header Card: Icon, Title, Description, Stats */}

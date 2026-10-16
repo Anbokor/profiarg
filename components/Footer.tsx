@@ -4,7 +4,7 @@ import React from 'react';
 import { Locale, CategoryId } from '@/types';
 import { translations } from '@/lib/translations';
 import { CATEGORIES } from '@/data/categories';
-import { Send, Users, FileSpreadsheet, PlusCircle, Briefcase, UserPlus } from 'lucide-react';
+import { Send, Users, Briefcase, UserPlus } from 'lucide-react';
 
 interface FooterProps {
   locale: Locale;
@@ -98,30 +98,6 @@ export const Footer: React.FC<FooterProps> = ({
                 >
                   <Users className="h-3.5 w-3.5 text-sky-600" />
                   <span>{locale === 'ru' ? 'Специалисты и услуги' : 'Especialistas y servicios'}</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onNavigateToOrders) onNavigateToOrders();
-                  }}
-                  className="flex items-center gap-2 text-slate-600 hover:text-sky-600 dark:text-slate-400 dark:hover:text-white transition cursor-pointer"
-                >
-                  <FileSpreadsheet className="h-3.5 w-3.5 text-sky-600" />
-                  <span>{t.ordersBoardTab}</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onOpenCreateOrder) onOpenCreateOrder();
-                  }}
-                  className="flex items-center gap-2 text-slate-600 hover:text-sky-600 dark:text-slate-400 dark:hover:text-white transition cursor-pointer"
-                >
-                  <PlusCircle className="h-3.5 w-3.5 text-amber-500" />
-                  <span>{t.createOrderBtn}</span>
                 </button>
               </li>
               <li>

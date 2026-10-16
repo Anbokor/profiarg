@@ -218,8 +218,8 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
           </div>
         </div>
 
-        {/* Groups Plates (Такие же лаконичные, как и 3 уровень) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+        {/* Groups Plates (Wide Single Column) */}
+        <div className="flex flex-col gap-2.5 sm:gap-3">
           {groups.map((group, idx) => {
             const rawTitle = locale === 'ru' ? group.title_ru : group.title_es;
             // Clean up title: strictly ensure no language bleed
@@ -245,7 +245,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                 key={group.id}
                 type="button"
                 onClick={() => onSelectGroup?.(group.id)}
-                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[72px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 px-4 py-3 sm:px-5 sm:py-3.5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[58px] sm:min-h-[64px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
               >
                 {/* Left Area: Index + Title Column */}
                 <div className="flex items-center gap-3.5 min-w-0 flex-1">
@@ -374,8 +374,8 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
           </div>
         </div>
 
-        {/* Subsection Plates: Spacious 2-column or 1-column layout with 100% full readable text */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+        {/* Subsection Plates: Wide Single Column with 100% full readable text */}
+        <div className="flex flex-col gap-2.5 sm:gap-3">
           {groupItems.map((item, idx) => {
             const itemLower = item.toLowerCase();
             const matchingSpecialists = categorySpecialists.filter((s) => {
@@ -400,7 +400,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                 key={item}
                 type="button"
                 onClick={() => onSelectSubcategory?.(activeCategory.id, item)}
-                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[72px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 px-4 py-3 sm:px-5 sm:py-3.5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[58px] sm:min-h-[64px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
               >
                 {/* Left Area: Index + Title Column */}
                 <div className="flex items-center gap-3.5 min-w-0 flex-1">
@@ -451,8 +451,8 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
         </p>
       </div>
 
-      {/* 14 Categories Cards Grid (Responsive 2-column grid matching Level 3) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+      {/* 14 Categories Cards (Single-Column Wide Layout matching Level 2 & Level 3) */}
+      <div className="flex flex-col gap-2.5 sm:gap-3">
         {CATEGORIES.map((cat, index) => {
           const categorySpecialists = specialists.filter((s) => s.category === cat.id);
           const count = categorySpecialists.length;
@@ -489,7 +489,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                   onSelectCategory(cat.id);
                 }
               }}
-              className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[72px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
+              className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 px-4 py-3 sm:px-5 sm:py-3.5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[58px] sm:min-h-[64px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
             >
               {/* Left Area: Icon + Title & Meta Column */}
               <div className="flex items-center gap-3.5 min-w-0 flex-1">
