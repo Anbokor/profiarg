@@ -99,20 +99,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             tabIndex={0}
             aria-label="Quatro Clicks Home"
           >
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-600 via-sky-500 to-amber-400 text-white shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
-              <span className="font-extrabold text-sm sm:text-base tracking-tighter">4C</span>
-              <span className="text-amber-300 font-black text-[9px] sm:text-[10px]">🇦🇷</span>
+            {/* Actual Quatro Clicks Brand Logo */}
+            <div className="flex items-center group-hover:opacity-95 transition-opacity">
+              <img
+                src="/logo-horizontal.png"
+                alt="Quatro Clicks — Servicios y Mapa"
+                className="h-9 sm:h-10 w-auto object-contain block dark:hidden"
+              />
+              <img
+                src="/logo-dark.png"
+                alt="Quatro Clicks — Servicios y Mapa"
+                className="h-9 sm:h-10 w-auto object-contain hidden dark:block"
+              />
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                  Quatro <span className="text-sky-600 dark:text-sky-400">Clicks</span>
-                </span>
-                <span className="hidden sm:inline-flex items-center rounded-md bg-sky-50 px-1.5 py-0.5 text-[10px] font-bold text-sky-700 ring-1 ring-inset ring-sky-700/10 dark:bg-sky-950/60 dark:text-sky-300">
-                  AR
-                </span>
-              </div>
-            </div>
+            <span className="sr-only">Quatro Clicks</span>
           </div>
 
           {/* Compact navigation switch: Специалисты | Заказы (Desktop & Tablet) */}

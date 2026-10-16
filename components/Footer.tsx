@@ -51,12 +51,17 @@ export const Footer: React.FC<FooterProps> = ({
                 }
               }}
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-600 text-white font-bold text-xs shadow-xs group-hover:scale-105 transition-transform">
-                4C🇦🇷
-              </div>
-              <span className="font-extrabold text-lg text-slate-900 dark:text-white">
-                Quatro <span className="text-sky-600 dark:text-sky-400">Clicks</span>
-              </span>
+              <img
+                src="/logo-horizontal.png"
+                alt="Quatro Clicks — Servicios y Mapa"
+                className="h-10 w-auto object-contain block dark:hidden group-hover:opacity-90 transition-opacity"
+              />
+              <img
+                src="/logo-dark.png"
+                alt="Quatro Clicks — Servicios y Mapa"
+                className="h-10 w-auto object-contain hidden dark:block group-hover:opacity-90 transition-opacity"
+              />
+              <span className="sr-only">Quatro Clicks</span>
             </div>
 
             <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">

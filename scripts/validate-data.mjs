@@ -1,5 +1,4 @@
-// Comprehensive validation and test script for Quatro Clicks seed data, categories, barrios, and bilingual translations
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 
 console.log('========================================================');
@@ -864,6 +863,14 @@ assert(
   drilldownHeaderContent.includes('.replace') && pageContent.includes('.replace'),
   "Drilldown return buttons prevent double-arrow visual defects when rendering backToCategories"
 );
+
+console.log('\n15. Validating Official Quatro Clicks Logo & Asset Integrity:');
+assert(existsSync('public/logo-horizontal.png'), "public/logo-horizontal.png exists for light mode");
+assert(existsSync('public/logo-dark.png'), "public/logo-dark.png exists for dark mode");
+assert(existsSync('public/logo-icon.png'), "public/logo-icon.png exists for app emblem/icon");
+assert(navbarContent.includes('logo-horizontal.png') && navbarContent.includes('logo-dark.png'), "Navbar renders official responsive Quatro Clicks logo for light & dark modes");
+assert(footerContent.includes('logo-horizontal.png') && footerContent.includes('logo-dark.png'), "Footer renders official responsive Quatro Clicks logo for light & dark modes");
+assert(layoutContent.includes('logo-icon.png'), "Root layout links to official Quatro Clicks logo emblem favicon");
 
 // Summary
 console.log('\n========================================================');
