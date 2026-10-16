@@ -868,9 +868,11 @@ console.log('\n15. Validating Official Quatro Clicks Logo & Asset Integrity:');
 assert(existsSync('public/logo-horizontal.png'), "public/logo-horizontal.png exists for light mode");
 assert(existsSync('public/logo-dark.png'), "public/logo-dark.png exists for dark mode");
 assert(existsSync('public/logo-icon.png'), "public/logo-icon.png exists for app emblem/icon");
+assert(existsSync('public/favicon.ico') && existsSync('app/favicon.ico'), "favicon.ico exists in public and app roots");
+assert(existsSync('public/favicon-32x32.png') && existsSync('public/apple-touch-icon.png'), "Multi-resolution browser tab icons exist (32x32 and 180x180)");
 assert(navbarContent.includes('logo-horizontal.png') && navbarContent.includes('logo-dark.png'), "Navbar renders official responsive Quatro Clicks logo for light & dark modes");
 assert(footerContent.includes('logo-horizontal.png') && footerContent.includes('logo-dark.png'), "Footer renders official responsive Quatro Clicks logo for light & dark modes");
-assert(layoutContent.includes('logo-icon.png'), "Root layout links to official Quatro Clicks logo emblem favicon");
+assert(layoutContent.includes('logo-icon.png') && layoutContent.includes('favicon.ico'), "Root layout links to official Quatro Clicks logo emblem favicon and favicon.ico");
 
 // Summary
 console.log('\n========================================================');
