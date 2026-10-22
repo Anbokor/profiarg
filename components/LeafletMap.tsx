@@ -5,7 +5,7 @@ import { Specialist, Locale } from '@/types';
 import { CATEGORIES } from '@/data/categories';
 import { BARRIOS } from '@/data/barrios';
 import { translations } from '@/lib/translations';
-import { buildWhatsAppUrl } from '@/lib/utils';
+import { buildWhatsAppUrl, escapeHtml, sanitizeUrl } from '@/lib/utils';
 import {
   Navigation,
   ZoomIn,
@@ -200,37 +200,45 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
         let marker = markersRef.current.get(specialist.id);
 
-        // Build rich popup content
+        // Build rich popup content with XSS sanitization
         const waUrl = buildWhatsAppUrl(specialist.whatsapp, specialist.name, locale);
         const title = locale === 'ru' ? specialist.title_ru : specialist.title_es;
         const categoryTitle = locale === 'ru' ? category?.title_ru : category?.title_es;
 
+        const safeAvatar = sanitizeUrl(specialist.avatar, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80');
+        const safeName = escapeHtml(specialist.name);
+        const safeTitle = escapeHtml(title);
+        const safeCategoryTitle = escapeHtml(categoryTitle || '');
+        const safeBarrio = escapeHtml(specialist.barrio);
+        const safePinBg = escapeHtml(pinBg);
+        const safeWaUrl = sanitizeUrl(waUrl);
+
         const popupHtml = `
           <div style="font-family: inherit; width: 230px; padding: 4px;">
             <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-              <img src="${specialist.avatar}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; object-position: top;" />
+              <img src="${safeAvatar}" alt="${safeName}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; object-position: top;" />
               <div style="flex: 1; overflow: hidden;">
-                <span style="display: inline-block; font-size: 10px; font-weight: 700; color: ${pinBg}; background: ${pinBg}15; padding: 2px 6px; border-radius: 4px; margin-bottom: 2px;">
-                  ${categoryTitle || ''}
+                <span style="display: inline-block; font-size: 10px; font-weight: 700; color: ${safePinBg}; background: ${safePinBg}15; padding: 2px 6px; border-radius: 4px; margin-bottom: 2px;">
+                  ${safeCategoryTitle}
                 </span>
                 <div style="font-weight: 700; font-size: 13px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                  ${specialist.name}
+                  ${safeName}
                 </div>
               </div>
             </div>
             <div style="font-size: 11px; color: #64748b; margin-bottom: 6px; line-height: 1.3;">
-              ${title}
+              ${safeTitle}
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; margin-bottom: 10px; border-top: 1px solid #f1f5f9; padding-top: 6px;">
               <span style="font-weight: 700; color: #d97706;">★ ${specialist.rating.toFixed(1)} (${specialist.reviewsCount})</span>
-              <span style="color: #64748b; font-weight: 500;">📍 ${specialist.barrio}</span>
+              <span style="color: #64748b; font-weight: 500;">📍 ${safeBarrio}</span>
             </div>
             <div style="display: flex; gap: 6px;">
-              <a href="${waUrl}" target="_blank" rel="noopener noreferrer" style="flex: 1; text-align: center; background: #059669; color: white; padding: 6px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; text-decoration: none;">
+              <a href="${safeWaUrl}" target="_blank" rel="noopener noreferrer" style="flex: 1; text-align: center; background: #059669; color: white; padding: 6px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; text-decoration: none;">
                 WhatsApp
               </a>
               <button id="view-spec-${specialist.id}" style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; padding: 6px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">
-                ${t.viewDetails}
+                ${escapeHtml(t.viewDetails)}
               </button>
             </div>
           </div>

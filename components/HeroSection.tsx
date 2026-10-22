@@ -25,7 +25,6 @@ import {
   LayoutGrid,
   ChevronLeft,
   ChevronRight,
-  PlusCircle,
   ArrowRight,
   Star,
 } from 'lucide-react';

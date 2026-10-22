@@ -1059,6 +1059,32 @@ assert(
   "Specialist profiles do not render work duration (srv.duration completely removed)"
 );
 
+// 18. Validating Security Sanitization, Coding Standards & Dead Code Elimination
+console.log('\n18. Validating Security Sanitization & Coding Standards:');
+const utilsContent = readFileSync(resolve(process.cwd(), 'lib/utils.ts'), 'utf8');
+const leafletContent = readFileSync(resolve(process.cwd(), 'components/LeafletMap.tsx'), 'utf8');
+
+assert(
+  utilsContent.includes('export function escapeHtml') && utilsContent.includes('export function sanitizeUrl'),
+  "lib/utils.ts exports escapeHtml and sanitizeUrl security helpers"
+);
+assert(
+  leafletContent.includes('escapeHtml(') && leafletContent.includes('sanitizeUrl('),
+  "components/LeafletMap.tsx applies escapeHtml and sanitizeUrl to eliminate stored XSS in map popups"
+);
+assert(
+  !specialistDetailContent.includes('Building2') && !specialistPageContent.includes('Building2'),
+  "Purged unused icon imports (Building2) from specialist profiles"
+);
+assert(
+  !specialistPageContent.includes('Calendar'),
+  "Purged unused Calendar import from specialist slug page"
+);
+assert(
+  !specialistCardContent.includes('Send,') && !specialistCardContent.includes('Send\n'),
+  "Purged unused Send import from SpecialistCard"
+);
+
 // Summary
 console.log('\n========================================================');
 console.log(`Total tests: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests}`);

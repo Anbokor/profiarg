@@ -6,7 +6,6 @@ import { translations } from '@/lib/translations';
 import {
   Briefcase,
   UserPlus,
-  Heart,
   ChevronDown,
   LogOut,
 } from 'lucide-react';

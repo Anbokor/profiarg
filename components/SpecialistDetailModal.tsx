@@ -23,7 +23,6 @@ import {
   Facebook,
   Mail,
   ShieldCheck,
-  Building2,
   Check,
   HardHat,
   Sparkles,

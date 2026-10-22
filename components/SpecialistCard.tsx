@@ -10,7 +10,6 @@ import {
   MapPin,
   CheckCircle2,
   MessageCircle,
-  Send,
   Heart,
   Phone,
   ArrowRight,

@@ -9,7 +9,6 @@ import {
   Search,
   Filter,
   X,
-  FileSpreadsheet,
   PlusCircle,
   Clock,
   MapPin,
@@ -19,10 +18,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Briefcase,
-  ChevronDown,
-  LayoutGrid,
-  ShieldCheck,
-  TrendingUp,
 } from 'lucide-react';
 
 interface OrdersBoardProps {

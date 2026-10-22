@@ -21,9 +21,6 @@ import {
   ShoppingBag,
   ArrowRight,
   ArrowLeft,
-  Layers,
-  MapPin,
-  ChevronRight,
 } from 'lucide-react';
 
 interface CategoryDirectoryProps {

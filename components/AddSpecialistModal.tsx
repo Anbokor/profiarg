@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Specialist, Locale, CategoryId, WorkFormat, Currency, SpanishLevel, EnglishLevel } from '@/types';
+import { Specialist, Locale, CategoryId, WorkFormat, SpanishLevel, EnglishLevel } from '@/types';
 import { translations } from '@/lib/translations';
 import { CATEGORIES } from '@/data/categories';
 import { BARRIOS } from '@/data/barrios';
@@ -9,7 +9,6 @@ import { generateSlug } from '@/lib/utils';
 import {
   X,
   PlusCircle,
-  ShieldCheck,
   Lock,
   Clock,
   Sparkles,

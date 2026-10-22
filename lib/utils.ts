@@ -65,3 +65,34 @@ export function generateSlug(name: string): string {
     .trim()
     .replace(/\s+/g, '-');
 }
+
+/**
+ * Escapes characters with HTML entities to prevent XSS in raw HTML templates (e.g. Leaflet popups)
+ */
+export function escapeHtml(str: string | null | undefined): string {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Sanitizes URLs to prevent javascript: and data: script execution vulnerabilities
+ */
+export function sanitizeUrl(url: string | null | undefined, fallback: string = ''): string {
+  if (!url) return fallback;
+  const trimmed = url.trim();
+  // Safe protocols: http, https, relative root path, or standard image data URLs
+  if (
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('/') ||
+    trimmed.startsWith('data:image/')
+  ) {
+    return trimmed;
+  }
+  return fallback;
+}
