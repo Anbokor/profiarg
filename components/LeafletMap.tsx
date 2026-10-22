@@ -17,6 +17,7 @@ interface LeafletMapProps {
   locale: Locale;
   selectedSpecialist: Specialist | null;
   onSelectSpecialist: (specialist: Specialist) => void;
+  onFocusSpecialist?: (specialist: Specialist) => void;
   className?: string;
 }
 
@@ -25,6 +26,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   locale,
   selectedSpecialist,
   onSelectSpecialist,
+  onFocusSpecialist,
   className = 'h-full w-full',
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -33,6 +35,8 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   const userMarkerRef = useRef<any>(null);
   const onSelectSpecialistRef = useRef(onSelectSpecialist);
   onSelectSpecialistRef.current = onSelectSpecialist;
+  const onFocusSpecialistRef = useRef(onFocusSpecialist);
+  onFocusSpecialistRef.current = onFocusSpecialist;
 
   const [isMapReady, setIsMapReady] = useState(false);
   const [activeBarrioFilter, setActiveBarrioFilter] = useState<string | null>(null);
@@ -56,7 +60,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
       if (!map) return;
 
       // 1. If explicit focus specialist is provided or exists in list
-      const targetFocus = focusSpecialist || (selectedSpecialist && specs.find((s) => s.id === selectedSpecialist.id));
+      const targetFocus = focusSpecialist || (selectedSpecialist && (specs.find((s) => s.id === selectedSpecialist.id) || selectedSpecialist));
       if (targetFocus) {
         const coords: [number, number] = [targetFocus.coordinates.lat, targetFocus.coordinates.lng];
         map.setView(coords, 15, { animate: true });
@@ -127,10 +131,12 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
           delete (mapContainerRef.current as any)._leaflet_id;
         }
 
-        // Default initial center: will be immediately adjusted once specialists markers are added
-        const initialCenter: [number, number] = specialists[0]
-          ? [specialists[0].coordinates.lat, specialists[0].coordinates.lng]
-          : [-34.595, -58.42];
+        // Default initial center: prefer selectedSpecialist, then first specialist, then Buenos Aires
+        const initialCenter: [number, number] = selectedSpecialist
+          ? [selectedSpecialist.coordinates.lat, selectedSpecialist.coordinates.lng]
+          : (specialists[0]
+            ? [specialists[0].coordinates.lat, specialists[0].coordinates.lng]
+            : [-34.595, -58.42]);
 
         const map = L.map(mapContainerRef.current, {
           center: initialCenter,
@@ -398,6 +404,9 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         marker.on('click', () => {
           marker.openPopup();
           map.panTo(latLng, { animate: true, duration: 0.5 });
+          if (onFocusSpecialistRef.current) {
+            onFocusSpecialistRef.current(specialist);
+          }
         });
       });
 
@@ -480,7 +489,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   };
 
   return (
-    <div className={`relative ${className} overflow-hidden rounded-2xl border border-slate-200 shadow-sm dark:border-slate-800`}>
+    <div className={`relative isolate z-0 ${className} overflow-hidden rounded-2xl border border-slate-200 shadow-sm dark:border-slate-800`}>
       {/* Dynamic Barrio Navigation Strip: only rendered when specialists span multiple barrios */}
       {availableBarrios.length > 1 && (
         <div className="absolute top-3 left-3 right-14 z-10 flex gap-1.5 overflow-x-auto py-1 px-1 scrollbar-none pointer-events-auto">

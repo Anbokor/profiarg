@@ -69,6 +69,7 @@ interface SpecialistDetailModalProps {
   dealId?: string | null;
   initialPhoto?: string | null;
   onClearPhoto?: () => void;
+  onFocusMap?: (specialist: Specialist) => void;
 }
 
 export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
@@ -82,6 +83,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
   dealId = null,
   initialPhoto = null,
   onClearPhoto,
+  onFocusMap,
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'reviews'>(initialTab);
   const [newReviewAuthor, setNewReviewAuthor] = useState('');
@@ -159,7 +161,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-xs animate-fade-in"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-xs animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -466,12 +468,27 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                 </div>
 
                 {/* Address */}
-                <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
-                  <MapPin className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="block text-xs font-semibold text-slate-400">{t.address}</span>
-                    <span className="text-xs font-medium text-slate-700 dark:text-slate-200">{specialist.addressLine}</span>
+                <div className="flex items-start justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <MapPin className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div className="min-w-0">
+                      <span className="block text-xs font-semibold text-slate-400">{t.address}</span>
+                      <span className="text-xs font-medium text-slate-700 dark:text-slate-200 block truncate sm:whitespace-normal">
+                        {specialist.addressLine}
+                      </span>
+                    </div>
                   </div>
+                  {onFocusMap && (
+                    <button
+                      type="button"
+                      onClick={() => onFocusMap(specialist)}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-3 py-1.5 text-xs font-semibold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-slate-600 shadow-2xs transition cursor-pointer shrink-0"
+                      title={locale === 'ru' ? 'Показать мастера на карте' : 'Ver especialista en el mapa'}
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
+                      <span>{locale === 'ru' ? 'На карте' : 'En el mapa'}</span>
+                    </button>
+                  )}
                 </div>
 
                 {/* Languages with Granular Levels */}
@@ -747,7 +764,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
       {/* Fullscreen Uncropped Lightbox Photo Modal */}
       {selectedPhoto && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 sm:p-6 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/90 p-4 sm:p-6 backdrop-blur-md animate-fade-in"
           onClick={(e) => {
             e.stopPropagation();
             setSelectedPhoto(null);
@@ -761,7 +778,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
               setSelectedPhoto(null);
               onClearPhoto?.();
             }}
-            className="absolute top-4 right-4 z-[110] flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white shadow-2xl backdrop-blur-md cursor-pointer transition hover:scale-105 active:scale-95"
+            className="absolute top-4 right-4 z-[10002] flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white shadow-2xl backdrop-blur-md cursor-pointer transition hover:scale-105 active:scale-95"
             aria-label={t.modalClose}
             title={t.modalClose}
           >

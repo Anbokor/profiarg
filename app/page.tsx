@@ -217,12 +217,14 @@ export default function Home() {
 
   const handleOpenSpecialist = (spec: Specialist) => {
     setActiveSpecialist(spec);
+    setFocusedSpecialist(spec);
     setActivePhoto(null);
     pushNavState({ specialistId: spec.id });
   };
 
   const handleOpenSpecialistPhoto = (spec: Specialist, photoUrl: string) => {
     setActiveSpecialist(spec);
+    setFocusedSpecialist(spec);
     setActivePhoto(photoUrl);
     pushNavState({ specialistId: spec.id });
   };
@@ -602,14 +604,17 @@ export default function Home() {
 
             {/* Compact Map (Reduced vertical height, opened by button) */}
             {showCategoryMap && filteredSpecialists.length > 0 && (
-              <div className="h-64 sm:h-72 w-full rounded-2xl mb-6 shadow-sm overflow-hidden border border-slate-200 dark:border-slate-800">
+              <div className="relative isolate z-0 h-64 sm:h-72 w-full rounded-2xl mb-6 shadow-sm overflow-hidden border border-slate-200 dark:border-slate-800">
                 <LeafletMap
                   specialists={filteredSpecialists}
                   locale={locale}
-                  selectedSpecialist={focusedSpecialist}
+                  selectedSpecialist={activeSpecialist || focusedSpecialist}
                   onSelectSpecialist={(spec) => {
                     setFocusedSpecialist(spec);
                     handleOpenSpecialist(spec);
+                  }}
+                  onFocusSpecialist={(spec) => {
+                    setFocusedSpecialist(spec);
                   }}
                   className="h-full w-full rounded-none border-0"
                 />
@@ -624,16 +629,21 @@ export default function Home() {
                     key={specialist.id}
                     specialist={specialist}
                     locale={locale}
-                    onSelect={(spec) => handleOpenSpecialist(spec)}
+                    onSelect={(spec) => {
+                      setFocusedSpecialist(spec);
+                      handleOpenSpecialist(spec);
+                    }}
                     onSelectPhoto={handleOpenSpecialistPhoto}
                     onFocusMap={(spec) => {
                       setFocusedSpecialist(spec);
                       setShowCategoryMap(true);
-                      window.scrollTo({ top: 150, behavior: 'smooth' });
+                      if (typeof window !== 'undefined') {
+                        window.scrollTo({ top: 180, behavior: 'smooth' });
+                      }
                     }}
                     isFavorite={favorites.includes(specialist.id)}
                     onToggleFavorite={handleToggleFavorite}
-                    isSelected={focusedSpecialist?.id === specialist.id}
+                    isSelected={(activeSpecialist?.id || focusedSpecialist?.id) === specialist.id}
                   />
                 ))}
               </div>
@@ -690,6 +700,14 @@ export default function Home() {
         dealId={reviewDealId}
         initialPhoto={activePhoto}
         onClearPhoto={() => setActivePhoto(null)}
+        onFocusMap={(spec) => {
+          handleCloseSpecialist();
+          setFocusedSpecialist(spec);
+          setShowCategoryMap(true);
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 180, behavior: 'smooth' });
+          }
+        }}
       />
 
       {/* Add Specialist Modal Form */}

@@ -1112,6 +1112,15 @@ assert(
   specialistCardContent.includes('onFocusMap?.(specialist)') && specialistCardContent.includes('specialist.addressLine'),
   "SpecialistCard provides interactive location button triggering onFocusMap with full address tooltip"
 );
+assert(
+  leafletContent.includes('isolate') && leafletContent.includes('z-0'),
+  "LeafletMap enforces local CSS stacking context (isolate z-0) preventing leaflet controls from leaking"
+);
+assert(
+  specialistDetailContent.includes('z-[9999]') && specialistDetailContent.includes('onFocusMap'),
+  "SpecialistDetailModal applies high z-index (z-[9999]) and interactive map focus button"
+);
+
 
 
 // Summary
