@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Locale, Order, SpecialistCabinetState, Specialist, OrderStatus } from '@/types';
+import { Locale, Order, SpecialistCabinetState, Specialist, OrderStatus, Review } from '@/types';
 import { translations } from '@/lib/translations';
 import { CATEGORIES } from '@/data/categories';
 import {
@@ -10,6 +10,8 @@ import {
   loginSpecialistByCredential,
   logoutSpecialist,
   getLoggedInSpecialist,
+  getAllReviewsForSpecialist,
+  updateReviewStatus,
 } from '@/lib/storage';
 import {
   X,
@@ -34,6 +36,9 @@ import {
   Lock,
   ArrowRight,
   ChevronRight,
+  MessageSquare,
+  Check,
+  Link as LinkIcon,
 } from 'lucide-react';
 
 interface SpecialistCabinetModalProps {
@@ -97,16 +102,39 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
     return getStoredSpecialists();
   }, [propSpecialists]);
 
+  // Review Moderation & Link generation states
+  const [activeCabinetTab, setActiveCabinetTab] = useState<'deals' | 'reviews'>('deals');
+  const [specialistReviews, setSpecialistReviews] = useState<Review[]>([]);
+  const [copiedReviewDealId, setCopiedReviewDealId] = useState<string | null>(null);
+
   // Sync session on mount/open
   useEffect(() => {
     if (isOpen) {
       const active = propLoggedInSpecialist ?? getLoggedInSpecialist();
       setInternalSpecialist(active);
       setAuthError('');
+      if (active) {
+        setSpecialistReviews(getAllReviewsForSpecialist(active.id));
+      }
     }
   }, [isOpen, propLoggedInSpecialist]);
 
   const activeSpecialist = propLoggedInSpecialist !== undefined ? propLoggedInSpecialist : internalSpecialist;
+
+  const handleModerateReview = (reviewId: string, status: 'approved' | 'rejected') => {
+    if (!activeSpecialist) return;
+    updateReviewStatus(activeSpecialist.id, reviewId, status);
+    setSpecialistReviews(getAllReviewsForSpecialist(activeSpecialist.id));
+  };
+
+  const handleCopyReviewLink = (dealId?: string) => {
+    if (typeof window !== 'undefined') {
+      const url = `${window.location.origin}/?reviewDeal=${dealId || 'deal'}&specialist=${activeSpecialist?.id || ''}`;
+      navigator.clipboard.writeText(url);
+      setCopiedReviewDealId(dealId || 'deal');
+      setTimeout(() => setCopiedReviewDealId(null), 3500);
+    }
+  };
 
   const handleOpenComplete = React.useCallback((order: Order) => {
     setOrderToComplete(order);
@@ -198,7 +226,7 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
     setTimeout(() => {
       setCompleteSuccess(false);
       setOrderToComplete(null);
-    }, 1200);
+    }, 4000);
   };
 
   const finalSumNum = parseFloat(finalSumInput) || 0;
@@ -441,6 +469,42 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
               </button>
             </div>
 
+            {/* Cabinet Tab Switcher: Deals & Balance vs Review Moderation */}
+            <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-1">
+              <button
+                type="button"
+                onClick={() => setActiveCabinetTab('deals')}
+                className={`inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition cursor-pointer ${
+                  activeCabinetTab === 'deals'
+                    ? 'bg-sky-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                <Briefcase className="h-4 w-4" />
+                <span>{t.dealsAndBalanceTab}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveCabinetTab('reviews')}
+                className={`inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition cursor-pointer ${
+                  activeCabinetTab === 'reviews'
+                    ? 'bg-sky-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                <Star className="h-4 w-4" />
+                <span>{t.reviewsModerationTab}</span>
+                {specialistReviews.filter((r) => r.status === 'pending').length > 0 && (
+                  <span className="rounded-full bg-amber-500 text-white px-2 py-0.2 text-[10px] font-black">
+                    {specialistReviews.filter((r) => r.status === 'pending').length}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {activeCabinetTab === 'deals' ? (
+              <>
             {/* 4 Clean Business Cards (Stripe / MercadoPago style) */}
             {(() => {
               const computedVolumeArs = completedOrders
@@ -750,9 +814,26 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
                 </div>
 
                 {completeSuccess ? (
-                  <div className="rounded-xl bg-emerald-100 border border-emerald-300 p-4 text-center text-sm font-bold text-emerald-800 flex items-center justify-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                    <span>{t.dealCompleteSuccess}</span>
+                  <div className="rounded-xl bg-emerald-100 border border-emerald-300 p-5 text-center text-sm font-bold text-emerald-800 flex flex-col items-center justify-center gap-2.5">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                      <span>{t.dealCompleteSuccess}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyReviewLink(orderToComplete?.id)}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-white text-emerald-800 px-3.5 py-1.5 text-xs font-bold border border-emerald-300 hover:bg-emerald-50 transition shadow-2xs"
+                    >
+                      <LinkIcon className="h-3.5 w-3.5" />
+                      <span>{copiedReviewDealId ? t.reviewLinkCopied : t.requestReviewLink}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOrderToComplete(null)}
+                      className="mt-1 text-xs text-emerald-700 underline font-normal hover:text-emerald-900"
+                    >
+                      {t.modalClose}
+                    </button>
                   </div>
                 ) : (
                   <form onSubmit={handleConfirmCompletion} className="space-y-4">
@@ -953,6 +1034,16 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
                             {t.cabinetTransactionFeeLine} #{ord.id} (1%): -{feeAmount.toLocaleString('es-AR')}{' '}
                             {ord.commissionCurrency || ord.currency}
                           </div>
+                          <div className="mt-1">
+                            <button
+                              type="button"
+                              onClick={() => handleCopyReviewLink(ord.id)}
+                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-sky-700 dark:text-sky-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                            >
+                              <LinkIcon className="h-3 w-3" />
+                              <span>{copiedReviewDealId === ord.id ? t.reviewLinkCopied : t.requestReviewLink}</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -964,6 +1055,132 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
                 </div>
               )}
             </div>
+          </>
+        ) : (
+              /* ========================================================================= */
+              /* REVIEW MODERATION TAB (Review approvals, verified deals, status badges)  */
+              /* ========================================================================= */
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <Star className="h-4 w-4 text-amber-500 fill-amber-400" />
+                      <span>{t.reviewsModerationTab}</span>
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold px-2 py-0.5">
+                        {specialistReviews.length}
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      {locale === 'ru'
+                        ? 'В профиле и карточке специалиста отображаются только одобренные вами отзывы.'
+                        : 'En tu perfil solo se mostrarán públicamente las opiniones que apruebes.'}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyReviewLink()}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50/70 hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/40 px-3.5 py-2 text-xs font-bold text-sky-700 dark:text-sky-300 transition shrink-0 cursor-pointer"
+                  >
+                    <LinkIcon className="h-3.5 w-3.5" />
+                    <span>{copiedReviewDealId ? t.reviewLinkCopied : t.requestReviewLink}</span>
+                  </button>
+                </div>
+
+                {specialistReviews.length > 0 ? (
+                  <div className="space-y-3">
+                    {specialistReviews.map((rev) => (
+                      <div
+                        key={rev.id}
+                        className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/70 p-4 sm:p-4.5 shadow-2xs space-y-3"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">
+                              {rev.authorName}
+                            </span>
+                            {rev.verifiedDeal && (
+                              <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:border-emerald-800 dark:text-emerald-300">
+                                <CheckCircle2 className="h-3 w-3" />
+                                <span>{t.verifiedDealBadge}</span>
+                              </span>
+                            )}
+                            <span className="text-[11px] text-slate-400">
+                              {rev.date}
+                            </span>
+                          </div>
+
+                          {/* Status Badge */}
+                          <div className="flex items-center gap-2">
+                            {rev.status === 'approved' && (
+                              <span className="rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
+                                {t.approvedReviewStatus}
+                              </span>
+                            )}
+                            {rev.status === 'rejected' && (
+                              <span className="rounded-md bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 px-2 py-0.5 text-[10px] font-bold">
+                                {t.rejectedReviewStatus}
+                              </span>
+                            )}
+                            {(!rev.status || rev.status === 'pending') && (
+                              <span className="rounded-md bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 px-2 py-0.5 text-[10px] font-bold">
+                                {t.pendingReviewStatus}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Rating stars & text */}
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-3.5 w-3.5 ${
+                                i < rev.rating
+                                  ? 'fill-amber-400 text-amber-400'
+                                  : 'text-slate-200 dark:text-slate-700'
+                              }`}
+                            />
+                          ))}
+                        </div>
+
+                        <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                          {locale === 'ru' ? rev.text_ru : rev.text_es}
+                        </p>
+
+                        {/* Moderation Actions */}
+                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                          {rev.status !== 'approved' && (
+                            <button
+                              type="button"
+                              onClick={() => handleModerateReview(rev.id, 'approved')}
+                              className="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 transition shadow-2xs cursor-pointer"
+                            >
+                              <Check className="h-3.5 w-3.5" />
+                              <span>{t.approveReviewBtn}</span>
+                            </button>
+                          )}
+                          {rev.status !== 'rejected' && (
+                            <button
+                              type="button"
+                              onClick={() => handleModerateReview(rev.id, 'rejected')}
+                              className="inline-flex items-center gap-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                              <span>{t.rejectReviewBtn}</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500">
+                    <p>{locale === 'ru' ? 'Отзывов пока нет.' : 'Aún no hay opiniones recibidas.'}</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

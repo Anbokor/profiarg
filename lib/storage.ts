@@ -23,15 +23,16 @@ export function getStoredSpecialists(): Specialist[] {
 
     const all = [...custom, ...SEED_SPECIALISTS];
 
-    // Merge any stored custom reviews
+    // Merge any stored custom reviews (publicly only approved or seed reviews)
     return all.map((s) => {
       const extraReviews = reviewsMap[s.id];
       if (extraReviews && extraReviews.length > 0) {
         const existingIds = new Set((s.reviews || []).map((r) => r.id));
         const newReviewsToAdd = extraReviews.filter((r) => !existingIds.has(r.id));
-        if (newReviewsToAdd.length === 0) return s;
+        const approvedCustom = newReviewsToAdd.filter((r) => r.status === 'approved' || !r.status);
+        if (approvedCustom.length === 0) return s;
 
-        const combinedReviews = [...newReviewsToAdd, ...(s.reviews || [])];
+        const combinedReviews = [...approvedCustom, ...(s.reviews || [])];
         const newAvg =
           combinedReviews.reduce((sum, r) => sum + r.rating, 0) / combinedReviews.length;
         return {
@@ -95,6 +96,8 @@ export function addReviewToSpecialist(
   const newReview: Review = {
     ...review,
     id: `rev-${Date.now()}`,
+    status: review.status || (review.verifiedDeal ? 'approved' : 'pending'),
+    verifiedDeal: review.verifiedDeal || false,
     date: new Date().toLocaleDateString('ru-RU', {
       day: 'numeric',
       month: 'long',
@@ -117,6 +120,43 @@ export function addReviewToSpecialist(
   }
 
   return newReview;
+}
+
+export function getAllReviewsForSpecialist(specialistId: string): Review[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const rawReviews = localStorage.getItem(CUSTOM_REVIEWS_KEY);
+    const reviewsMap: Record<string, Review[]> = rawReviews ? JSON.parse(rawReviews) : {};
+    const custom = reviewsMap[specialistId] || [];
+    const specialist = SEED_SPECIALISTS.find((s) => s.id === specialistId);
+    const seed = (specialist?.reviews || []).map((r) => ({ ...r, status: r.status || ('approved' as const) }));
+    return [...custom, ...seed];
+  } catch {
+    return [];
+  }
+}
+
+export function updateReviewStatus(
+  specialistId: string,
+  reviewId: string,
+  status: 'approved' | 'rejected'
+): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const rawReviews = localStorage.getItem(CUSTOM_REVIEWS_KEY);
+    const reviewsMap: Record<string, Review[]> = rawReviews ? JSON.parse(rawReviews) : {};
+    if (reviewsMap[specialistId]) {
+      reviewsMap[specialistId] = reviewsMap[specialistId].map((r) =>
+        r.id === reviewId ? { ...r, status } : r
+      );
+      localStorage.setItem(CUSTOM_REVIEWS_KEY, JSON.stringify(reviewsMap));
+      return true;
+    }
+    return false;
+  } catch (e) {
+    console.error('Error updating review status', e);
+    return false;
+  }
 }
 
 export function getStoredLocale(): 'ru' | 'es' | null {

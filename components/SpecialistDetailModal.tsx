@@ -34,6 +34,10 @@ interface SpecialistDetailModalProps {
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
   onAddReview: (specialistId: string, review: Omit<Review, 'id' | 'date'>) => void;
+  initialTab?: 'overview' | 'reviews';
+  dealId?: string | null;
+  initialPhoto?: string | null;
+  onClearPhoto?: () => void;
 }
 
 export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
@@ -43,14 +47,43 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
   isFavorite,
   onToggleFavorite,
   onAddReview,
+  initialTab = 'overview',
+  dealId = null,
+  initialPhoto = null,
+  onClearPhoto,
 }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'reviews'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'reviews'>(initialTab);
   const [newReviewAuthor, setNewReviewAuthor] = useState('');
   const [newReviewRating, setNewReviewRating] = useState(5);
   const [newReviewText, setNewReviewText] = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewSuccessMsg, setReviewSuccessMsg] = useState(false);
   const [copiedToast, setCopiedToast] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(initialPhoto || null);
+
+  React.useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
+
+  React.useEffect(() => {
+    if (initialPhoto) setSelectedPhoto(initialPhoto);
+  }, [initialPhoto]);
+
+  // Close modal or photo lightbox on Escape key
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (selectedPhoto) {
+          setSelectedPhoto(null);
+          onClearPhoto?.();
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, selectedPhoto, onClearPhoto]);
 
   if (!specialist) return null;
 
@@ -80,6 +113,9 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
       rating: newReviewRating,
       text_ru: newReviewText.trim(),
       text_es: newReviewText.trim(),
+      status: dealId ? 'approved' : 'pending',
+      dealId: dealId || undefined,
+      verifiedDeal: Boolean(dealId),
     });
 
     setNewReviewAuthor('');
@@ -87,47 +123,59 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
     setNewReviewRating(5);
     setIsSubmittingReview(false);
     setReviewSuccessMsg(true);
-    setTimeout(() => setReviewSuccessMsg(false), 3000);
+    setTimeout(() => setReviewSuccessMsg(false), 4000);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-xs animate-fade-in">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-xs animate-fade-in"
+      onClick={onClose}
+    >
       <div
         className="relative w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 my-8 max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Cover Image & Close Button */}
-        <div className="relative h-48 sm:h-60 w-full shrink-0">
+        {/* Prominent Fixed Close Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-3.5 right-3.5 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/80 hover:bg-slate-900 text-white shadow-lg backdrop-blur-md cursor-pointer transition hover:scale-105 active:scale-95"
+          aria-label={t.modalClose}
+          title={t.modalClose}
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        {/* Cover Image */}
+        <div
+          className="relative h-48 sm:h-56 w-full shrink-0 overflow-hidden bg-slate-800 cursor-pointer"
+          onClick={() => setSelectedPhoto(specialist.coverImage || specialist.avatar)}
+          title={locale === 'ru' ? 'Нажмите для просмотра фото' : 'Tocá para ver foto'}
+        >
           <img
             src={specialist.coverImage || specialist.avatar}
             alt={specialist.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-center hover:opacity-95 transition"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
 
-          {/* Top Actions: Close, Favorite, Share */}
-          <div className="absolute top-4 right-4 flex items-center gap-2">
+          {/* Top Actions: Favorite, Share */}
+          <div className="absolute top-4 right-14 flex items-center gap-2">
             <button
               onClick={handleShare}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur-xs hover:bg-white dark:bg-slate-800/90 dark:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur-xs hover:bg-white dark:bg-slate-800/90 dark:text-white cursor-pointer transition"
               title={t.share}
             >
               <Share2 className="h-4 w-4" />
             </button>
             <button
               onClick={() => onToggleFavorite(specialist.id)}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur-xs hover:bg-white dark:bg-slate-800/90 dark:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur-xs hover:bg-white dark:bg-slate-800/90 dark:text-white cursor-pointer transition"
               title={t.favoritesOnly}
             >
               <Heart
                 className={`h-4 w-4 ${isFavorite ? 'fill-rose-500 text-rose-500' : ''}`}
               />
-            </button>
-            <button
-              onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur-xs hover:bg-white dark:bg-slate-800/90 dark:text-white"
-            >
-              <X className="h-5 w-5" />
             </button>
           </div>
 
@@ -506,7 +554,9 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                         key={idx}
                         src={img}
                         alt="Portfolio"
-                        className="h-36 w-full rounded-2xl object-cover shadow-xs hover:opacity-95 transition"
+                        className="h-36 w-full rounded-2xl object-cover shadow-xs hover:opacity-95 transition cursor-pointer hover:scale-102"
+                        onClick={() => setSelectedPhoto(img)}
+                        title={locale === 'ru' ? 'Нажмите для просмотра фото' : 'Tocá para ver foto'}
                       />
                     ))}
                   </div>
@@ -524,10 +574,18 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                       key={rev.id}
                       className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/40"
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white">
-                          {rev.authorName}
-                        </span>
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-bold text-sm text-slate-900 dark:text-white">
+                            {rev.authorName}
+                          </span>
+                          {rev.verifiedDeal && (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:border-emerald-800 dark:text-emerald-300">
+                              <CheckCircle2 className="h-3 w-3" />
+                              <span>{t.verifiedDealBadge}</span>
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-1">
                           {[...Array(5)].map((_, i) => (
                             <Star
@@ -559,6 +617,22 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                 <h4 className="font-bold text-sm text-slate-900 dark:text-white mb-3">
                   {t.addReview}
                 </h4>
+
+                {dealId && (
+                  <div className="mb-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 p-3.5 text-xs text-emerald-800 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-200 flex items-start gap-2.5 shadow-2xs">
+                    <CheckCircle2 className="h-4.5 w-4.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold block text-sm">
+                        {locale === 'ru' ? `Отзыв о подтвержденной сделке #${dealId}` : `Opinión de operación verificada #${dealId}`}
+                      </span>
+                      <span className="text-[11px] opacity-90 mt-0.5 block leading-relaxed">
+                        {locale === 'ru'
+                          ? 'Вы оставляете отзыв после выполнения сделки. Ваш отзыв получит значок «Подтвержденная сделка»!'
+                          : 'Estás dejando una opinión tras concretar el servicio. ¡Tu opinión se destacará con el sello «Operación verificada»!'}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {reviewSuccessMsg && (
                   <div className="mb-3 rounded-xl bg-emerald-50 p-3 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
@@ -634,6 +708,46 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
           )}
         </div>
       </div>
+
+      {/* Fullscreen Uncropped Lightbox Photo Modal */}
+      {selectedPhoto && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 sm:p-6 backdrop-blur-md animate-fade-in"
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedPhoto(null);
+            onClearPhoto?.();
+          }}
+        >
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedPhoto(null);
+              onClearPhoto?.();
+            }}
+            className="absolute top-4 right-4 z-[110] flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white shadow-2xl backdrop-blur-md cursor-pointer transition hover:scale-105 active:scale-95"
+            aria-label={t.modalClose}
+            title={t.modalClose}
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          <div
+            className="relative max-h-[90vh] max-w-[92vw] flex flex-col items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={selectedPhoto}
+              alt="Uncropped work preview"
+              className="max-h-[85vh] max-w-[90vw] object-contain rounded-2xl shadow-2xl ring-1 ring-white/10"
+            />
+            <p className="mt-2.5 text-xs font-semibold text-slate-300 text-center">
+              {locale === 'ru' ? 'Нажмите в любом месте или Esc чтобы закрыть' : 'Tocá en cualquier lugar o Esc para cerrar'}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

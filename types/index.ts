@@ -88,6 +88,9 @@ export interface Review {
   text_ru: string;
   text_es: string;
   avatar?: string;
+  status?: 'pending' | 'approved' | 'rejected';
+  dealId?: string;
+  verifiedDeal?: boolean;
 }
 
 export interface Specialist {

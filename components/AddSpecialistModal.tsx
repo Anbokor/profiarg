@@ -27,30 +27,26 @@ interface AddSpecialistModalProps {
   onSave: (specialist: Specialist) => void;
 }
 
-const COMMON_ADVANTAGES_RU = [
-  'Замер',
-  'Консультация',
-  'Выезд специалиста',
-  'Европейские нормы',
-  'Гарантия',
-  'Немецкая фурнитура',
-  'Минимальные сроки',
-  'Свой инструмент',
-  'Работа по договору',
-  'Скидки на объём',
+const COMMON_WORKS_RU = [
+  'Замер и консультация',
+  'Монтаж окон и дверей',
+  'Регулировка и ремонт фурнитуры',
+  'Замена стеклопакетов',
+  'Установка откосов и подоконников',
+  'Москитные сетки',
+  'Герметизация швов',
+  'Остекление балконов',
 ];
 
-const COMMON_ADVANTAGES_ES = [
-  'Medición en obra',
-  'Asesoría técnica',
-  'Visita a domicilio',
-  'Normas europeas',
-  'Garantía escrita',
-  'Herrajes alemanes',
-  'Plazos mínimos',
-  'Herramientas propias',
-  'Contrato formal',
-  'Descuento por volumen',
+const COMMON_WORKS_ES = [
+  'Medición y asesoramiento',
+  'Instalación de aberturas',
+  'Ajuste y reparación de herrajes',
+  'Cambio de termopaneles (DVH)',
+  'Colocación de contramarquillos',
+  'Mosquiteros a medida',
+  'Sellado térmico y acústico',
+  'Cerramientos de balcones',
 ];
 
 export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
@@ -79,13 +75,13 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
   const [privateDni, setPrivateDni] = useState('');
   const [privateDniPhoto, setPrivateDniPhoto] = useState('');
 
-  // Description & Advantages
+  // Description & Performed Works (Выполняемые работы)
   const [descriptionRu, setDescriptionRu] = useState('');
-  const [selectedAdvantages, setSelectedAdvantages] = useState<string[]>([
-    locale === 'ru' ? 'Замер' : 'Medición en obra',
-    locale === 'ru' ? 'Гарантия' : 'Garantía escrita',
+  const [selectedWorks, setSelectedWorks] = useState<string[]>([
+    locale === 'ru' ? 'Замер и консультация' : 'Medición y asesoramiento',
+    locale === 'ru' ? 'Монтаж окон и дверей' : 'Instalación de aberturas',
   ]);
-  const [customAdvantage, setCustomAdvantage] = useState('');
+  const [customWork, setCustomWork] = useState('');
 
   // Contacts
   const [barrio, setBarrio] = useState(BARRIOS[0].name);
@@ -109,30 +105,40 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
   const [langEnLevel, setLangEnLevel] = useState<EnglishLevel | 'none'>('good');
   const [langPt, setLangPt] = useState(false);
 
-  // Work format, Services & Portfolio
+  // Work format & Portfolio
   const [format, setFormat] = useState<WorkFormat[]>(['office', 'home_visit']);
-  const [serviceTitle, setServiceTitle] = useState('');
-  const [servicePrice, setServicePrice] = useState<number | ''>('');
-  const [currency, setCurrency] = useState<Currency>('ARS');
   const [portfolioUrls, setPortfolioUrls] = useState('');
+
+  // Close modal on Escape key
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const handleToggleAdvantage = (adv: string) => {
-    if (selectedAdvantages.includes(adv)) {
-      setSelectedAdvantages(selectedAdvantages.filter((a) => a !== adv));
+  const handleToggleWork = (work: string) => {
+    if (selectedWorks.includes(work)) {
+      setSelectedWorks(selectedWorks.filter((w) => w !== work));
     } else {
-      setSelectedAdvantages([...selectedAdvantages, adv]);
+      setSelectedWorks([...selectedWorks, work]);
     }
   };
 
-  const handleAddCustomAdvantage = () => {
-    if (!customAdvantage.trim()) return;
-    if (!selectedAdvantages.includes(customAdvantage.trim())) {
-      setSelectedAdvantages([...selectedAdvantages, customAdvantage.trim()]);
+  const handleAddCustomWork = () => {
+    if (!customWork.trim()) return;
+    if (!selectedWorks.includes(customWork.trim())) {
+      setSelectedWorks([...selectedWorks, customWork.trim()]);
     }
-    setCustomAdvantage('');
+    setCustomWork('');
   };
+
+  const selectedAdvantages = selectedWorks;
+  const handleToggleAdvantage = handleToggleWork;
 
   const handleToggleSubcategory = (sub: string) => {
     if (selectedSubcategories.includes(sub)) {
@@ -232,23 +238,21 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
       formats: format,
       description_ru: descriptionRu.trim() || 'Информация обновляется специалистом.',
       description_es: descriptionRu.trim() || 'Servicios profesionales en Buenos Aires.',
-      services: serviceTitle.trim()
-        ? [
-            {
-              id: `srv-${Date.now()}`,
-              title_ru: serviceTitle.trim(),
-              title_es: serviceTitle.trim(),
-              price: typeof servicePrice === 'number' ? servicePrice : null,
-              currency,
-            },
-          ]
+      services: selectedWorks.length > 0
+        ? selectedWorks.map((work, idx) => ({
+            id: `srv-${Date.now()}-${idx}`,
+            title_ru: work,
+            title_es: work,
+            price: null,
+            currency: 'a_convenir' as const,
+          }))
         : [
             {
               id: `srv-default`,
               title_ru: 'Консультация',
               title_es: 'Consulta inicial',
               price: null,
-              currency: 'a_convenir',
+              currency: 'a_convenir' as const,
             },
           ],
       gallery: galleryItems,
@@ -271,12 +275,15 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
     onClose();
   };
 
-  const sampleAdvantages = locale === 'ru' ? COMMON_ADVANTAGES_RU : COMMON_ADVANTAGES_ES;
+  const sampleWorks = locale === 'ru' ? COMMON_WORKS_RU : COMMON_WORKS_ES;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-xs animate-fade-in">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-xs animate-fade-in"
+    >
       <div
-        className="relative w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 my-8 flex flex-col max-h-[92vh]"
+        className="relative w-full max-w-xl overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 my-8 flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -308,15 +315,15 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
         </div>
 
         {/* Scrollable Form */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
           {/* SECTION 1: Основные данные специалиста / компании */}
-          <div className="space-y-4">
+          <div className="flex flex-col gap-3.5">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
               <Briefcase className="h-4 w-4" />
               <span>{locale === 'ru' ? '1. Данные специалиста или компании' : '1. Datos del profesional o empresa'}</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="flex flex-col gap-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   {t.contractorIdLabel}
@@ -330,7 +337,7 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
                 />
               </div>
 
-              <div className="sm:col-span-2">
+              <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   {t.formName} *
                 </label>
@@ -373,7 +380,7 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex flex-col gap-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   {t.formCategory} *
@@ -469,7 +476,7 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
               {t.privateConfidentialNotice}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div className="flex flex-col gap-3 pt-1">
               <div>
                 <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                   {t.privateDniLabel}
@@ -503,11 +510,11 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
             </div>
           </div>
 
-          {/* SECTION 3: Описание и преимущества */}
-          <div className="space-y-3">
+          {/* SECTION 3: Описание и выполняемые работы */}
+          <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
               <Sparkles className="h-4 w-4" />
-              <span>{locale === 'ru' ? '2. Описание и преимущества' : '2. Descripción y ventajas'}</span>
+              <span>{locale === 'ru' ? '2. Описание и выполняемые работы' : '2. Descripción y trabajos realizados'}</span>
             </div>
 
             <div>
@@ -518,24 +525,24 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
                 rows={3}
                 value={descriptionRu}
                 onChange={(e) => setDescriptionRu(e.target.value)}
-                placeholder={locale === 'ru' ? 'Опишите ваши услуги, гарантии, материалы (например: немецкая фурнитура, замер, европейские нормы)...' : 'Describí tus servicios, garantías, materiales (ej: herrajes alemanes, normas europeas)...'}
+                placeholder={locale === 'ru' ? 'Опишите ваш опыт, используемые технологии и подход к работе...' : 'Describí tu experiencia, tecnologías utilizadas y enfoque de trabajo...'}
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
               />
             </div>
 
-            {/* Advantages Chips Selector */}
+            {/* Performed Works Chips Selector */}
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                {t.advantagesLabel}
+                {t.performedWorks}
               </label>
               <div className="flex flex-wrap gap-1.5 mb-2">
-                {sampleAdvantages.map((adv) => {
-                  const isSelected = selectedAdvantages.includes(adv);
+                {sampleWorks.map((work) => {
+                  const isSelected = selectedWorks.includes(work);
                   return (
                     <button
                       type="button"
-                      key={adv}
-                      onClick={() => handleToggleAdvantage(adv)}
+                      key={work}
+                      onClick={() => handleToggleWork(work)}
                       className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition ${
                         isSelected
                           ? 'bg-sky-600 text-white shadow-xs'
@@ -543,30 +550,30 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
                       }`}
                     >
                       {isSelected && <Check className="h-3 w-3" />}
-                      <span>{adv}</span>
+                      <span>{work}</span>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Add Custom Advantage */}
+              {/* Add Custom Work */}
               <div className="flex gap-2">
                 <input
                   type="text"
-                  value={customAdvantage}
-                  onChange={(e) => setCustomAdvantage(e.target.value)}
+                  value={customWork}
+                  onChange={(e) => setCustomWork(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
-                      handleAddCustomAdvantage();
+                      handleAddCustomWork();
                     }
                   }}
-                  placeholder={t.advantagesPlaceholder}
+                  placeholder={t.performedWorksPlaceholder}
                   className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
                 <button
                   type="button"
-                  onClick={handleAddCustomAdvantage}
+                  onClick={handleAddCustomWork}
                   className="rounded-xl bg-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200"
                 >
                   +
@@ -576,155 +583,152 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
           </div>
 
           {/* SECTION 4: Контакты и каналы связи */}
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3.5">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
               <Phone className="h-4 w-4" />
               <span>{locale === 'ru' ? '3. Контакты и связь' : '3. Canales de contacto'}</span>
             </div>
 
-            {/* Barrio & Address */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t.formBarrio} *
-                </label>
-                <select
-                  value={barrio}
-                  onChange={(e) => setBarrio(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                >
-                  {BARRIOS.map((b) => (
-                    <option key={b.id} value={b.name}>
-                      {b.name} ({b.zone})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t.formAddress}
-                </label>
-                <input
-                  type="text"
-                  value={addressLine}
-                  onChange={(e) => setAddressLine(e.target.value)}
-                  placeholder="Av. del Libertador 2200"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
+            {/* Barrio */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {t.formBarrio} *
+              </label>
+              <select
+                value={barrio}
+                onChange={(e) => setBarrio(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              >
+                {BARRIOS.map((b) => (
+                  <option key={b.id} value={b.name}>
+                    {b.name} ({b.zone})
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* Phone & WhatsApp */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t.formPhone} *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  placeholder="+54 9 11 3386 7500"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t.phoneDirect}
-                </label>
-                <input
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+54 9 11 3015 9399"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
+            {/* Address */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {t.formAddress}
+              </label>
+              <input
+                type="text"
+                value={addressLine}
+                onChange={(e) => setAddressLine(e.target.value)}
+                placeholder="Av. del Libertador 2200"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
             </div>
 
-            {/* Telegram & Email */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t.formTelegram}
-                </label>
-                <input
-                  type="text"
-                  value={telegram}
-                  onChange={(e) => setTelegram(e.target.value)}
-                  placeholder="telegram_username"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t.emailLabel}
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="info@ventanasportenas.ar"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
+            {/* WhatsApp */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {t.formPhone} *
+              </label>
+              <input
+                type="text"
+                required
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                placeholder="+54 9 11 3386 7500"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
             </div>
 
-            {/* Website, Instagram, Facebook */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t.websiteLabel}
-                </label>
-                <input
-                  type="text"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  placeholder="WWW.ventanasportenas.ar"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
+            {/* Phone direct */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {t.phoneDirect}
+              </label>
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+54 9 11 3015 9399"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t.instagramLabel}
-                </label>
-                <input
-                  type="text"
-                  value={instagram}
-                  onChange={(e) => setInstagram(e.target.value)}
-                  placeholder="ventanasportenascaba"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
+            {/* Telegram */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {t.formTelegram}
+              </label>
+              <input
+                type="text"
+                value={telegram}
+                onChange={(e) => setTelegram(e.target.value)}
+                placeholder="telegram_username"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  {t.facebookLabel}
-                </label>
-                <input
-                  type="text"
-                  value={facebook}
-                  onChange={(e) => setFacebook(e.target.value)}
-                  placeholder="ventanasportenas"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-              </div>
+            {/* Email */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {t.emailLabel}
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="info@ventanasportenas.ar"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+            </div>
+
+            {/* Website */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {t.websiteLabel}
+              </label>
+              <input
+                type="text"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                placeholder="WWW.ventanasportenas.ar"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+            </div>
+
+            {/* Instagram */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {t.instagramLabel}
+              </label>
+              <input
+                type="text"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                placeholder="ventanasportenascaba"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+            </div>
+
+            {/* Facebook */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                {t.facebookLabel}
+              </label>
+              <input
+                type="text"
+                value={facebook}
+                onChange={(e) => setFacebook(e.target.value)}
+                placeholder="ventanasportenas"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
             </div>
           </div>
 
           {/* SECTION 5: Параметры связи и время ответа */}
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3.5">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
               <Clock className="h-4 w-4" />
               <span>{locale === 'ru' ? '4. Режим связи и скорость ответа' : '4. Horarios y respuesta'}</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="flex flex-col gap-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   {t.responseTimeLabel}
@@ -769,21 +773,35 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
           </div>
 
           {/* SECTION 6: Владение языками */}
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3.5">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
               <Globe className="h-4 w-4" />
               <span>{t.languagesSkillTitle}</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
               {/* Russian */}
-              <div className="flex items-center justify-between sm:flex-col sm:items-start gap-1">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{t.langRussian}</span>
                 <label className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={langRu}
                     onChange={(e) => setLangRu(e.target.checked)}
+                    className="h-4 w-4 rounded-md text-sky-600 focus:ring-sky-500"
+                  />
+                  <span>{locale === 'ru' ? 'Да' : 'Sí'}</span>
+                </label>
+              </div>
+
+              {/* Portuguese */}
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{t.langPortuguese}</span>
+                <label className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                  <input
+                    type="checkbox"
+                    checked={langPt}
+                    onChange={(e) => setLangPt(e.target.checked)}
                     className="h-4 w-4 rounded-md text-sky-600 focus:ring-sky-500"
                   />
                   <span>{locale === 'ru' ? 'Да' : 'Sí'}</span>
@@ -819,25 +837,11 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
                   <option value="none">{locale === 'ru' ? 'Нет' : 'No'}</option>
                 </select>
               </div>
-
-              {/* Portuguese */}
-              <div className="flex items-center justify-between sm:flex-col sm:items-start gap-1">
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{t.langPortuguese}</span>
-                <label className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
-                  <input
-                    type="checkbox"
-                    checked={langPt}
-                    onChange={(e) => setLangPt(e.target.checked)}
-                    className="h-4 w-4 rounded-md text-sky-600 focus:ring-sky-500"
-                  />
-                  <span>{locale === 'ru' ? 'Да' : 'Sí'}</span>
-                </label>
-              </div>
             </div>
           </div>
 
-          {/* SECTION 7: Формат, портфолио и услуги */}
-          <div className="space-y-4">
+          {/* SECTION 7: Формат и портфолио работ */}
+          <div className="flex flex-col gap-3.5">
             {/* Work Formats */}
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
@@ -877,42 +881,6 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
                 >
                   {t.onlineFormat}
                 </button>
-              </div>
-            </div>
-
-            {/* Service & Price */}
-            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
-                {locale === 'ru' ? 'Основная услуга и ориентировочная цена' : 'Servicio principal y tarifa orientativa'}
-              </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="sm:col-span-2">
-                  <input
-                    type="text"
-                    value={serviceTitle}
-                    onChange={(e) => setServiceTitle(e.target.value)}
-                    placeholder={locale === 'ru' ? 'Например: Замер и монтаж окна ПВХ' : 'Ej: Medición e instalación de ventana PVC'}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    value={servicePrice}
-                    onChange={(e) => setServicePrice(e.target.value ? Number(e.target.value) : '')}
-                    placeholder="50000"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                  />
-                  <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value as Currency)}
-                    className="rounded-xl border border-slate-200 bg-white px-2 py-2 text-xs font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                  >
-                    <option value="ARS">ARS</option>
-                    <option value="USD">USD</option>
-                    <option value="a_convenir">Cons.</option>
-                  </select>
-                </div>
               </div>
             </div>
 

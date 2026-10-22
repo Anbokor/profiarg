@@ -3,13 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --background: #f8fafc;
+  --background: #D7DADC; /* RAL 7035 Light Grey */
+  --ral-7035: #D7DADC;
+  --ral-7004: #9CA1A6; /* RAL 7004 Signal Grey */
   --foreground: #0f172a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #090d16;
+    --background: #0b0f19;
+    --ral-7035: #1e293b;
+    --ral-7004: #334155;
     --foreground: #f8fafc;
   }
 }

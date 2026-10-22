@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
-import { Locale, CategoryId } from '@/types';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Locale, CategoryId, Specialist } from '@/types';
 import { translations } from '@/lib/translations';
 import { CATEGORIES } from '@/data/categories';
+import { SEED_SPECIALISTS } from '@/data/seedData';
 import {
   Search,
   X,
@@ -25,6 +26,8 @@ import {
   ChevronLeft,
   ChevronRight,
   PlusCircle,
+  ArrowRight,
+  Star,
 } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -37,6 +40,8 @@ interface HeroSectionProps {
   onReset?: () => void;
   onOpenCreateOrder?: () => void;
   showCategoryPills?: boolean;
+  onSelectSpecialist?: (spec: Specialist) => void;
+  specialists?: Specialist[];
 }
 
 const getCategoryIcon = (iconName: string, className = 'w-4 h-4') => {
@@ -69,15 +74,71 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onReset,
   onOpenCreateOrder,
   showCategoryPills = false,
+  onSelectSpecialist,
+  specialists,
 }) => {
   const t = translations[locale];
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = React.useState(false);
-  const [canScrollRight, setCanScrollRight] = React.useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  // Decoupled local search input to prevent screen jumps on every letter
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    setLocalQuery(searchQuery);
+  }, [searchQuery]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleCommitSearch = (queryToCommit?: string) => {
+    const q = (queryToCommit !== undefined ? queryToCommit : localQuery).trim();
+    setSearchQuery(q);
+    setIsDropdownOpen(false);
+  };
+
+  const handleClearSearch = () => {
+    setLocalQuery('');
+    setSearchQuery('');
+    setIsDropdownOpen(false);
+  };
+
+  const matchingCategories = React.useMemo(() => {
+    const q = localQuery.toLowerCase().trim();
+    if (!q) return [];
+    return CATEGORIES.filter((c) =>
+      c.title_ru.toLowerCase().includes(q) ||
+      c.title_es.toLowerCase().includes(q) ||
+      c.subcategories.some((sub) => sub.toLowerCase().includes(q))
+    ).slice(0, 4);
+  }, [localQuery]);
+
+  const matchingSpecialists = React.useMemo(() => {
+    const q = localQuery.toLowerCase().trim();
+    if (!q) return [];
+    const pool = specialists && specialists.length > 0 ? specialists : SEED_SPECIALISTS;
+    return pool.filter((s) =>
+      s.name.toLowerCase().includes(q) ||
+      s.title_ru.toLowerCase().includes(q) ||
+      s.title_es.toLowerCase().includes(q) ||
+      (s.companyName && s.companyName.toLowerCase().includes(q))
+    ).slice(0, 4);
+  }, [localQuery, specialists]);
 
   const activeCategory = CATEGORIES.find((c) => c.id === selectedCategory);
 
-  const handleScroll = React.useCallback(() => {
+  const handleScroll = useCallback(() => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
       setCanScrollLeft(scrollLeft > 4);
@@ -85,7 +146,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     handleScroll();
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -100,7 +161,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     };
   }, [handleScroll]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
@@ -137,30 +198,146 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </p>
         </div>
 
-        {/* Clean, Prominent Search Bar */}
-        <div className="mx-auto max-w-2xl">
-          <div className="relative w-full">
+        {/* Clean, Prominent Search Bar with Autocomplete Suggestions */}
+        <div className="mx-auto max-w-2xl relative" ref={searchContainerRef}>
+          <div className="relative w-full flex items-center">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
               <Search className="h-5 w-5 text-sky-600 dark:text-sky-400" />
             </div>
             <input
               type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={localQuery}
+              onChange={(e) => {
+                setLocalQuery(e.target.value);
+                setIsDropdownOpen(e.target.value.trim().length >= 3);
+              }}
+              onFocus={() => {
+                if (localQuery.trim().length >= 3) setIsDropdownOpen(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  setIsDropdownOpen(false);
+                  handleCommitSearch();
+                } else if (e.key === 'Escape') {
+                  setIsDropdownOpen(false);
+                }
+              }}
               placeholder={t.searchPlaceholder}
-              className="block w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-3 sm:py-3.5 pl-11 pr-11 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs focus:outline-hidden focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition"
+              className="block w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-3 sm:py-3.5 pl-11 pr-24 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs focus:outline-hidden focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition"
             />
-            {searchQuery && (
+            <div className="absolute inset-y-0 right-1.5 flex items-center gap-1">
+              {localQuery && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+                  aria-label={locale === 'ru' ? 'Очистить поиск' : 'Borrar búsqueda'}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
-                aria-label={locale === 'ru' ? 'Очистить поиск' : 'Borrar búsqueda'}
+                onClick={() => handleCommitSearch()}
+                className="rounded-xl bg-sky-600 hover:bg-sky-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer flex-shrink-0"
               >
-                <X className="h-4 w-4" />
+                {locale === 'ru' ? 'Найти' : 'Buscar'}
               </button>
-            )}
+            </div>
           </div>
+
+          {/* Autocomplete Suggestions Dropdown (Only for 3+ characters to avoid opening after every letter) */}
+          {isDropdownOpen && localQuery.trim().length >= 3 && (
+            <div className="absolute left-0 right-0 top-full mt-2 z-50 rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 animate-fade-in">
+              {matchingCategories.length > 0 && (
+                <div className="p-2">
+                  <div className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    {locale === 'ru' ? 'Категории' : 'Categorías'}
+                  </div>
+                  {matchingCategories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCategory(cat.id);
+                        setLocalQuery('');
+                        setSearchQuery('');
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center justify-between px-3 py-2 text-xs rounded-xl hover:bg-sky-50 dark:hover:bg-slate-800 text-left transition cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-sky-600">{getCategoryIcon(cat.iconName, 'w-4 h-4')}</span>
+                        <span className="font-semibold text-slate-800 dark:text-slate-100">
+                          {locale === 'ru' ? cat.title_ru : cat.title_es}
+                        </span>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {matchingSpecialists.length > 0 && (
+                <div className="p-2">
+                  <div className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    {locale === 'ru' ? 'Мастера и специалисты' : 'Profesionales'}
+                  </div>
+                  {matchingSpecialists.map((spec) => (
+                    <button
+                      key={spec.id}
+                      type="button"
+                      onClick={() => {
+                        if (onSelectSpecialist) {
+                          onSelectSpecialist(spec);
+                        } else {
+                          handleCommitSearch(spec.name);
+                        }
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center justify-between px-3 py-2 text-xs rounded-xl hover:bg-sky-50 dark:hover:bg-slate-800 text-left transition cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <img
+                          src={spec.avatar}
+                          alt={spec.name}
+                          className="w-7 h-7 rounded-lg object-cover flex-shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <div className="font-bold text-slate-800 dark:text-slate-100 truncate">
+                            {spec.name} {spec.companyName ? `• ${spec.companyName}` : ''}
+                          </div>
+                          <div className="text-[11px] text-slate-500 truncate">
+                            {locale === 'ru' ? spec.title_ru : spec.title_es}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 text-amber-500 font-bold ml-2 flex-shrink-0">
+                        <Star className="w-3 h-3 fill-amber-400" />
+                        <span>{spec.rating.toFixed(1)}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="p-2 bg-slate-50 dark:bg-slate-800/50">
+                <button
+                  type="button"
+                  onClick={() => handleCommitSearch()}
+                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-700 rounded-xl transition cursor-pointer"
+                >
+                  <span>
+                    {locale === 'ru'
+                      ? `Искать «${localQuery}» по всей платформе`
+                      : `Buscar «${localQuery}» en toda la plataforma`}
+                  </span>
+                  <span className="text-[11px] text-slate-400">↵ Enter</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Active Category Filter Badge in Search Area */}

@@ -36,7 +36,6 @@ interface CategoryDirectoryProps {
   onSelectSubcategory?: (categoryId: CategoryId, subcategory: string) => void;
   onBackToCategories?: () => void;
   onBackToGroups?: () => void;
-  onViewAllOnMap?: () => void;
 }
 
 const getCategoryIcon = (iconName: string, className = 'w-6 h-6') => {
@@ -69,7 +68,6 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
   onSelectSubcategory,
   onBackToCategories,
   onBackToGroups,
-  onViewAllOnMap,
 }) => {
   const t = translations[locale];
 
@@ -172,19 +170,6 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
               </span>
             </div>
           </div>
-
-          {/* Quick jump to map for the whole category */}
-          {onViewAllOnMap && (
-            <button
-              type="button"
-              onClick={onViewAllOnMap}
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition cursor-pointer"
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              <span>{t.viewAllOnMap}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          )}
         </div>
 
         {/* Level 2 Category Header Plate */}
@@ -340,19 +325,6 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
               </span>
             </div>
           </div>
-
-          {/* Quick jump to map for this section */}
-          {onViewAllOnMap && (
-            <button
-              type="button"
-              onClick={onViewAllOnMap}
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 transition cursor-pointer"
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              <span>{t.viewSectionOnMap}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          )}
         </div>
 
         {/* Section Header Plate */}

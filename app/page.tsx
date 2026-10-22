@@ -62,6 +62,9 @@ export default function Home() {
 
   // Modal States
   const [activeSpecialist, setActiveSpecialist] = useState<Specialist | null>(null);
+  const [activePhoto, setActivePhoto] = useState<string | null>(null);
+  const [reviewDealId, setReviewDealId] = useState<string | null>(null);
+  const [reviewInitialTab, setReviewInitialTab] = useState<'overview' | 'reviews'>('overview');
   const [focusedSpecialist, setFocusedSpecialist] = useState<Specialist | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCabinetModalOpen, setIsCabinetModalOpen] = useState(false);
@@ -84,6 +87,92 @@ export default function Home() {
     } else {
       setCabinetState(getSpecialistCabinetState());
     }
+
+    // Restore deep-link navigation state from URL query parameters
+    if (typeof window !== 'undefined' && window.location.search) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const catParam = urlParams.get('cat') as CategoryId;
+      const grpParam = urlParams.get('group');
+      const subParam = urlParams.get('sub');
+      const qParam = urlParams.get('q');
+      const specIdParam = urlParams.get('specialist');
+      const reviewDealParam = urlParams.get('reviewDeal');
+
+      if (catParam) setSelectedCategory(catParam);
+      if (grpParam) setSelectedGroup(grpParam);
+      if (subParam) setSelectedSubcategory(subParam);
+      if (qParam) setSearchQuery(qParam);
+      if (reviewDealParam) {
+        setReviewDealId(reviewDealParam);
+        setReviewInitialTab('reviews');
+      }
+      if (specIdParam) {
+        const found = getStoredSpecialists().find((s) => s.id === specIdParam || s.slug === specIdParam);
+        if (found) setActiveSpecialist(found);
+      }
+    }
+  }, []);
+
+  // Helper to build URL query string and push history state for browser back/forward
+  const pushNavState = (params: {
+    category?: CategoryId | 'all';
+    group?: string | null;
+    subcategory?: string | 'all';
+    specialistId?: string | null;
+    q?: string;
+  }) => {
+    if (typeof window === 'undefined') return;
+
+    const urlParams = new URLSearchParams();
+    const cat = params.category !== undefined ? params.category : selectedCategory;
+    const grp = params.group !== undefined ? params.group : selectedGroup;
+    const sub = params.subcategory !== undefined ? params.subcategory : selectedSubcategory;
+    const specId = params.specialistId !== undefined ? params.specialistId : activeSpecialist?.id;
+    const query = params.q !== undefined ? params.q : searchQuery;
+
+    if (cat && cat !== 'all') urlParams.set('cat', cat);
+    if (grp) urlParams.set('group', grp);
+    if (sub && sub !== 'all') urlParams.set('sub', sub);
+    if (specId) urlParams.set('specialist', specId);
+    if (query && query.trim()) urlParams.set('q', query.trim());
+
+    const qs = urlParams.toString();
+    const newUrl = qs ? `?${qs}` : window.location.pathname;
+
+    if (window.location.search !== (qs ? `?${qs}` : '')) {
+      window.history.pushState({ cat, grp, sub, specId, query }, '', newUrl);
+    }
+  };
+
+  // Native browser Back / Forward (popstate) listener
+  useEffect(() => {
+    const handlePopState = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const catParam = (urlParams.get('cat') as CategoryId) || 'all';
+      const grpParam = urlParams.get('group') || null;
+      const subParam = urlParams.get('sub') || 'all';
+      const specIdParam = urlParams.get('specialist');
+      const qParam = urlParams.get('q') || '';
+      const reviewDealParam = urlParams.get('reviewDeal');
+
+      setSelectedCategory(catParam);
+      setSelectedGroup(grpParam);
+      setSelectedSubcategory(subParam);
+      setSearchQuery(qParam);
+      setReviewDealId(reviewDealParam);
+      if (reviewDealParam) setReviewInitialTab('reviews');
+
+      if (specIdParam) {
+        const found = getStoredSpecialists().find((s) => s.id === specIdParam || s.slug === specIdParam) || null;
+        setActiveSpecialist(found);
+      } else {
+        setActiveSpecialist(null);
+        setActivePhoto(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const handleSetLocale = (newLocale: Locale) => {
@@ -126,11 +215,36 @@ export default function Home() {
     }
   };
 
+  const handleOpenSpecialist = (spec: Specialist) => {
+    setActiveSpecialist(spec);
+    setActivePhoto(null);
+    pushNavState({ specialistId: spec.id });
+  };
+
+  const handleOpenSpecialistPhoto = (spec: Specialist, photoUrl: string) => {
+    setActiveSpecialist(spec);
+    setActivePhoto(photoUrl);
+    pushNavState({ specialistId: spec.id });
+  };
+
+  const handleCloseSpecialist = () => {
+    setActiveSpecialist(null);
+    setActivePhoto(null);
+    setReviewDealId(null);
+    setReviewInitialTab('overview');
+    if (typeof window !== 'undefined' && window.history.state?.specId) {
+      window.history.back();
+    } else {
+      pushNavState({ specialistId: null });
+    }
+  };
+
   const handleSelectCategory = (catId: CategoryId) => {
     setSelectedCategory(catId);
     setSelectedGroup(null);
     setSelectedSubcategory('all');
     setShowCategoryMap(false);
+    pushNavState({ category: catId, group: null, subcategory: 'all', specialistId: null });
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -140,6 +254,7 @@ export default function Home() {
     setSelectedGroup(groupId);
     setSelectedSubcategory('all');
     setShowCategoryMap(false);
+    pushNavState({ group: groupId, subcategory: 'all', specialistId: null });
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -151,10 +266,12 @@ export default function Home() {
     const matchingGroup = catObj?.groups?.find((g) =>
       g.items.some((item) => item.toLowerCase() === subcategory.toLowerCase())
     );
+    const grpId = matchingGroup ? matchingGroup.id : selectedGroup;
     if (matchingGroup) {
       setSelectedGroup(matchingGroup.id);
     }
     setSelectedSubcategory(subcategory);
+    pushNavState({ category: catId, group: grpId, subcategory, specialistId: null });
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -175,6 +292,7 @@ export default function Home() {
     setSelectedSubcategory('all');
     setShowCategoryMap(false);
     setFavoritesOnly(false);
+    pushNavState({ category: 'all', group: null, subcategory: 'all', specialistId: null, q: '' });
   };
 
   const handleBackToCategories = () => {
@@ -183,6 +301,7 @@ export default function Home() {
     setSelectedSubcategory('all');
     setShowCategoryMap(false);
     setSearchQuery('');
+    pushNavState({ category: 'all', group: null, subcategory: 'all', specialistId: null, q: '' });
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -192,6 +311,7 @@ export default function Home() {
     setSelectedGroup(null);
     setSelectedSubcategory('all');
     setShowCategoryMap(false);
+    pushNavState({ group: null, subcategory: 'all', specialistId: null });
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -200,6 +320,7 @@ export default function Home() {
   const handleBackToSubsections = () => {
     setSelectedSubcategory('all');
     setShowCategoryMap(false);
+    pushNavState({ subcategory: 'all', specialistId: null });
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -308,7 +429,7 @@ export default function Home() {
     selectedCategory !== 'all' ? CATEGORIES.find((c) => c.id === selectedCategory) || null : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-[#D7DADC] dark:bg-slate-950">
       {/* Navigation Header */}
       <Navbar
         locale={locale}
@@ -342,6 +463,8 @@ export default function Home() {
             totalSpecialists={specialists.length}
             onReset={handleResetFilters}
             showCategoryPills={false}
+            onSelectSpecialist={handleOpenSpecialist}
+            specialists={specialists}
           />
 
           {/* Main Body: ТОЛЬКО 14 КАТЕГОРИЙ! */}
@@ -354,7 +477,7 @@ export default function Home() {
             onSelectSubcategory={handleSelectSubcategory}
           />
         </main>
-      ) : (!showCategoryMap && selectedSubcategory === 'all' && !searchQuery.trim()) ? (
+      ) : (selectedSubcategory === 'all' && !searchQuery.trim()) ? (
         /* ================= LEVEL 2 & LEVEL 3: GROUPS & SUBSECTIONS ================= */
         /* Разделение на Материалы / работы и подразделы в один столбец. Без карты и без шума. */
         <main className="flex-1">
@@ -368,7 +491,6 @@ export default function Home() {
             onSelectSubcategory={handleSelectSubcategory}
             onBackToCategories={handleBackToCategories}
             onBackToGroups={handleBackToGroups}
-            onViewAllOnMap={() => setShowCategoryMap(true)}
           />
         </main>
       ) : (
@@ -386,7 +508,7 @@ export default function Home() {
               selectedGroup={selectedGroup}
               selectedSubcategory={selectedSubcategory}
               onSelectSubcategory={(sub) => {
-                setSelectedSubcategory(sub);
+                handleSelectSubcategory(activeCategory.id, sub);
               }}
               onBackToCategories={handleBackToCategories}
               onBackToGroups={handleBackToGroups}
@@ -487,7 +609,7 @@ export default function Home() {
                   selectedSpecialist={focusedSpecialist}
                   onSelectSpecialist={(spec) => {
                     setFocusedSpecialist(spec);
-                    setActiveSpecialist(spec);
+                    handleOpenSpecialist(spec);
                   }}
                   className="h-full w-full rounded-none border-0"
                 />
@@ -502,7 +624,8 @@ export default function Home() {
                     key={specialist.id}
                     specialist={specialist}
                     locale={locale}
-                    onSelect={(spec) => setActiveSpecialist(spec)}
+                    onSelect={(spec) => handleOpenSpecialist(spec)}
+                    onSelectPhoto={handleOpenSpecialistPhoto}
                     onFocusMap={(spec) => {
                       setFocusedSpecialist(spec);
                       setShowCategoryMap(true);
@@ -559,10 +682,14 @@ export default function Home() {
       <SpecialistDetailModal
         specialist={activeSpecialist}
         locale={locale}
-        onClose={() => setActiveSpecialist(null)}
+        onClose={handleCloseSpecialist}
         isFavorite={activeSpecialist ? favorites.includes(activeSpecialist.id) : false}
         onToggleFavorite={handleToggleFavorite}
         onAddReview={handleAddReview}
+        initialTab={reviewInitialTab}
+        dealId={reviewDealId}
+        initialPhoto={activePhoto}
+        onClearPhoto={() => setActivePhoto(null)}
       />
 
       {/* Add Specialist Modal Form */}

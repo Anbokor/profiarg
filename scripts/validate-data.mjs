@@ -792,8 +792,8 @@ assert(
   "Footer provides functional direct trigger for specialist cabinet"
 );
 assert(
-  footerContent.includes('onSelectCategory') && footerContent.includes('CATEGORIES.map'),
-  "Footer provides direct category shortcuts navigating into category drilldown"
+  !footerContent.includes('CATEGORIES.map'),
+  "Footer purges duplicate category shortcuts dump in line with single-level design"
 );
 assert(
   footerContent.includes('setLocale') && footerContent.includes("setLocale('ru')") && footerContent.includes("setLocale('es')"),
@@ -891,6 +891,133 @@ assert(
 assert(
   pageContent.includes('max-w-4xl') && pageContent.includes('space-y-4'),
   "app/page.tsx lays out specialist cards in a single, spacious, highly readable column"
+);
+
+// TEST 17: UI/UX Redesign & Functional Refinements Validation
+console.log('\n17. Validating Complete UI/UX Redesign & Functional Refinements:');
+const globalsCssContent = readFileSync(resolve(process.cwd(), 'app/globals.css'), 'utf8');
+const typesContent = readFileSync(resolve(process.cwd(), 'types/index.ts'), 'utf8');
+const specialistDetailContent = readFileSync(resolve(process.cwd(), 'components/SpecialistDetailModal.tsx'), 'utf8');
+
+// 17.1 Palette RAL 7035 / RAL 7004 & White category/card plates
+assert(
+  globalsCssContent.includes('--ral-7035: #D7DADC;') && globalsCssContent.includes('--ral-7004: #9CA1A6;'),
+  "app/globals.css configures corporate RAL 7035 (#D7DADC) and RAL 7004 (#9CA1A6) variables"
+);
+assert(
+  pageContent.includes('bg-[#D7DADC]'),
+  "app/page.tsx root container applies RAL 7035 backdrop (#D7DADC)"
+);
+assert(
+  specialistCardContent.includes('bg-white') && specialistCardContent.includes('dark:bg-slate-900'),
+  "Specialist cards maintain pure white plate background for high contrast against grey backdrop"
+);
+
+// 17.2 Navbar Red Menu Border & Larger Language Switcher
+assert(
+  navbarContent.includes('border-2 border-red-500'),
+  "Navbar renders red accent border (RAL 3020 / border-red-500) around 'Вход для мастеров'"
+);
+assert(
+  navbarContent.includes('px-3.5 sm:px-4 py-1.5'),
+  "Navbar provides enlarged, high-contrast RU/ES language toggle switch"
+);
+
+// 17.3 HeroSection Decoupled Search & Autocomplete
+assert(
+  heroSectionContent.includes('localQuery') && heroSectionContent.includes('matchingCategories') && heroSectionContent.includes('matchingSpecialists'),
+  "HeroSection implements decoupled local search with smooth autocomplete suggestions dropdown"
+);
+
+// 17.4 SpecialistDetailModal Escape listener & Fixed Close Button
+assert(
+  specialistDetailContent.includes("e.key === 'Escape'") && specialistDetailContent.includes('onClick={onClose}'),
+  "SpecialistDetailModal supports backdrop click dismissal and Escape key listener"
+);
+assert(
+  specialistDetailContent.includes('z-50') && specialistDetailContent.includes('absolute top-'),
+  "SpecialistDetailModal features prominent fixed z-50 close button preventing photo overlap lockouts"
+);
+
+// 17.5 SpecialistCard Layout Matching User Sketch
+assert(
+  specialistCardContent.includes('#{specialist.contractorId}') || specialistCardContent.includes('contractorId'),
+  "SpecialistCard displays contractor ID badge in header row"
+);
+assert(
+  specialistCardContent.includes('categoryBadgeTitle') && specialistCardContent.includes('groupBadgeTitle'),
+  "SpecialistCard displays 3 hierarchical header badges matching sketch"
+);
+assert(
+  specialistCardContent.includes('specialist.gallery') && specialistCardContent.includes('slice(0, 4)'),
+  "SpecialistCard renders completed work portfolio strip from specialist.gallery"
+);
+assert(
+  specialistCardContent.includes('md:flex-col'),
+  "SpecialistCard renders right-side vertical action buttons stack (Heart, Phone, WhatsApp, Arrow)"
+);
+
+// 17.6 Specialist Cabinet Review Moderation & Verified Deals
+assert(
+  typesContent.includes("status?: 'pending' | 'approved' | 'rejected'") && typesContent.includes('verifiedDeal?: boolean'),
+  "types/index.ts defines review moderation status and verified deal fields"
+);
+assert(
+  storageContent.includes('getAllReviewsForSpecialist') && storageContent.includes('updateReviewStatus'),
+  "lib/storage.ts exports review moderation functions (getAllReviewsForSpecialist, updateReviewStatus)"
+);
+assert(
+  cabinetModalContent.includes('activeCabinetTab') && cabinetModalContent.includes('handleModerateReview'),
+  "SpecialistCabinetModal implements review moderation tab with approve/reject actions"
+);
+assert(
+  cabinetModalContent.includes('handleCopyReviewLink') && cabinetModalContent.includes('reviewDeal='),
+  "SpecialistCabinetModal provides verified client review link generator upon deal completion"
+);
+
+// 17.7 Registration Form: Single Column, Works instead of Advantages, No Prices
+assert(
+  addSpecialistModalContent.includes('max-w-xl') && addSpecialistModalContent.includes('flex flex-col gap-'),
+  "AddSpecialistModal renders concise single vertical column layout ('в столбик')"
+);
+assert(
+  addSpecialistModalContent.includes('COMMON_WORKS_RU') && addSpecialistModalContent.includes('COMMON_WORKS_ES'),
+  "AddSpecialistModal replaces advantages with selectable performed works ('Выполняемые работы')"
+);
+assert(
+  !addSpecialistModalContent.includes('servicePrice') && !addSpecialistModalContent.includes('primaryService') && !addSpecialistModalContent.includes('priceCurrency'),
+  "AddSpecialistModal completely eliminates price and currency inputs in line with client ТЗ"
+);
+
+assert(
+  specialistDetailContent.includes('verifiedDealBadge') && specialistDetailContent.includes('rev.verifiedDeal'),
+  "SpecialistDetailModal displays verified deal badge on customer reviews"
+);
+assert(
+  specialistDetailContent.includes('selectedPhoto') && specialistDetailContent.includes('object-contain'),
+  "SpecialistDetailModal provides uncropped photo lightbox viewer with instant escape/close functionality"
+);
+assert(
+  specialistCardContent.includes('onSelectPhoto'),
+  "SpecialistCard supports direct opening of work photos in uncropped lightbox"
+);
+assert(
+  pageContent.includes('reviewDealParam') && pageContent.includes('reviewDealId'),
+  "app/page.tsx restores reviewDeal deep-link state directly to customer review form"
+);
+assert(
+  pageContent.includes('window.history.back()'),
+  "app/page.tsx uses native browser history back on specialist modal close to avoid trapped navigation"
+);
+
+// 17.8 History API & Map Strict Placement
+assert(
+  pageContent.includes("window.addEventListener('popstate'") && pageContent.includes('pushNavState'),
+  "app/page.tsx synchronizes drilldown levels and specialist modal with browser History API"
+);
+assert(
+  !catDirContent.includes('onViewAllOnMap'),
+  "CategoryDirectory does not render map button on Levels 1, 2, or 3"
 );
 
 // Summary
