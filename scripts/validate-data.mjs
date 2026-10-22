@@ -1120,6 +1120,11 @@ assert(
   specialistDetailContent.includes('z-[9999]') && specialistDetailContent.includes('onFocusMap'),
   "SpecialistDetailModal applies high z-index (z-[9999]) and interactive map focus button"
 );
+assert(
+  seedContent.includes('-34.5834248') && seedContent.includes('-58.4338893'),
+  "Alexander Romanov coordinates verified directly on Humboldt 1900 on OpenStreetMap (-34.5834248, -58.4338893)"
+);
+
 
 
 
