@@ -251,7 +251,7 @@ export default function SpecialistPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
             <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4 text-white">
-              <div className="relative shrink-0">
+              <div className="relative shrink-0 w-20 h-20 sm:w-24 sm:h-24">
                 <img
                   src={specialist.avatar}
                   alt={specialist.name}

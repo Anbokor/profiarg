@@ -1038,6 +1038,14 @@ assert(
   seedContent.includes('crop=faces') && seedContent.includes('w=400&h=400'),
   "seedData.ts ensures all specialist avatars use crop=faces and 1:1 aspect ratio"
 );
+assert(
+  !specialistDetailContent.includes('h-18') && !specialistDetailContent.includes('w-18'),
+  "SpecialistDetailModal avatar does not use nonexistent Tailwind classes (h-18/w-18)"
+);
+assert(
+  specialistDetailContent.includes('h-20 w-20 sm:h-24 sm:w-24'),
+  "SpecialistDetailModal avatar uses valid h-20 w-20 sm:h-24 sm:w-24 dimensions"
+);
 
 // Summary
 console.log('\n========================================================');

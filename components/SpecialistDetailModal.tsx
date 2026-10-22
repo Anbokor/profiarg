@@ -188,15 +188,15 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
 
           {/* Avatar and Title overlaid on Cover */}
           <div className="absolute bottom-4 left-4 right-4 flex items-end gap-3 sm:gap-4">
-            <div className="relative shrink-0">
+            <div className="relative shrink-0 w-20 h-20 sm:w-24 sm:h-24">
               <img
                 src={specialist.avatar}
                 alt={specialist.name}
-                className="h-18 w-18 sm:h-22 sm:w-22 rounded-2xl border-2 border-white object-cover object-top shadow-xl dark:border-slate-800"
+                className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-2 border-white object-cover object-top shadow-xl dark:border-slate-800"
               />
               {specialist.isVerified && (
                 <div
-                  className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-white dark:ring-slate-900"
+                  className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-white dark:ring-slate-900 shadow-md"
                   title={t.verifiedDniBadge || t.verifiedBadge}
                 >
                   <CheckCircle2 className="h-4 w-4" />
