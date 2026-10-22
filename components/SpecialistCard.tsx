@@ -149,10 +149,18 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
                 <span className="font-normal text-slate-400">({specialist.reviewsCount})</span>
               </div>
               <span className="text-slate-300 dark:text-slate-600">•</span>
-              <div className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onFocusMap?.(specialist);
+                }}
+                title={specialist.addressLine ? `${specialist.addressLine} • ${locale === 'ru' ? 'Показать на карте' : 'Ver en el mapa'}` : (locale === 'ru' ? 'Показать на карте' : 'Ver en el mapa')}
+                className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium hover:text-sky-600 dark:hover:text-sky-400 transition cursor-pointer"
+              >
                 <MapPin className="h-3 w-3 text-sky-500" />
                 <span>{specialist.barrio}</span>
-              </div>
+              </button>
               {specialist.responseTime && (
                 <>
                   <span className="text-slate-300 dark:text-slate-600">•</span>

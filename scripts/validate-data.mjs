@@ -1085,6 +1085,35 @@ assert(
   "Purged unused Send import from SpecialistCard"
 );
 
+// 19. Validating Interactive Map Integrity (Centering, Full Address & Freeze Elimination)
+console.log('\n19. Validating Interactive Map Centering, Address & Safe Interaction:');
+
+assert(
+  leafletContent.includes('centerMapOnSpecialists'),
+  "LeafletMap defines centerMapOnSpecialists for automatic centering"
+);
+assert(
+  leafletContent.includes('safeAddressLine') && leafletContent.includes('specialist.addressLine'),
+  "LeafletMap popup renders exact safeAddressLine (specialist.addressLine)"
+);
+assert(
+  leafletContent.includes('availableBarrios') && leafletContent.includes('availableBarrios.length > 1'),
+  "LeafletMap dynamically computes availableBarrios and hides strip when not applicable"
+);
+assert(
+  leafletContent.includes('onSelectSpecialistRef.current'),
+  "LeafletMap utilizes onSelectSpecialistRef to prevent re-render animation loops"
+);
+assert(
+  leafletContent.includes('debounceMoveend') && leafletContent.includes('Math.abs(width - lastWidth) > 8'),
+  "LeafletMap debounces resize events with subpixel threshold to eliminate browser freeze loops"
+);
+assert(
+  specialistCardContent.includes('onFocusMap?.(specialist)') && specialistCardContent.includes('specialist.addressLine'),
+  "SpecialistCard provides interactive location button triggering onFocusMap with full address tooltip"
+);
+
+
 // Summary
 console.log('\n========================================================');
 console.log(`Total tests: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests}`);
