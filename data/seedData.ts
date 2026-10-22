@@ -47,7 +47,7 @@ export const SEED_SPECIALISTS: Specialist[] = [
     description_ru: 'Ventanas porteñas - Александр Марченко. Профессиональный замер, изготовление и качественный монтаж металлопластиковых окон и дверей ПВХ в Буэнос-Айресе. Немецкая фурнитура высочайшего качества, соблюдение европейских норм изоляции и шумоподавления, гарантия на все конструкции, минимальные сроки исполнения.',
     description_es: 'Ventanas porteñas - Alexander Marchenko. Medición profesional, fabricación e instalación de aberturas, ventanas y puertas de PVC en Buenos Aires. Herrajes alemanes de primera calidad, estándares europeos de aislación termoacústica, garantía integral y plazos mínimos de entrega.',
     services: [
-      { id: 's1-1', title_ru: 'Выезд на замер и техническая консультация', title_es: 'Visita técnica y medición en obra', price: null, currency: 'a_convenir', duration: '45 мин' },
+      { id: 's1-1', title_ru: 'Выезд на замер и техническая консультация', title_es: 'Visita técnica y medición en obra', price: null, currency: 'a_convenir' },
       { id: 's1-2', title_ru: 'Окно ПВХ поворотно-откидное с немецкой фурнитурой (м²)', title_es: 'Ventana PVC oscilobatiente herrajes alemanes (m²)', price: null, currency: 'a_convenir' },
       { id: 's1-3', title_ru: 'Балконный блок ПВХ с энергосберегающим стеклопакетом', title_es: 'Puerta balcón PVC doble vidriado hermético (DVH)', price: null, currency: 'a_convenir' },
       { id: 's1-4', title_ru: 'Демонтаж старых рам и чистый монтаж по евростандарту', title_es: 'Desmonte y colocación limpia según normas europeas', price: null, currency: 'a_convenir' },
@@ -173,7 +173,7 @@ export const SEED_SPECIALISTS: Specialist[] = [
     description_ru: 'Опытный мастер-универсал. Ремонт квартир под ключ, замена сантехники, монтаж электрики 220V, ремонт термотанков, сборка европейской и аргентинской мебели, аварийное вскрытие и замена замков.',
     description_es: 'Especialista en mantenimiento y reformas del hogar. Plomería integral, instalaciones eléctricas seguras, cambio de cerraduras, armado de muebles y reparaciones de urgencia.',
     services: [
-      { id: 's3-1', title_ru: 'Вызов мастера и диагностика', title_es: 'Visita y diagnóstico', price: null, currency: 'a_convenir', duration: '30 мин' },
+      { id: 's3-1', title_ru: 'Вызов мастера и диагностика', title_es: 'Visita y diagnóstico', price: null, currency: 'a_convenir' },
       { id: 's3-2', title_ru: 'Замена смесителя / сифона', title_es: 'Cambio de grifería y sifón', price: null, currency: 'a_convenir' },
       { id: 's3-3', title_ru: 'Сборка мебели (кровать, шкаф, стол)', title_es: 'Armado de muebles', price: null, currency: 'a_convenir' },
     ],
@@ -230,9 +230,9 @@ export const SEED_SPECIALISTS: Specialist[] = [
     description_ru: 'Сертифицированный мастер с 8-летним стажем. Чистейший комбинированный и аппаратный русский маникюр с идеальным покрытием под кутикулу. Стерилизация в медицинском сухожаре, одноразовые расходники, стойкость покрытия от 3 недель.',
     description_es: 'Estudio de manicuría rusa y estética en Palermo Soho. Técnica rusa combinada de alta precisión, esmaltado semipermanente bajo cutícula y esterilización hospitalaria.',
     services: [
-      { id: 's4-1', title_ru: 'Аппаратный маникюр + покрытие гель-лак', title_es: 'Manicuría rusa + esmaltado semipermanente', price: null, currency: 'a_convenir', duration: '90 мин' },
-      { id: 's4-2', title_ru: 'Smart-педикюр аппаратный полный', title_es: 'Pedicuría rusa Smart integral', price: null, currency: 'a_convenir', duration: '90 мин' },
-      { id: 's4-3', title_ru: 'Ламинирование и окрашивание бровей', title_es: 'Laminado y perfilado de cejas', price: null, currency: 'a_convenir', duration: '45 мин' },
+      { id: 's4-1', title_ru: 'Аппаратный маникюр + покрытие гель-лак', title_es: 'Manicuría rusa + esmaltado semipermanente', price: null, currency: 'a_convenir' },
+      { id: 's4-2', title_ru: 'Smart-педикюр аппаратный полный', title_es: 'Pedicuría rusa Smart integral', price: null, currency: 'a_convenir' },
+      { id: 's4-3', title_ru: 'Ламинирование и окрашивание бровей', title_es: 'Laminado y perfilado de cejas', price: null, currency: 'a_convenir' },
     ],
     gallery: [
       'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=800&q=80',
@@ -291,7 +291,7 @@ export const SEED_SPECIALISTS: Specialist[] = [
     services: [
       { id: 's5-1', title_ru: 'Официальный перевод документа с печатью CTPCBA', title_es: 'Traducción pública matriculada por documento', price: null, currency: 'a_convenir' },
       { id: 's5-2', title_ru: 'Срочный перевод за 24 часа', title_es: 'Traducción urgente en 24 horas', price: null, currency: 'a_convenir' },
-      { id: 's5-3', title_ru: 'Выездной переводчик и сопровождение в Renaper/Migraciones', title_es: 'Acompañamiento presencial para trámites', price: null, currency: 'a_convenir', duration: '120 мин' },
+      { id: 's5-3', title_ru: 'Выездной переводчик и сопровождение в Renaper/Migraciones', title_es: 'Acompañamiento presencial para trámites', price: null, currency: 'a_convenir' },
     ],
     gallery: [
       'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80',
@@ -403,7 +403,7 @@ export const SEED_SPECIALISTS: Specialist[] = [
     description_ru: 'Преподаватель испанского языка с филологическим образованием и 6-летним опытом жизни в Буэнос-Айресе. Быстрое погружение в аргентинский вариант языка (voseo, lunfardo), преодоление языкового барьера, подготовка к собеседованию в суде.',
     description_es: 'Clases dinámicas de español rioplatense para extranjeros. Comprensión oral, fonética porteña, conversación práctica y preparación para trámites legales y ciudadanía.',
     services: [
-      { id: 's7-1', title_ru: 'Индивидуальный урок (60 мин)', title_es: 'Clase individual (60 min)', price: null, currency: 'a_convenir', duration: '60 мин' },
+      { id: 's7-1', title_ru: 'Индивидуальный урок (60 мин)', title_es: 'Clase individual (60 min)', price: null, currency: 'a_convenir' },
       { id: 's7-2', title_ru: 'Интенсив для суда на гражданство (пакет 10 уроков)', title_es: 'Curso intensivo ciudadanía (10 clases)', price: null, currency: 'a_convenir' },
     ],
     gallery: [
@@ -517,7 +517,7 @@ export const SEED_SPECIALISTS: Specialist[] = [
     description_ru: 'Лицензированный гид по Аргентине. Нескучные индивидуальные прогулки по Буэнос-Айресу, колоритный Сан-Тельмо и Ла-Бока, поездки на катере по реке Парана в Тигре, гастрономические туры и организация поездок на водопады Игуасу.',
     description_es: 'Tours privados exclusivos por Buenos Aires y alrededores. Historia, tango, gastronomía porteña, paseos a Tigre y estancias argentinas.',
     services: [
-      { id: 's9-1', title_ru: 'Индивидуальная обзорная экскурсия по BA (4 часа)', title_es: 'City tour privado por Buenos Aires (4 hs)', price: null, currency: 'a_convenir', duration: '240 мин' },
+      { id: 's9-1', title_ru: 'Индивидуальная обзорная экскурсия по BA (4 часа)', title_es: 'City tour privado por Buenos Aires (4 hs)', price: null, currency: 'a_convenir' },
       { id: 's9-2', title_ru: 'Поездка в Тигре на катере с дельтой Параны', title_es: 'Excursión a Tigre y Delta', price: null, currency: 'a_convenir' },
     ],
     gallery: [
@@ -688,7 +688,7 @@ export const SEED_SPECIALISTS: Specialist[] = [
     description_es: 'Estudio jurídico especializado en derecho migratorio y corporativo. Juicios federales de carta de ciudadanía argentina, trámites en Migraciones y AFIP/ARCA.',
     services: [
       { id: 's12-1', title_ru: 'Комплексное ведение дела по гражданству в суде', title_es: 'Juicio federal de ciudadanía integral', price: null, currency: 'a_convenir' },
-      { id: 's12-2', title_ru: 'Первичная консультация юриста (1 час)', title_es: 'Consulta legal estratégica', price: null, currency: 'a_convenir', duration: '60 мин' },
+      { id: 's12-2', title_ru: 'Первичная консультация юриста (1 час)', title_es: 'Consulta legal estratégica', price: null, currency: 'a_convenir' },
     ],
     gallery: [
       'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80',
@@ -742,7 +742,7 @@ export const SEED_SPECIALISTS: Specialist[] = [
     description_ru: 'Срочный ремонт бытовой техники и электроники: модульный и компонентный ремонт iPhone, MacBook, ремонт плат стиральных машин, заправка кондиционеров фреоном R410A, ремонт телевизоров Smart TV.',
     description_es: 'Taller de servicio técnico especializado en CABA. Reparación de electrónica, celulares, lavarropas automáticos, microondas y equipos de aire acondicionado con repuestos originales.',
     services: [
-      { id: 's13-1', title_ru: 'Диагностика и выезд специалиста', title_es: 'Diagnóstico en taller o domicilio', price: null, currency: 'a_convenir', duration: '30 мин' },
+      { id: 's13-1', title_ru: 'Диагностика и выезд специалиста', title_es: 'Diagnóstico en taller o domicilio', price: null, currency: 'a_convenir' },
       { id: 's13-2', title_ru: 'Замена дисплея / аккумулятора iPhone', title_es: 'Cambio de pantalla / batería iPhone', price: null, currency: 'a_convenir' },
       { id: 's13-3', title_ru: 'Чистка и заправка сплит-системы кондиционера', title_es: 'Service y carga de gas refrigerante aire', price: null, currency: 'a_convenir' },
     ],
@@ -856,7 +856,7 @@ export const SEED_SPECIALISTS: Specialist[] = [
     description_es: 'Agencia de talento y orientación laboral en Argentina. Armado de currículums adaptados al mercado local, búsqueda y selección de profesionales.',
     services: [
       { id: 's15-1', title_ru: 'Адаптация резюме под стандарты Аргентины (CV на испанском)', title_es: 'Armado de CV adaptado al mercado local', price: null, currency: 'a_convenir' },
-      { id: 's15-2', title_ru: 'Карьерная консультация и подбор вакансий (1 час)', title_es: 'Consultoría laboral y orientación', price: null, currency: 'a_convenir', duration: '60 мин' },
+      { id: 's15-2', title_ru: 'Карьерная консультация и подбор вакансий (1 час)', title_es: 'Consultoría laboral y orientación', price: null, currency: 'a_convenir' },
     ],
     gallery: [
       'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80',
@@ -911,8 +911,8 @@ export const SEED_SPECIALISTS: Specialist[] = [
     description_ru: 'Дипломированный косметолог-эстетист и массажист. Ультразвуковая и механическая чистка лица, всесезонные пилинги, массаж лица и спины, депиляция воском и сахаром, восстанавливающие спа-программы.',
     description_es: 'Gabinete de estética y cosmetología en Palermo Hollywood. Limpieza facial profunda, peelings, masajes descontracturantes y depilación.',
     services: [
-      { id: 's16-1', title_ru: 'Комбинированная чистка лица + пилинг', title_es: 'Limpieza facial profunda con peeling', price: null, currency: 'a_convenir', duration: '90 мин' },
-      { id: 's16-2', title_ru: 'Массаж спины и шейно-воротниковой зоны', title_es: 'Masaje descontracturante de espalda', price: null, currency: 'a_convenir', duration: '60 мин' },
+      { id: 's16-1', title_ru: 'Комбинированная чистка лица + пилинг', title_es: 'Limpieza facial profunda con peeling', price: null, currency: 'a_convenir' },
+      { id: 's16-2', title_ru: 'Массаж спины и шейно-воротниковой зоны', title_es: 'Masaje descontracturante de espalda', price: null, currency: 'a_convenir' },
     ],
     gallery: [
       'https://images.unsplash.com/photo-1512290900672-1f41d911b306?auto=format&fit=crop&w=800&q=80',

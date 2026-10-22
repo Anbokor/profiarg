@@ -503,20 +503,12 @@ export default function SpecialistPage() {
                   </h2>
                   <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
                     {specialist.services.map((srv) => (
-                      <div key={srv.id} className="flex items-center justify-between p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
+                      <div key={srv.id} className="flex items-center p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
                         <div className="flex items-center gap-2.5 min-w-0">
                           <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                          <div className="min-w-0">
-                            <div className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-white">
-                              {locale === 'ru' ? srv.title_ru : srv.title_es}
-                            </div>
-                            {srv.duration && (
-                              <div className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                                <Clock className="h-3 w-3" />
-                                <span>{srv.duration}</span>
-                              </div>
-                            )}
-                          </div>
+                          <span className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-white">
+                            {locale === 'ru' ? srv.title_ru : srv.title_es}
+                          </span>
                         </div>
                       </div>
                     ))}

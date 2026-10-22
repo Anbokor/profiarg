@@ -1054,6 +1054,10 @@ assert(
   specialistDetailContent.includes('getCategoryIcon') && specialistDetailContent.includes('blur-3xl'),
   "SpecialistDetailModal features subtle category color aura and decorative watermark iconography"
 );
+assert(
+  !specialistDetailContent.includes('srv.duration') && !specialistPageContent.includes('srv.duration'),
+  "Specialist profiles do not render work duration (srv.duration completely removed)"
+);
 
 // Summary
 console.log('\n========================================================');
