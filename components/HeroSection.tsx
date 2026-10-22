@@ -223,7 +223,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 }
               }}
               placeholder={t.searchPlaceholder}
-              className="block w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-3 sm:py-3.5 pl-11 pr-24 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs focus:outline-hidden focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition"
+              className="block w-full rounded-2xl border border-slate-300 dark:border-slate-700/80 bg-white dark:bg-slate-900 py-3 sm:py-3.5 pl-11 pr-24 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-[0_2px_8px_rgba(15,23,42,0.06)] focus:outline-hidden focus:border-red-500 focus:ring-2 focus:ring-red-500/15 transition"
             />
             <div className="absolute inset-y-0 right-1.5 flex items-center gap-1">
               {localQuery && (

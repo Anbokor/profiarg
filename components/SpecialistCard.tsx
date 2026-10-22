@@ -65,10 +65,10 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
 
   return (
     <div
-      className={`group relative flex flex-col justify-between rounded-2xl border bg-white p-4 sm:p-5 transition-all duration-200 hover:shadow-lg dark:bg-slate-900 ${
+      className={`group relative flex flex-col justify-between rounded-2xl border bg-white p-4 sm:p-5 shadow-[0_2px_8px_rgba(15,23,42,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:bg-slate-900 ${
         isSelected
-          ? 'border-sky-500 ring-2 ring-sky-500/20 shadow-md'
-          : 'border-slate-200 hover:border-slate-300 dark:border-slate-800 dark:hover:border-slate-700'
+          ? 'border-red-500 ring-2 ring-red-500/20 shadow-md'
+          : 'border-slate-300 hover:border-red-500/80 hover:ring-2 hover:ring-red-500/10 dark:border-slate-700/80 dark:hover:border-red-500/80'
       }`}
     >
       <div className="flex flex-col md:flex-row items-start gap-4 justify-between">
@@ -263,7 +263,7 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
           <button
             type="button"
             onClick={() => onSelect(specialist)}
-            className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition cursor-pointer"
+            className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:border-red-500 hover:bg-red-50 hover:text-red-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-red-500 dark:hover:bg-red-950/40 dark:hover:text-red-400 transition cursor-pointer"
             title={t.viewDetails}
             aria-label={t.viewDetails}
           >

@@ -227,16 +227,16 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                 key={group.id}
                 type="button"
                 onClick={() => onSelectGroup?.(group.id)}
-                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 px-4 py-3 sm:px-5 sm:py-3.5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[58px] sm:min-h-[64px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 px-4 py-3 sm:px-5 sm:py-3.5 shadow-[0_2px_8px_rgba(15,23,42,0.06)] hover:shadow-md hover:border-red-500 dark:hover:border-red-500 hover:ring-2 hover:ring-red-500/15 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer min-h-[58px] sm:min-h-[64px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:border-red-500"
               >
                 {/* Left Area: Index + Title Column */}
                 <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                  <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-500 dark:text-slate-400 flex-shrink-0 group-hover:bg-sky-50 group-hover:text-sky-600 dark:group-hover:bg-sky-950/60 dark:group-hover:text-sky-400 transition-colors">
+                  <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-500 dark:text-slate-400 flex-shrink-0 group-hover:bg-red-50 group-hover:text-red-600 dark:group-hover:bg-red-950/60 dark:group-hover:text-red-400 transition-colors">
                     {String(idx + 1).padStart(2, '0')}
                   </span>
 
                   <div className="min-w-0 flex-1 pr-1">
-                    <span className="block text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-snug break-words">
+                    <span className="block text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-snug break-words">
                       {groupTitle}
                     </span>
                     <span className="mt-1 inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
@@ -255,7 +255,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
 
                 {/* Right Area: Action button affordance (exact match with Level 3) */}
                 <div className="flex items-center flex-shrink-0 self-center">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-sky-500 group-hover:text-white group-hover:shadow-sm transition-all">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-red-500 group-hover:text-white group-hover:shadow-xs transition-all duration-200">
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
@@ -325,7 +325,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
         </div>
 
         {/* Section Header Plate */}
-        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-2xs">
+        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 p-5 sm:p-6 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2.5 flex-wrap">
@@ -369,16 +369,16 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                 key={item}
                 type="button"
                 onClick={() => onSelectSubcategory?.(activeCategory.id, item)}
-                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 px-4 py-3 sm:px-5 sm:py-3.5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[58px] sm:min-h-[64px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
+                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 px-4 py-3 sm:px-5 sm:py-3.5 shadow-[0_2px_8px_rgba(15,23,42,0.06)] hover:shadow-md hover:border-red-500 dark:hover:border-red-500 hover:ring-2 hover:ring-red-500/15 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer min-h-[58px] sm:min-h-[64px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:border-red-500"
               >
                 {/* Left Area: Index + Title Column */}
                 <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                  <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-500 dark:text-slate-400 flex-shrink-0 group-hover:bg-sky-50 group-hover:text-sky-600 dark:group-hover:bg-sky-950/60 dark:group-hover:text-sky-400 transition-colors">
+                  <span className="flex items-center justify-center h-9 w-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-mono font-bold text-slate-500 dark:text-slate-400 flex-shrink-0 group-hover:bg-red-50 group-hover:text-red-600 dark:group-hover:bg-red-950/60 dark:group-hover:text-red-400 transition-colors">
                     {String(idx + 1).padStart(2, '0')}
                   </span>
 
                   <div className="min-w-0 flex-1 pr-1">
-                    <span className="block text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-snug break-words">
+                    <span className="block text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-snug break-words">
                       {displayTitle}
                     </span>
                     {specCount > 0 && (
@@ -392,7 +392,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
 
                 {/* Right Area: Action button affordance */}
                 <div className="flex items-center flex-shrink-0 self-center">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-sky-500 group-hover:text-white group-hover:shadow-sm transition-all">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-red-500 group-hover:text-white group-hover:shadow-xs transition-all duration-200">
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
@@ -458,7 +458,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                   onSelectCategory(cat.id);
                 }
               }}
-              className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 px-4 py-3 sm:px-5 sm:py-3.5 shadow-2xs hover:shadow-md hover:border-sky-500 dark:hover:border-sky-500 transition-all duration-150 cursor-pointer min-h-[58px] sm:min-h-[64px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-sky-500"
+              className="group relative flex items-center justify-between gap-3.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 px-4 py-3 sm:px-5 sm:py-3.5 shadow-[0_2px_8px_rgba(15,23,42,0.06)] hover:shadow-md hover:border-red-500 dark:hover:border-red-500 hover:ring-2 hover:ring-red-500/15 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer min-h-[58px] sm:min-h-[64px] text-left w-full focus:outline-hidden focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:border-red-500"
             >
               {/* Left Area: Icon + Title & Meta Column */}
               <div className="flex items-center gap-3.5 min-w-0 flex-1">
@@ -474,10 +474,10 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
 
                 <div className="min-w-0 flex-1 pr-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-slate-400 dark:text-slate-500 flex-shrink-0">
+                    <span className="text-xs font-mono font-bold text-slate-400 dark:text-slate-500 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors flex-shrink-0">
                       {indexNumber}
                     </span>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-snug break-words">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-950 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors leading-snug break-words">
                       {locale === 'ru' ? cat.title_ru : cat.title_es}
                     </h3>
                   </div>
@@ -506,7 +506,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                                   onSelectCategory(cat.id);
                                 }
                               }}
-                              className="inline-flex items-center rounded-md bg-slate-100 hover:bg-sky-50 dark:bg-slate-800 dark:hover:bg-sky-950/60 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:text-sky-700 dark:text-slate-300 dark:hover:text-sky-300 transition-colors cursor-pointer"
+                              className="inline-flex items-center rounded-md bg-slate-100 hover:bg-red-50 dark:bg-slate-800 dark:hover:bg-red-950/60 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 hover:text-red-700 dark:text-slate-300 dark:hover:text-red-300 transition-colors cursor-pointer"
                               title={locale === 'ru' ? `Открыть подкатегорию "${displaySubTitle}"` : `Ver subcategoría "${displaySubTitle}"`}
                             >
                               {displaySubTitle}
@@ -521,7 +521,7 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
 
               {/* Right Area: Action button affordance (exact match with Level 2 and Level 3!) */}
               <div className="flex items-center flex-shrink-0 self-center">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-sky-500 group-hover:text-white group-hover:shadow-sm transition-all">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-red-500 group-hover:text-white group-hover:shadow-xs transition-all duration-200">
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>

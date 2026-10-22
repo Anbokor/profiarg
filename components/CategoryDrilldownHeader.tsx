@@ -228,7 +228,7 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
         </div>
 
         {/* Category Header Card: Icon, Title, Description, Stats */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700/80 p-4 sm:p-6 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
           <div className="flex items-center gap-4">
             <div
               className="flex h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0 items-center justify-center rounded-2xl shadow-xs"
