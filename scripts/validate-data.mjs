@@ -1124,6 +1124,19 @@ assert(
   seedContent.includes('-34.5834248') && seedContent.includes('-58.4338893'),
   "Alexander Romanov coordinates verified directly on Humboldt 1900 on OpenStreetMap (-34.5834248, -58.4338893)"
 );
+assert(
+  leafletContent.includes('setActiveBarrioFilter(null)') && leafletContent.includes('[specialists]'),
+  "LeafletMap resets activeBarrioFilter when specialists prop changes during category switch"
+);
+assert(
+  pageContent.includes('!filteredSpecialists.some') && pageContent.includes('setFocusedSpecialist(null)'),
+  "app/page.tsx synchronizes and clears focusedSpecialist when navigating to another category"
+);
+assert(
+  leafletContent.includes('map.flyTo(coords, 15'),
+  "LeafletMap applies smooth camera transition (flyTo) when switching to a new specialist"
+);
+
 
 
 

@@ -245,6 +245,8 @@ export default function Home() {
     setSelectedCategory(catId);
     setSelectedGroup(null);
     setSelectedSubcategory('all');
+    setFocusedSpecialist(null);
+    setActiveSpecialist(null);
     setShowCategoryMap(false);
     pushNavState({ category: catId, group: null, subcategory: 'all', specialistId: null });
     if (typeof window !== 'undefined') {
@@ -255,6 +257,8 @@ export default function Home() {
   const handleSelectGroup = (groupId: string | null) => {
     setSelectedGroup(groupId);
     setSelectedSubcategory('all');
+    setFocusedSpecialist(null);
+    setActiveSpecialist(null);
     setShowCategoryMap(false);
     pushNavState({ group: groupId, subcategory: 'all', specialistId: null });
     if (typeof window !== 'undefined') {
@@ -273,6 +277,8 @@ export default function Home() {
       setSelectedGroup(matchingGroup.id);
     }
     setSelectedSubcategory(subcategory);
+    setFocusedSpecialist(null);
+    setActiveSpecialist(null);
     pushNavState({ category: catId, group: grpId, subcategory, specialistId: null });
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -292,6 +298,8 @@ export default function Home() {
     setSelectedCategory('all');
     setSelectedGroup(null);
     setSelectedSubcategory('all');
+    setFocusedSpecialist(null);
+    setActiveSpecialist(null);
     setShowCategoryMap(false);
     setFavoritesOnly(false);
     pushNavState({ category: 'all', group: null, subcategory: 'all', specialistId: null, q: '' });
@@ -301,6 +309,8 @@ export default function Home() {
     setSelectedCategory('all');
     setSelectedGroup(null);
     setSelectedSubcategory('all');
+    setFocusedSpecialist(null);
+    setActiveSpecialist(null);
     setShowCategoryMap(false);
     setSearchQuery('');
     pushNavState({ category: 'all', group: null, subcategory: 'all', specialistId: null, q: '' });
@@ -312,6 +322,8 @@ export default function Home() {
   const handleBackToGroups = () => {
     setSelectedGroup(null);
     setSelectedSubcategory('all');
+    setFocusedSpecialist(null);
+    setActiveSpecialist(null);
     setShowCategoryMap(false);
     pushNavState({ group: null, subcategory: 'all', specialistId: null });
     if (typeof window !== 'undefined') {
@@ -321,6 +333,8 @@ export default function Home() {
 
   const handleBackToSubsections = () => {
     setSelectedSubcategory('all');
+    setFocusedSpecialist(null);
+    setActiveSpecialist(null);
     setShowCategoryMap(false);
     pushNavState({ subcategory: 'all', specialistId: null });
     if (typeof window !== 'undefined') {
@@ -425,6 +439,13 @@ export default function Home() {
     selectedSubcategory,
     searchQuery,
   ]);
+
+  // Guard: if focusedSpecialist does not belong to currently filtered specialists, reset focus
+  useEffect(() => {
+    if (focusedSpecialist && !filteredSpecialists.some((s) => s.id === focusedSpecialist.id)) {
+      setFocusedSpecialist(null);
+    }
+  }, [filteredSpecialists, focusedSpecialist]);
 
   const t = translations[locale];
   const activeCategory =

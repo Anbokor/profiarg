@@ -42,6 +42,11 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   const [activeBarrioFilter, setActiveBarrioFilter] = useState<string | null>(null);
   const t = translations[locale];
 
+  // Reset barrio filter when specialists set changes (e.g. category switch)
+  useEffect(() => {
+    setActiveBarrioFilter(null);
+  }, [specialists]);
+
   // Barrios that actually exist in the current specialist set
   const availableBarrios = useMemo(() => {
     const map = new Map<string, number>();
@@ -59,18 +64,25 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
       const map = mapInstanceRef.current;
       if (!map) return;
 
-      // 1. If explicit focus specialist is provided or exists in list
-      const targetFocus = focusSpecialist || (selectedSpecialist && (specs.find((s) => s.id === selectedSpecialist.id) || selectedSpecialist));
+      if (!specs || specs.length === 0) {
+        map.setView([-34.595, -58.42], 13, { animate: true });
+        return;
+      }
+
+      // 1. If explicit focus specialist is provided and exists in current specs
+      const targetFocus = (focusSpecialist && specs.find((s) => s.id === focusSpecialist.id))
+        || (selectedSpecialist && specs.find((s) => s.id === selectedSpecialist.id));
+
       if (targetFocus) {
         const coords: [number, number] = [targetFocus.coordinates.lat, targetFocus.coordinates.lng];
-        map.setView(coords, 15, { animate: true });
+        map.flyTo(coords, 15, { duration: 0.8 });
         const marker = markersRef.current.get(targetFocus.id);
         if (marker) {
           setTimeout(() => {
             if (marker && mapInstanceRef.current) {
               marker.openPopup();
             }
-          }, 200);
+          }, 300);
         }
         return;
       }
@@ -79,14 +91,14 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
       if (specs.length === 1) {
         const single = specs[0];
         const coords: [number, number] = [single.coordinates.lat, single.coordinates.lng];
-        map.setView(coords, 15, { animate: true });
+        map.flyTo(coords, 15, { duration: 0.8 });
         const marker = markersRef.current.get(single.id);
         if (marker) {
           setTimeout(() => {
             if (marker && mapInstanceRef.current) {
               marker.openPopup();
             }
-          }, 200);
+          }, 300);
         }
         return;
       }
