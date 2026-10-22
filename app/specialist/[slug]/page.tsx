@@ -37,7 +37,39 @@ import {
   ShieldCheck,
   Building2,
   Check,
+  HardHat,
+  Sparkles,
+  Truck,
+  ArrowLeftRight,
+  Scale,
+  GraduationCap,
+  Compass,
+  Tv,
+  Car,
+  Building,
+  Laptop,
+  ShoppingBag,
 } from 'lucide-react';
+
+const getCategoryIcon = (iconName: string, className = 'w-6 h-6') => {
+  switch (iconName) {
+    case 'HardHat': return <HardHat className={className} />;
+    case 'Sparkles': return <Sparkles className={className} />;
+    case 'Truck': return <Truck className={className} />;
+    case 'ArrowLeftRight': return <ArrowLeftRight className={className} />;
+    case 'Languages': return <Languages className={className} />;
+    case 'Scale': return <Scale className={className} />;
+    case 'GraduationCap': return <GraduationCap className={className} />;
+    case 'Compass': return <Compass className={className} />;
+    case 'Tv': return <Tv className={className} />;
+    case 'Car': return <Car className={className} />;
+    case 'Building': return <Building className={className} />;
+    case 'Briefcase': return <Briefcase className={className} />;
+    case 'Laptop': return <Laptop className={className} />;
+    case 'ShoppingBag': return <ShoppingBag className={className} />;
+    default: return <Sparkles className={className} />;
+  }
+};
 
 export default function SpecialistPage() {
   const params = useParams();
@@ -241,33 +273,48 @@ export default function SpecialistPage() {
 
       {/* Main Container */}
       <main className="mx-auto max-w-4xl px-4 sm:px-6 pt-6 space-y-6">
-        {/* Profile Card Header */}
+        {/* Profile Card Header (Elegant Category Brand Backdrop without random stock photos) */}
         <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <div className="relative h-48 sm:h-64 w-full">
-            <img
-              src={specialist.coverImage || specialist.avatar}
-              alt={specialist.name}
-              className="h-full w-full object-cover"
+          <div className="relative min-h-[190px] sm:min-h-[220px] w-full p-5 sm:p-7 flex flex-col justify-end overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800">
+            {/* Subtle Ambient Category Color Aura */}
+            <div
+              className="absolute -right-12 -top-12 h-64 w-64 rounded-full blur-3xl pointer-events-none"
+              style={{ backgroundColor: `${category?.color || '#0284c7'}30` }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-            <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4 text-white">
-              <div className="relative shrink-0 w-20 h-20 sm:w-24 sm:h-24">
+            <div
+              className="absolute left-1/4 -bottom-16 h-48 w-48 rounded-full blur-2xl pointer-events-none"
+              style={{ backgroundColor: `${category?.color || '#0284c7'}18` }}
+            />
+
+            {/* Micro Geometric Dot Pattern */}
+            <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+            {/* Large Subtle Category Icon Watermark */}
+            <div className="absolute right-4 -bottom-5 pointer-events-none opacity-[0.06] text-white -rotate-12 select-none">
+              {getCategoryIcon(category?.iconName || '', 'w-44 h-44 sm:w-52 sm:h-52')}
+            </div>
+
+            {/* Avatar and Details in Header */}
+            <div className="relative z-10 flex items-start sm:items-end gap-4 text-white">
+              {/* Avatar with Verified Badge */}
+              <div className="relative shrink-0 h-20 w-20 sm:h-24 sm:w-24">
                 <img
                   src={specialist.avatar}
                   alt={specialist.name}
-                  className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-2 border-white object-cover object-top shadow-2xl dark:border-slate-800"
+                  className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-2 border-white/90 object-cover object-top shadow-2xl ring-2 ring-slate-800"
                 />
                 {specialist.isVerified && (
                   <div
-                    className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-white dark:ring-slate-900"
+                    className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-slate-900 shadow-md"
                     title={t.verifiedBadge}
                   >
                     <CheckCircle2 className="h-4 w-4" />
                   </div>
                 )}
               </div>
+
               <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2 mb-1">
+                <div className="flex flex-wrap items-center gap-2 mb-1.5">
                   {specialist.contractorId && (
                     <span className="rounded-md bg-amber-400 px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-black text-slate-950 shadow-xs">
                       ID {specialist.contractorId}
@@ -279,19 +326,21 @@ export default function SpecialistPage() {
                   >
                     {locale === 'ru' ? category?.title_ru : category?.title_es}
                   </span>
-                  <span className="text-xs text-slate-200">
+                  <span className="text-xs text-slate-300 font-medium">
                     {specialist.experienceYears} {t.yearsInArg}
                   </span>
                 </div>
-                <h1 className="text-xl sm:text-3xl font-black tracking-tight flex items-center gap-2">
+                <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
                   <span>{specialist.name}</span>
                   {specialist.companyName && (
-                    <span className="text-sm sm:text-lg font-medium text-sky-200 hidden sm:inline-flex items-center gap-1">
-                      • <Building2 className="h-4 w-4" /> {specialist.companyName}
+                    <span className="text-sm sm:text-lg font-semibold text-sky-300 hidden sm:inline-flex items-center gap-1">
+                      • {specialist.companyName}
                     </span>
                   )}
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-200 line-clamp-1">{title}</p>
+                <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 mt-0.5 font-medium leading-snug">
+                  {title}
+                </p>
               </div>
             </div>
           </div>

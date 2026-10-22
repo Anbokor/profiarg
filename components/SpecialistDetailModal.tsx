@@ -25,7 +25,39 @@ import {
   ShieldCheck,
   Building2,
   Check,
+  HardHat,
+  Sparkles,
+  Truck,
+  ArrowLeftRight,
+  Scale,
+  GraduationCap,
+  Compass,
+  Tv,
+  Car,
+  Building,
+  Laptop,
+  ShoppingBag,
 } from 'lucide-react';
+
+const getCategoryIcon = (iconName: string, className = 'w-6 h-6') => {
+  switch (iconName) {
+    case 'HardHat': return <HardHat className={className} />;
+    case 'Sparkles': return <Sparkles className={className} />;
+    case 'Truck': return <Truck className={className} />;
+    case 'ArrowLeftRight': return <ArrowLeftRight className={className} />;
+    case 'Languages': return <Languages className={className} />;
+    case 'Scale': return <Scale className={className} />;
+    case 'GraduationCap': return <GraduationCap className={className} />;
+    case 'Compass': return <Compass className={className} />;
+    case 'Tv': return <Tv className={className} />;
+    case 'Car': return <Car className={className} />;
+    case 'Building': return <Building className={className} />;
+    case 'Briefcase': return <Briefcase className={className} />;
+    case 'Laptop': return <Laptop className={className} />;
+    case 'ShoppingBag': return <ShoppingBag className={className} />;
+    default: return <Sparkles className={className} />;
+  }
+};
 
 interface SpecialistDetailModalProps {
   specialist: Specialist | null;
@@ -146,31 +178,38 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
           <X className="h-5 w-5" />
         </button>
 
-        {/* Cover Image */}
-        <div
-          className="relative h-48 sm:h-56 w-full shrink-0 overflow-hidden bg-slate-800 cursor-pointer"
-          onClick={() => setSelectedPhoto(specialist.coverImage || specialist.avatar)}
-          title={locale === 'ru' ? 'Нажмите для просмотра фото' : 'Tocá para ver foto'}
-        >
-          <img
-            src={specialist.coverImage || specialist.avatar}
-            alt={specialist.name}
-            className="h-full w-full object-cover object-center hover:opacity-95 transition"
+        {/* Profile Card Header (Elegant Category Brand Backdrop without random stock photos) */}
+        <div className="relative min-h-[180px] sm:min-h-[200px] w-full shrink-0 overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800 p-5 sm:p-6 flex flex-col justify-end">
+          {/* Subtle Ambient Category Color Aura */}
+          <div
+            className="absolute -right-12 -top-12 h-64 w-64 rounded-full blur-3xl pointer-events-none"
+            style={{ backgroundColor: `${category?.color || '#0284c7'}30` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
+          <div
+            className="absolute left-1/4 -bottom-16 h-48 w-48 rounded-full blur-2xl pointer-events-none"
+            style={{ backgroundColor: `${category?.color || '#0284c7'}18` }}
+          />
+
+          {/* Micro Geometric Dot Pattern */}
+          <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+          {/* Large Subtle Category Icon Watermark */}
+          <div className="absolute right-3 -bottom-4 pointer-events-none opacity-[0.06] text-white -rotate-12 select-none">
+            {getCategoryIcon(category?.iconName || '', 'w-40 h-40 sm:w-48 sm:h-48')}
+          </div>
 
           {/* Top Actions: Favorite, Share */}
-          <div className="absolute top-4 right-14 flex items-center gap-2">
+          <div className="absolute top-4 right-14 flex items-center gap-2 z-10">
             <button
               onClick={handleShare}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur-xs hover:bg-white dark:bg-slate-800/90 dark:text-white cursor-pointer transition"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white shadow-sm border border-white/10 backdrop-blur-md cursor-pointer transition active:scale-95"
               title={t.share}
             >
               <Share2 className="h-4 w-4" />
             </button>
             <button
               onClick={() => onToggleFavorite(specialist.id)}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md backdrop-blur-xs hover:bg-white dark:bg-slate-800/90 dark:text-white cursor-pointer transition"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white shadow-sm border border-white/10 backdrop-blur-md cursor-pointer transition active:scale-95"
               title={t.favoritesOnly}
             >
               <Heart
@@ -181,22 +220,27 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
 
           {/* Toast Notification */}
           {copiedToast && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 rounded-full bg-slate-900/90 px-4 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-md">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 rounded-full bg-slate-900/95 border border-slate-700 px-4 py-1.5 text-xs font-semibold text-white shadow-xl backdrop-blur-md">
               {t.copiedLink}
             </div>
           )}
 
-          {/* Avatar and Title overlaid on Cover */}
-          <div className="absolute bottom-4 left-4 right-4 flex items-end gap-3 sm:gap-4">
-            <div className="relative shrink-0 w-20 h-20 sm:w-24 sm:h-24">
+          {/* Avatar and Details in Header */}
+          <div className="relative z-10 flex items-start sm:items-end gap-3.5 sm:gap-4.5 pt-8 sm:pt-4">
+            {/* Avatar with Verified Badge */}
+            <div
+              className="relative shrink-0 h-20 w-20 sm:h-24 sm:w-24 cursor-pointer"
+              onClick={() => setSelectedPhoto(specialist.avatar)}
+              title={locale === 'ru' ? 'Нажмите для просмотра фото' : 'Tocá para ver foto'}
+            >
               <img
                 src={specialist.avatar}
                 alt={specialist.name}
-                className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-2 border-white object-cover object-top shadow-xl dark:border-slate-800"
+                className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-2 border-white/90 object-cover object-top shadow-2xl ring-2 ring-slate-800"
               />
               {specialist.isVerified && (
                 <div
-                  className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-white dark:ring-slate-900 shadow-md"
+                  className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-slate-900 shadow-md"
                   title={t.verifiedDniBadge || t.verifiedBadge}
                 >
                   <CheckCircle2 className="h-4 w-4" />
@@ -204,7 +248,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
               )}
             </div>
 
-            <div className="flex-1 text-white">
+            <div className="flex-1 min-w-0 text-white">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
                 {/* Contractor ID Code Badge */}
                 {specialist.contractorId && (
@@ -218,19 +262,21 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                 >
                   {locale === 'ru' ? category?.title_ru : category?.title_es}
                 </span>
-                <span className="text-xs text-slate-200">
+                <span className="text-xs text-slate-300 font-medium">
                   {specialist.experienceYears} {t.yearsInArg}
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
                 <span>{specialist.name}</span>
                 {specialist.companyName && (
-                  <span className="text-sm sm:text-base font-medium text-sky-200 hidden sm:inline-flex items-center gap-1">
-                    • <Building2 className="h-4 w-4" /> {specialist.companyName}
+                  <span className="text-sm sm:text-base font-semibold text-sky-300 hidden sm:inline-flex items-center gap-1">
+                    • {specialist.companyName}
                   </span>
                 )}
               </h2>
-              <p className="text-xs text-slate-200 line-clamp-1">{title}</p>
+              <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 mt-0.5 font-medium leading-snug">
+                {title}
+              </p>
             </div>
           </div>
         </div>

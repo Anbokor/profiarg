@@ -1046,6 +1046,14 @@ assert(
   specialistDetailContent.includes('h-20 w-20 sm:h-24 sm:w-24'),
   "SpecialistDetailModal avatar uses valid h-20 w-20 sm:h-24 sm:w-24 dimensions"
 );
+assert(
+  !specialistDetailContent.includes('specialist.coverImage') && !specialistPageContent.includes('specialist.coverImage'),
+  "Specialist profiles replace random stock cover photos with elegant category-branded ambient headers"
+);
+assert(
+  specialistDetailContent.includes('getCategoryIcon') && specialistDetailContent.includes('blur-3xl'),
+  "SpecialistDetailModal features subtle category color aura and decorative watermark iconography"
+);
 
 // Summary
 console.log('\n========================================================');
