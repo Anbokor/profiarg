@@ -208,7 +208,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         const popupHtml = `
           <div style="font-family: inherit; width: 230px; padding: 4px;">
             <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-              <img src="${specialist.avatar}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover;" />
+              <img src="${specialist.avatar}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; object-position: top;" />
               <div style="flex: 1; overflow: hidden;">
                 <span style="display: inline-block; font-size: 10px; font-weight: 700; color: ${pinBg}; background: ${pinBg}15; padding: 2px 6px; border-radius: 4px; margin-bottom: 2px;">
                   ${categoryTitle || ''}

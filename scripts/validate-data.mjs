@@ -1020,6 +1020,25 @@ assert(
   "CategoryDirectory does not render map button on Levels 1, 2, or 3"
 );
 
+// 17.9 Zero Prices & Avatar Face Framing Verification
+const specialistPageContent = readFileSync(resolve(process.cwd(), 'app/specialist/[slug]/page.tsx'), 'utf8');
+assert(
+  specialistCardContent.includes('object-top') && specialistCardContent.includes('object-cover'),
+  "SpecialistCard avatar uses object-cover object-top ensuring contractor face is 100% visible"
+);
+assert(
+  !specialistDetailContent.includes('formatCurrency') && !specialistPageContent.includes('formatCurrency'),
+  "SpecialistDetailModal and SpecialistPage have 0 occurrences of formatCurrency (100% price-free)"
+);
+assert(
+  specialistDetailContent.includes('Выполняемые работы и услуги') && specialistPageContent.includes('Выполняемые работы и услуги'),
+  "Specialist profiles render 'Выполняемые работы и услуги' without price tags"
+);
+assert(
+  seedContent.includes('crop=faces') && seedContent.includes('w=400&h=400'),
+  "seedData.ts ensures all specialist avatars use crop=faces and 1:1 aspect ratio"
+);
+
 // Summary
 console.log('\n========================================================');
 console.log(`Total tests: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests}`);

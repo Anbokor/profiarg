@@ -13,7 +13,7 @@ import {
   addReviewToSpecialist,
 } from '@/lib/storage';
 import { CATEGORIES } from '@/data/categories';
-import { formatCurrency, buildWhatsAppUrl } from '@/lib/utils';
+import { buildWhatsAppUrl } from '@/lib/utils';
 import { translations } from '@/lib/translations';
 import {
   ArrowLeft,
@@ -255,7 +255,7 @@ export default function SpecialistPage() {
                 <img
                   src={specialist.avatar}
                   alt={specialist.name}
-                  className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-2 border-white object-cover shadow-2xl dark:border-slate-800"
+                  className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-2 border-white object-cover object-top shadow-2xl dark:border-slate-800"
                 />
                 {specialist.isVerified && (
                   <div
@@ -447,28 +447,28 @@ export default function SpecialistPage() {
                   </div>
                 )}
 
-                {/* Services & Prices */}
+                {/* Performed Works & Services (Strictly NO PRICES) */}
                 <div>
                   <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                    {t.servicesAndPrices}
+                    {locale === 'ru' ? 'Выполняемые работы и услуги' : 'Trabajos y servicios realizados'}
                   </h2>
-                  <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
+                  <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
                     {specialist.services.map((srv) => (
-                      <div key={srv.id} className="flex items-center justify-between p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                        <div>
-                          <div className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-white">
-                            {locale === 'ru' ? srv.title_ru : srv.title_es}
-                          </div>
-                          {srv.duration && (
-                            <div className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                              <Clock className="h-3 w-3" />
-                              <span>{srv.duration}</span>
+                      <div key={srv.id} className="flex items-center justify-between p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-white">
+                              {locale === 'ru' ? srv.title_ru : srv.title_es}
                             </div>
-                          )}
+                            {srv.duration && (
+                              <div className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
+                                <Clock className="h-3 w-3" />
+                                <span>{srv.duration}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <span className="font-bold text-xs sm:text-sm text-sky-600 dark:text-sky-400">
-                          {formatCurrency(srv.price, srv.currency, locale)}
-                        </span>
                       </div>
                     ))}
                   </div>

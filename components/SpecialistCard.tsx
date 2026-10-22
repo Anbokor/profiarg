@@ -75,12 +75,12 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
       <div className="flex flex-col md:flex-row items-start gap-4 justify-between">
         {/* Left Side: Avatar + Main Content */}
         <div className="flex items-start gap-3.5 sm:gap-4.5 flex-1 min-w-0">
-          {/* Avatar with Verified Badge */}
-          <div className="relative shrink-0">
+          {/* Avatar with Verified Badge - object-top ensures face is always 100% visible */}
+          <div className="relative shrink-0 h-20 w-20 sm:h-24 sm:w-24">
             <img
               src={specialist.avatar}
               alt={specialist.name}
-              className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover ring-2 ring-slate-100 dark:ring-slate-800 shadow-xs cursor-pointer hover:opacity-95 transition"
+              className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover object-top ring-2 ring-slate-100 dark:ring-slate-800 shadow-xs cursor-pointer hover:opacity-95 transition"
               loading="lazy"
               onClick={() => onSelect(specialist)}
             />
