@@ -43,7 +43,6 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
   const waUrl = buildWhatsAppUrl(specialist.whatsapp, displayName, locale);
 
   const title = locale === 'ru' ? specialist.title_ru : specialist.title_es;
-  const description = locale === 'ru' ? specialist.description_ru : specialist.description_es;
 
   // Determine Category, Group, Subcategory tags for header matching sketch: [Рем] [Усл] [Двери]
   const categoryBadgeTitle = locale === 'ru'
@@ -185,41 +184,6 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
                 </span>
               )}
             </div>
-
-            {/* Boxed Concise Description ("Описание") matching handwritten sketch */}
-            <div className="mt-3 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 p-3 sm:p-3.5">
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                {locale === 'ru' ? 'Описание' : 'Descripción'}
-              </span>
-              <p className="text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-3">
-                {description}
-              </p>
-            </div>
-
-            {/* Completed Work Photos / Portfolio Strip in Card */}
-            {specialist.gallery && specialist.gallery.length > 0 && (
-              <div className="mt-3">
-                <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
-                  {specialist.gallery.slice(0, 4).map((img, idx) => (
-                    <img
-                      key={idx}
-                      src={img}
-                      alt={`${displayName} work ${idx + 1}`}
-                      className="h-16 w-20 sm:h-20 sm:w-24 rounded-xl object-cover shrink-0 border border-slate-200/90 dark:border-slate-700 cursor-pointer hover:opacity-90 hover:scale-102 transition shadow-2xs"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (onSelectPhoto) {
-                          onSelectPhoto(specialist, img);
-                        } else {
-                          onSelect(specialist);
-                        }
-                      }}
-                      title={locale === 'ru' ? 'Нажмите для просмотра фото' : 'Tocá para ver foto'}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

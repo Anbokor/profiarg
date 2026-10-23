@@ -737,12 +737,12 @@ assert(
 
 // Verify drill-down state renders map and specialist list
 assert(
-  drilldownHeaderContent.includes('backToCategories') && drilldownHeaderContent.includes('ArrowLeft'),
-  "CategoryDrilldownHeader includes prominent 'backToCategories' return button with arrow icon"
+  drilldownHeaderContent.includes('onBackToCategories') && drilldownHeaderContent.includes('ArrowLeft') && drilldownHeaderContent.includes('border-red-500'),
+  "CategoryDrilldownHeader includes prominent highlighted 'Назад' return button with red border and arrow icon"
 );
 assert(
-  drilldownHeaderContent.includes('category.subcategories.map'),
-  "CategoryDrilldownHeader renders clickable subcategories horizontal scroll strip"
+  !drilldownHeaderContent.includes('allSubcategories') && !drilldownHeaderContent.includes('scrollContainerRef'),
+  "CategoryDrilldownHeader purges scrolling subcategories search strip for focused clean view"
 );
 assert(
   pageContent.includes('<CategoryDrilldownHeader'),
@@ -852,8 +852,8 @@ assert(
   "CategoryDirectory balances trade diversity across specialists for prominent core subcategory discovery"
 );
 assert(
-  drilldownHeaderContent.includes('.replace') && pageContent.includes('.replace'),
-  "Drilldown return buttons prevent double-arrow visual defects when rendering backToCategories"
+  drilldownHeaderContent.includes('border-red-500') && drilldownHeaderContent.includes('ArrowLeft'),
+  "Drilldown return button is prominently highlighted with red border and ArrowLeft icon"
 );
 
 console.log('\n15. Validating Official Quatro Clicks Logo & Asset Integrity:');
@@ -949,8 +949,8 @@ assert(
   "SpecialistCard displays 3 hierarchical header badges matching sketch"
 );
 assert(
-  specialistCardContent.includes('specialist.gallery') && specialistCardContent.includes('slice(0, 4)'),
-  "SpecialistCard renders completed work portfolio strip from specialist.gallery"
+  !specialistCardContent.includes('slice(0, 4)') && !specialistCardContent.includes('specialist.description_ru'),
+  "SpecialistCard cleans out portfolio gallery and description block for concise scannable list display"
 );
 assert(
   specialistCardContent.includes('md:flex-col'),

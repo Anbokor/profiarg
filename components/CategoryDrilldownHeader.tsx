@@ -1,16 +1,13 @@
 'use client';
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { Locale, Category } from '@/types';
-import { CATEGORIES, getSubcategoryTitle } from '@/data/categories';
+import { CATEGORIES } from '@/data/categories';
 import { translations } from '@/lib/translations';
 import {
   ArrowLeft,
   Search,
   X,
-  LayoutGrid,
-  ChevronLeft,
-  ChevronRight,
   HardHat,
   Sparkles,
   Truck,
@@ -31,8 +28,8 @@ interface CategoryDrilldownHeaderProps {
   locale: Locale;
   category: Category;
   selectedGroup?: string | null;
-  selectedSubcategory: string | 'all';
-  onSelectSubcategory: (sub: string | 'all') => void;
+  selectedSubcategory?: string | 'all';
+  onSelectSubcategory?: (sub: string | 'all') => void;
   onBackToCategories: () => void;
   onBackToGroups?: () => void;
   onBackToSubsections?: () => void;
@@ -65,8 +62,6 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
   locale,
   category,
   selectedGroup,
-  selectedSubcategory,
-  onSelectSubcategory,
   onBackToCategories,
   onBackToGroups,
   onBackToSubsections,
@@ -87,61 +82,6 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
     ? rawGroupTitle.replace(/\s+Obras\b/i, '').replace(/\s+Materiales\b/i, '')
     : rawGroupTitle;
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const handleScroll = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setCanScrollLeft(scrollLeft > 4);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 4);
-    }
-  }, []);
-
-  useEffect(() => {
-    handleScroll();
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const resizeObserver = new ResizeObserver(() => {
-      handleScroll();
-    });
-    resizeObserver.observe(container);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [handleScroll, category.id]);
-
-  // Center active subcategory pill on change
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    if (selectedSubcategory === 'all') {
-      container.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      const activeButton = container.querySelector('[data-selected="true"]') as HTMLElement | null;
-      if (activeButton) {
-        const targetScrollLeft =
-          activeButton.offsetLeft - container.clientWidth / 2 + activeButton.clientWidth / 2;
-        container.scrollTo({ left: Math.max(0, targetScrollLeft), behavior: 'smooth' });
-      }
-    }
-  }, [selectedSubcategory]);
-
-  const scrollSubcategories = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const containerWidth = scrollContainerRef.current.clientWidth;
-      const offset =
-        direction === 'left'
-          ? -Math.max(200, Math.round(containerWidth * 0.7))
-          : Math.max(200, Math.round(containerWidth * 0.7));
-      scrollContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' });
-    }
-  };
-
   const getSpecialistsCountText = (count: number) => {
     if (locale === 'es') {
       return `${count} ${count === 1 ? t.specialistSingle : t.specialistsMany}`;
@@ -161,86 +101,60 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
   };
 
   return (
-    <div className="bg-gradient-to-b from-sky-50/60 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950 border-b border-slate-200 dark:border-slate-800 py-6 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gradient-to-b from-sky-50/60 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-950 border-b border-slate-200 dark:border-slate-800 py-5 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Navigation row: Back buttons & Breadcrumb trail & Create Order */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Primary Return Button (Back to previous step) */}
+        {/* Breadcrumb trail */}
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <nav className="flex items-center gap-1.5 text-xs font-medium text-slate-400 flex-wrap">
+            <button
+              type="button"
+              onClick={onBackToCategories}
+              className="hover:text-sky-600 transition cursor-pointer"
+            >
+              {t.homeCatalog}
+            </button>
+            <span>/</span>
+            <span className="text-slate-700 dark:text-slate-200 font-semibold">
+              {locale === 'ru' ? category.title_ru : category.title_es}
+            </span>
+            {groupTitle && (
+              <>
+                <span>/</span>
+                <span className="text-slate-600 dark:text-slate-300 font-semibold">
+                  {groupTitle}
+                </span>
+              </>
+            )}
+          </nav>
+        </div>
+
+        {/* Category Header Card: "Назад" button, Icon, Title, Description, Quick Search */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700/80 p-4 sm:p-5 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap">
+            {/* Prominent High-Contrast "Назад" Button positioned to the left of the category name and icon */}
             <button
               type="button"
               onClick={onBackToSubsections || onBackToGroups || onBackToCategories}
-              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition group cursor-pointer flex-shrink-0"
-              aria-label={
-                onBackToSubsections || onBackToGroups
-                  ? t.backToGroups
-                  : t.backToCategories
-              }
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-red-500 hover:border-red-600 dark:border-red-500 bg-white dark:bg-slate-800 px-4 py-2 text-xs sm:text-sm font-black text-red-600 dark:text-red-400 hover:bg-red-50/70 dark:hover:bg-red-950/40 shadow-xs transition-all active:scale-95 cursor-pointer ring-2 ring-red-500/20 shrink-0"
+              title={locale === 'ru' ? 'Назад к разделам' : 'Volver al catálogo'}
             >
-              <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400 group-hover:-translate-x-0.5 transition-transform" />
-              <span>
-                {(onBackToSubsections || onBackToGroups
-                  ? t.backToGroups
-                  : t.backToCategories
-                ).replace(/^[←\s]+/, '')}
-              </span>
+              <ArrowLeft className="w-4 h-4 stroke-[2.5] text-red-600 dark:text-red-400" />
+              <span>{locale === 'ru' ? 'Назад' : 'Volver'}</span>
             </button>
 
-            {/* Breadcrumb path: Каталог > Категория > Раздел > Подраздел */}
-            <nav className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-slate-400 ml-1.5 flex-wrap">
-              <button
-                type="button"
-                onClick={onBackToCategories}
-                className="hover:text-sky-600 transition cursor-pointer"
-              >
-                {t.homeCatalog}
-              </button>
-              <span>/</span>
-              <button
-                type="button"
-                onClick={onBackToGroups || onBackToCategories}
-                className="hover:text-sky-600 transition cursor-pointer"
-              >
-                {locale === 'ru' ? category.title_ru : category.title_es}
-              </button>
-              {groupTitle && (
-                <>
-                  <span>/</span>
-                  <button
-                    type="button"
-                    onClick={onBackToSubsections || onBackToGroups}
-                    className="hover:text-sky-600 transition cursor-pointer font-semibold text-slate-600 dark:text-slate-300"
-                  >
-                    {groupTitle}
-                  </button>
-                </>
-              )}
-              {selectedSubcategory !== 'all' && (
-                <>
-                  <span>/</span>
-                  <span className="text-slate-900 dark:text-white font-bold">
-                    {getSubcategoryTitle(selectedSubcategory, locale)}
-                  </span>
-                </>
-              )}
-            </nav>
-          </div>
-        </div>
-
-        {/* Category Header Card: Icon, Title, Description, Stats */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-700/80 p-4 sm:p-6 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
-          <div className="flex items-center gap-4">
+            {/* Category Icon */}
             <div
-              className="flex h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0 items-center justify-center rounded-2xl shadow-xs"
+              className="flex h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0 items-center justify-center rounded-2xl shadow-xs"
               style={{
                 backgroundColor: `${category.color}15`,
                 color: category.color,
                 border: `1px solid ${category.color}30`,
               }}
             >
-              {getCategoryIcon(category.iconName, 'w-7 h-7 sm:w-8 sm:h-8')}
+              {getCategoryIcon(category.iconName, 'w-6 h-6 sm:w-7 sm:h-7')}
             </div>
 
+            {/* Category Title & Stats */}
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 {indexNumber && (
@@ -248,7 +162,7 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
                     {indexNumber}
                   </span>
                 )}
-                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+                <h1 className="text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white">
                   {locale === 'ru' ? category.title_ru : category.title_es}
                   {groupTitle ? ` (${groupTitle})` : ''}
                 </h1>
@@ -256,14 +170,14 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
                   <span>{getSpecialistsCountText(specialistsCount)}</span>
                 </span>
               </div>
-              <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+              <p className="mt-0.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
                 {locale === 'ru' ? category.description_ru : category.description_es}
               </p>
             </div>
           </div>
 
           {/* Quick Search inside this category */}
-          <div className="w-full sm:w-72 flex-shrink-0">
+          <div className="w-full lg:w-72 flex-shrink-0">
             <div className="relative flex items-center">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                 <Search className="h-4 w-4 text-sky-600" />
@@ -290,95 +204,6 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
                 </button>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Horizontal Subcategories Scroll Strip */}
-        <div className="relative mt-4">
-          {/* Left Gradient Fade & Scroll Button */}
-          {canScrollLeft && (
-            <div className="absolute left-0 top-0 bottom-0 z-10 flex items-center w-8 sm:w-10 bg-gradient-to-r from-slate-50/90 via-slate-50/60 to-transparent dark:from-slate-900/90 dark:via-slate-900/60 to-transparent pointer-events-none">
-              <button
-                type="button"
-                onClick={() => scrollSubcategories('left')}
-                className="pointer-events-auto ml-0.5 h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
-                aria-label={locale === 'ru' ? 'Прокрутить влево' : 'Desplazar a la izquierda'}
-              >
-                <ChevronLeft className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
-
-          {/* Right Gradient Fade & Scroll Button */}
-          {canScrollRight && (
-            <div className="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-end w-8 sm:w-10 bg-gradient-to-l from-slate-50/90 via-slate-50/60 to-transparent dark:from-slate-900/90 dark:via-slate-900/60 to-transparent pointer-events-none">
-              <button
-                type="button"
-                onClick={() => scrollSubcategories('right')}
-                className="pointer-events-auto mr-0.5 h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
-                aria-label={locale === 'ru' ? 'Прокрутить вправо' : 'Desplazar a la derecha'}
-              >
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
-
-          {/* Subcategory Pill Buttons Container */}
-          <div
-            ref={scrollContainerRef}
-            onScroll={handleScroll}
-            className="flex items-center gap-2 overflow-x-auto py-2 px-3 sm:px-4 scrollbar-none scroll-smooth"
-          >
-            {/* "All subcategories" Pill with LayoutGrid icon */}
-            <button
-              type="button"
-              onClick={() => onSelectSubcategory('all')}
-              aria-pressed={selectedSubcategory === 'all'}
-              data-selected={selectedSubcategory === 'all'}
-              className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
-                selectedSubcategory === 'all'
-                  ? 'bg-slate-900 text-white shadow-xs ring-1 ring-slate-900 dark:bg-white dark:text-slate-900 dark:ring-white'
-                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5 flex-shrink-0" />
-              <span>{t.allSubcategories}</span>
-            </button>
-
-            {/* Individual Subcategory Pills (scoped to active group items if selectedGroup, or all category subcategories) */}
-            {category.subcategories.map((sub) => {
-              if (activeGroup && !activeGroup.items.includes(sub)) return null;
-              const isSelected = selectedSubcategory === sub;
-              return (
-                <button
-                  key={sub}
-                  type="button"
-                  data-selected={isSelected}
-                  aria-pressed={isSelected}
-                  onClick={() => onSelectSubcategory(isSelected ? 'all' : sub)}
-                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
-                    isSelected
-                      ? 'bg-sky-600 text-white shadow-xs ring-1 ring-sky-600'
-                      : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700'
-                  }`}
-                  title={
-                    isSelected
-                      ? locale === 'ru'
-                        ? 'Нажмите, чтобы сбросить выбор подкатегории'
-                        : 'Tocá para quitar el filtro de subcategoría'
-                      : undefined
-                  }
-                >
-                  <span className="whitespace-nowrap flex-shrink-0">{getSubcategoryTitle(sub, locale)}</span>
-                  {isSelected && (
-                    <X className="w-3 h-3 ml-0.5 opacity-80 hover:opacity-100 flex-shrink-0" />
-                  )}
-                </button>
-              );
-            })}
-
-            {/* End spacing spacer */}
-            <div className="w-8 flex-shrink-0" aria-hidden="true" />
           </div>
         </div>
       </div>
