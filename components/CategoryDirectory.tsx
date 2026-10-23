@@ -140,43 +140,44 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
     const categorySpecialists = specialists.filter((s) => s.category === activeCategory.id);
 
     return (
-      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-        {/* Navigation row: Back button & Breadcrumbs */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
+        {/* Breadcrumb trail */}
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <nav className="flex items-center gap-1.5 text-xs font-medium text-slate-400 flex-wrap">
             <button
               type="button"
               onClick={onBackToCategories}
-              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-2xs transition cursor-pointer"
+              className="hover:text-sky-600 transition cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-              <span>{t.backToCategories.replace(/^[←\s]+/, '')}</span>
+              {t.homeCatalog}
             </button>
-
-            {/* Breadcrumb trail */}
-            <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-slate-400">
-              <span
-                onClick={onBackToCategories}
-                className="hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition"
-              >
-                {t.homeCatalog}
-              </span>
-              <span>/</span>
-              <span className="text-slate-900 dark:text-white font-semibold">
-                {locale === 'ru' ? activeCategory.title_ru : activeCategory.title_es}
-              </span>
-            </div>
-          </div>
+            <span>/</span>
+            <span className="text-slate-700 dark:text-slate-200 font-semibold">
+              {locale === 'ru' ? activeCategory.title_ru : activeCategory.title_es}
+            </span>
+          </nav>
         </div>
 
         {/* Level 2 Category Header Plate */}
-        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-2xs">
-          <div className="flex items-center gap-4">
+        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 p-4 sm:p-5 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap">
+            {/* Prominent High-Contrast "Назад" Button identical across all levels */}
+            <button
+              type="button"
+              onClick={onBackToCategories}
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-red-500 hover:border-red-600 dark:border-red-500 bg-white dark:bg-slate-800 px-4 py-2 text-xs sm:text-sm font-black text-red-600 dark:text-red-400 hover:bg-red-50/70 dark:hover:bg-red-950/40 shadow-xs transition-all active:scale-95 cursor-pointer ring-2 ring-red-500/20 shrink-0"
+              title={locale === 'ru' ? 'Назад' : 'Volver'}
+            >
+              <ArrowLeft className="w-4 h-4 stroke-[2.5] text-red-600 dark:text-red-400" />
+              <span>{locale === 'ru' ? 'Назад' : 'Volver'}</span>
+            </button>
+
             <div
-              className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl shadow-2xs flex-shrink-0"
+              className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl shadow-xs flex-shrink-0"
               style={{
                 backgroundColor: `${activeCategory.color}15`,
                 color: activeCategory.color,
+                border: `1px solid ${activeCategory.color}30`,
               }}
             >
               {getCategoryIcon(activeCategory.iconName, 'w-6 h-6 sm:w-7 sm:h-7')}
@@ -186,14 +187,14 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
                 <span className="text-xs font-mono font-bold text-slate-400 dark:text-slate-500">
                   {indexNumber}
                 </span>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight">
+                <h1 className="text-lg sm:text-2xl font-extrabold text-slate-950 dark:text-white tracking-tight">
                   {locale === 'ru' ? activeCategory.title_ru : activeCategory.title_es}
                 </h1>
                 <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-400 flex-shrink-0">
                   {getProfileCountText(categorySpecialists.length)}
                 </span>
               </div>
-              <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl">
+              <p className="mt-0.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl">
                 {t.level2Subtitle}
               </p>
             </div>
@@ -288,55 +289,67 @@ export const CategoryDirectory: React.FC<CategoryDirectoryProps> = ({
       : rawGroupTitle;
 
     return (
-      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Navigation row: Back button & Breadcrumbs */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
+        {/* Breadcrumb trail */}
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <nav className="flex items-center gap-1.5 text-xs font-medium text-slate-400 flex-wrap">
+            <button
+              type="button"
+              onClick={onBackToCategories}
+              className="hover:text-sky-600 transition cursor-pointer"
+            >
+              {t.homeCatalog}
+            </button>
+            <span>/</span>
+            <button
+              type="button"
+              onClick={onBackToGroups}
+              className="hover:text-sky-600 transition cursor-pointer"
+            >
+              {locale === 'ru' ? activeCategory.title_ru : activeCategory.title_es}
+            </button>
+            <span>/</span>
+            <span className="text-slate-700 dark:text-slate-200 font-semibold">
+              {groupTitle}
+            </span>
+          </nav>
+        </div>
+
+        {/* Level 3 Section Header Plate */}
+        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 p-4 sm:p-5 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap">
+            {/* Prominent High-Contrast "Назад" Button identical across all levels */}
             <button
               type="button"
               onClick={onBackToGroups || onBackToCategories}
-              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-2xs transition cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-red-500 hover:border-red-600 dark:border-red-500 bg-white dark:bg-slate-800 px-4 py-2 text-xs sm:text-sm font-black text-red-600 dark:text-red-400 hover:bg-red-50/70 dark:hover:bg-red-950/40 shadow-xs transition-all active:scale-95 cursor-pointer ring-2 ring-red-500/20 shrink-0"
+              title={locale === 'ru' ? 'Назад' : 'Volver'}
             >
-              <ArrowLeft className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-              <span>{t.backToGroups.replace(/^[←\s]+/, '')}</span>
+              <ArrowLeft className="w-4 h-4 stroke-[2.5] text-red-600 dark:text-red-400" />
+              <span>{locale === 'ru' ? 'Назад' : 'Volver'}</span>
             </button>
 
-            {/* Breadcrumb trail */}
-            <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-slate-400">
-              <span
-                onClick={onBackToCategories}
-                className="hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition"
-              >
-                {t.homeCatalog}
-              </span>
-              <span>/</span>
-              <span
-                onClick={onBackToGroups}
-                className="hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer transition"
-              >
-                {locale === 'ru' ? activeCategory.title_ru : activeCategory.title_es}
-              </span>
-              <span>/</span>
-              <span className="text-slate-900 dark:text-white font-semibold">
-                {groupTitle}
-              </span>
+            <div
+              className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl shadow-xs flex-shrink-0"
+              style={{
+                backgroundColor: `${activeCategory.color}15`,
+                color: activeCategory.color,
+                border: `1px solid ${activeCategory.color}30`,
+              }}
+            >
+              {getCategoryIcon(activeCategory.iconName, 'w-6 h-6 sm:w-7 sm:h-7')}
             </div>
-          </div>
-        </div>
 
-        {/* Section Header Plate */}
-        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 p-5 sm:p-6 shadow-[0_2px_8px_rgba(15,23,42,0.06)]">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="min-w-0 flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight">
+                <h1 className="text-lg sm:text-2xl font-extrabold text-slate-950 dark:text-white tracking-tight">
                   {groupTitle}
                 </h1>
-                <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 flex-shrink-0">
+                <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300 flex-shrink-0">
                   {groupItems.length} {t.subsectionsCount}
                 </span>
               </div>
-              <p className="mt-1.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl">
+              <p className="mt-0.5 text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl">
                 {t.level3Subtitle}
               </p>
             </div>

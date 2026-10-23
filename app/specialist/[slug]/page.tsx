@@ -213,10 +213,11 @@ export default function SpecialistPage() {
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6">
           <button
             onClick={() => router.push('/')}
-            className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 transition"
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-red-500 hover:border-red-600 bg-white dark:bg-slate-800 px-3.5 py-1.5 text-xs sm:text-sm font-black text-red-600 dark:text-red-400 hover:bg-red-50/70 dark:hover:bg-red-950/40 shadow-xs transition-all active:scale-95 cursor-pointer ring-2 ring-red-500/20 shrink-0"
+            title={locale === 'ru' ? 'Назад в каталог' : 'Volver al catálogo'}
           >
-            <ArrowLeft className="h-4 w-4" />
-            <span>{locale === 'ru' ? 'В каталог Quatro Clicks' : 'Volver al catálogo'}</span>
+            <ArrowLeft className="w-4 h-4 stroke-[2.5] text-red-600 dark:text-red-400" />
+            <span>{locale === 'ru' ? 'Назад' : 'Volver'}</span>
           </button>
 
           <div className="flex items-center gap-2">

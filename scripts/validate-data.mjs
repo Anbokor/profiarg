@@ -852,8 +852,10 @@ assert(
   "CategoryDirectory balances trade diversity across specialists for prominent core subcategory discovery"
 );
 assert(
-  drilldownHeaderContent.includes('border-red-500') && drilldownHeaderContent.includes('ArrowLeft'),
-  "Drilldown return button is prominently highlighted with red border and ArrowLeft icon"
+  drilldownHeaderContent.includes('border-red-500') &&
+  catDirContent.includes('border-red-500') &&
+  pageContent.includes('border-red-500'),
+  "Return button 'Назад' is prominently highlighted with consistent red border styling across all directory levels and search"
 );
 
 console.log('\n15. Validating Official Quatro Clicks Logo & Asset Integrity:');
