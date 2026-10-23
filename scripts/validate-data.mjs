@@ -1137,6 +1137,61 @@ assert(
   "LeafletMap applies smooth camera transition (flyTo) when switching to a new specialist"
 );
 
+// TEST: Spanish/Latin Specialist Names Localization (Option 3 Hybrid Strategy)
+console.log('\nValidating Spanish/Latin Specialist Names Localization (Option 3):');
+const addModalContent = readFileSync(resolve(process.cwd(), 'components/AddSpecialistModal.tsx'), 'utf8');
+const slugPageContent = readFileSync(resolve(process.cwd(), 'app/specialist/[slug]/page.tsx'), 'utf8');
+
+assert(
+  typesContent.includes('name_es?: string;') && typesContent.includes('companyName_es?: string;'),
+  "types/index.ts defines optional name_es and companyName_es in Specialist interface"
+);
+assert(
+  utilsContent.includes('transliterateCyrillic') &&
+  utilsContent.includes('getSpecialistDisplayName') &&
+  utilsContent.includes('getSpecialistCompanyName'),
+  "lib/utils.ts exports transliterateCyrillic, getSpecialistDisplayName, and getSpecialistCompanyName"
+);
+assert(
+  seedContent.includes("name_es: 'Alexander Marchenko'") &&
+  seedContent.includes("name_es: 'Alexander Romanov'") &&
+  seedContent.includes("name_es: 'Elena Sokolova'") &&
+  seedContent.includes("companyName_es: 'Romanov Reparaciones & Servicios'"),
+  "data/seedData.ts populates explicit Latin names and company names for specialists"
+);
+assert(
+  specialistCardContent.includes('getSpecialistDisplayName') &&
+  specialistCardContent.includes('getSpecialistCompanyName') &&
+  specialistCardContent.includes('displayName') &&
+  specialistCardContent.includes('displayCompanyName'),
+  "SpecialistCard.tsx utilizes getSpecialistDisplayName and getSpecialistCompanyName for bilingual rendering"
+);
+assert(
+  specialistDetailContent.includes('getSpecialistDisplayName') &&
+  specialistDetailContent.includes('getSpecialistCompanyName'),
+  "SpecialistDetailModal.tsx utilizes getSpecialistDisplayName and getSpecialistCompanyName"
+);
+assert(
+  leafletContent.includes('getSpecialistDisplayName') &&
+  leafletContent.includes('getSpecialistCompanyName'),
+  "LeafletMap.tsx popups localize specialist and company names with getSpecialistDisplayName"
+);
+assert(
+  slugPageContent.includes('getSpecialistDisplayName') &&
+  slugPageContent.includes('getSpecialistCompanyName'),
+  "app/specialist/[slug]/page.tsx localizes specialist profile names"
+);
+assert(
+  pageContent.includes('s.name_es') && pageContent.includes('s.companyName_es'),
+  "app/page.tsx indexes both Cyrillic and Latin names in search queries"
+);
+assert(
+  addModalContent.includes('transliterateCyrillic') &&
+  addModalContent.includes('nameEs') &&
+  addModalContent.includes('companyNameEs'),
+  "AddSpecialistModal.tsx automatically transliterates Cyrillic names into Latin on input"
+);
+
 
 
 

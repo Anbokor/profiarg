@@ -412,6 +412,10 @@ export default function Home() {
           const categoryObj = CATEGORIES.find((c) => c.id === s.category);
           const searchableText = [
             s.name,
+            s.name_es || '',
+            s.companyName || '',
+            s.companyName_es || '',
+            s.contractorId || '',
             s.title_ru,
             s.title_es,
             s.barrio,

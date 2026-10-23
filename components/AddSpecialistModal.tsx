@@ -5,7 +5,7 @@ import { Specialist, Locale, CategoryId, WorkFormat, SpanishLevel, EnglishLevel 
 import { translations } from '@/lib/translations';
 import { CATEGORIES } from '@/data/categories';
 import { BARRIOS } from '@/data/barrios';
-import { generateSlug } from '@/lib/utils';
+import { generateSlug, transliterateCyrillic } from '@/lib/utils';
 import {
   X,
   PlusCircle,
@@ -59,8 +59,11 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
   // Basic Information
   const [contractorId, setContractorId] = useState(() => `0${Math.floor(100 + Math.random() * 900)}`);
   const [name, setName] = useState('');
+  const [nameEs, setNameEs] = useState('');
+  const [isNameEsManual, setIsNameEsManual] = useState(false);
   const [isCompany, setIsCompany] = useState(false);
   const [companyName, setCompanyName] = useState('');
+  const [companyNameEs, setCompanyNameEs] = useState('');
   const [category, setCategory] = useState<CategoryId>('repair_construction');
   const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([
     'Окна',
@@ -187,13 +190,20 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
       .map((url) => url.trim())
       .filter((url) => url.startsWith('http'));
 
+    const finalNameEs = nameEs.trim() || transliterateCyrillic(name.trim());
+    const finalCompanyNameEs = isCompany
+      ? (companyNameEs.trim() || (companyName.trim() ? transliterateCyrillic(companyName.trim()) : undefined))
+      : undefined;
+
     const newSpecialist: Specialist = {
       id: `custom-${Date.now()}`,
       contractorId: contractorId.trim() || `0${Math.floor(100 + Math.random() * 900)}`,
       slug: generateSlug(name) + '-' + Date.now().toString().slice(-4),
       name: name.trim(),
+      name_es: finalNameEs || undefined,
       isCompany,
       companyName: isCompany ? (companyName.trim() || name.trim()) : undefined,
+      companyName_es: finalCompanyNameEs,
       title_ru: titleRu.trim() || (locale === 'ru' ? 'Частный специалист' : 'Profesional independiente'),
       title_es: titleRu.trim() || 'Profesional independiente',
       category,
@@ -344,9 +354,36 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
                   type="text"
                   required
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setName(val);
+                    if (!isNameEsManual) {
+                      setNameEs(transliterateCyrillic(val));
+                    }
+                  }}
                   placeholder={locale === 'ru' ? 'Александр Марченко / Анна Смирнова' : 'Alexander Marchenko / Ana Gómez'}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {t.nameEsLabel}
+                  </label>
+                  <span className="text-[10px] text-slate-400">
+                    {t.nameEsHelp}
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  value={nameEs}
+                  onChange={(e) => {
+                    setNameEs(e.target.value);
+                    setIsNameEsManual(true);
+                  }}
+                  placeholder="Alexander Marchenko"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white font-medium"
                 />
               </div>
             </div>
@@ -364,17 +401,31 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
               </label>
 
               {isCompany && (
-                <div className="mt-2.5">
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                    {t.contractorCompanyLabel}
-                  </label>
-                  <input
-                    type="text"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Ventanas porteñas / Studio BA"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                  />
+                <div className="mt-2.5 space-y-2">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                      {t.contractorCompanyLabel}
+                    </label>
+                    <input
+                      type="text"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      placeholder="Ventanas porteñas / Studio BA"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                      {t.companyNameEsLabel}
+                    </label>
+                    <input
+                      type="text"
+                      value={companyNameEs}
+                      onChange={(e) => setCompanyNameEs(e.target.value)}
+                      placeholder="Ventanas porteñas / Studio BA"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-hidden dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                    />
+                  </div>
                 </div>
               )}
             </div>

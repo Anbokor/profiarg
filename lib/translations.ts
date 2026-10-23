@@ -179,7 +179,10 @@ export const translations = {
     cabinetShortBtn: 'Кабинет',
     // Contractor Profile Card & Registration Additions
     contractorIdLabel: 'Код специалиста (ID)',
+    nameEsLabel: 'Имя на латинице (для испанской версии Quatro Clicks)',
+    nameEsHelp: 'Заполняется автоматически при вводе имени, можно отредактировать',
     contractorCompanyLabel: 'Название компании / мастерской',
+    companyNameEsLabel: 'Название компании на латинице / испанском',
     isCompanyCheckbox: 'Это компания / организация',
     subcategoriesLabel: 'Специализация и подкатегории',
     privateVerificationTitle: 'Верификация документов (конфиденциально)',
@@ -434,7 +437,10 @@ export const translations = {
     cabinetShortBtn: 'Panel',
     // Contractor Profile Card & Registration Additions
     contractorIdLabel: 'Código de profesional (ID)',
+    nameEsLabel: 'Nombre en caracteres latinos (versión en español)',
+    nameEsHelp: 'Se autocompleta con transliteración, podés editarlo libremente',
     contractorCompanyLabel: 'Nombre de empresa o taller',
+    companyNameEsLabel: 'Nombre comercial en español / latín',
     isCompanyCheckbox: 'Es empresa u organización',
     subcategoriesLabel: 'Subcategorías de especialidad',
     privateVerificationTitle: 'Verificación de identidad (confidencial)',

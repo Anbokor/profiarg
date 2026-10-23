@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Specialist, Locale, Review } from '@/types';
 import { translations } from '@/lib/translations';
 import { CATEGORIES } from '@/data/categories';
-import { buildWhatsAppUrl } from '@/lib/utils';
+import { buildWhatsAppUrl, getSpecialistDisplayName, getSpecialistCompanyName } from '@/lib/utils';
 import {
   X,
   Star,
@@ -122,7 +122,9 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
 
   const t = translations[locale];
   const category = CATEGORIES.find((c) => c.id === specialist.category);
-  const waUrl = buildWhatsAppUrl(specialist.whatsapp, specialist.name, locale);
+  const displayName = getSpecialistDisplayName(specialist, locale);
+  const displayCompanyName = getSpecialistCompanyName(specialist, locale);
+  const waUrl = buildWhatsAppUrl(specialist.whatsapp, displayName, locale);
 
   const title = locale === 'ru' ? specialist.title_ru : specialist.title_es;
   const description = locale === 'ru' ? specialist.description_ru : specialist.description_es;
@@ -236,7 +238,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
             >
               <img
                 src={specialist.avatar}
-                alt={specialist.name}
+                alt={displayName}
                 className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-2 border-white/90 object-cover object-top shadow-2xl ring-2 ring-slate-800"
               />
               {specialist.isVerified && (
@@ -268,10 +270,10 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                 </span>
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                <span>{specialist.name}</span>
-                {specialist.companyName && (
+                <span>{displayName}</span>
+                {displayCompanyName && (
                   <span className="text-sm sm:text-base font-semibold text-sky-300 hidden sm:inline-flex items-center gap-1">
-                    • {specialist.companyName}
+                    • {displayCompanyName}
                   </span>
                 )}
               </h2>

@@ -4,7 +4,7 @@ import React from 'react';
 import { Specialist, Locale } from '@/types';
 import { translations } from '@/lib/translations';
 import { CATEGORIES } from '@/data/categories';
-import { buildWhatsAppUrl } from '@/lib/utils';
+import { buildWhatsAppUrl, getSpecialistDisplayName, getSpecialistCompanyName } from '@/lib/utils';
 import {
   Star,
   MapPin,
@@ -38,7 +38,9 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
 }) => {
   const t = translations[locale];
   const category = CATEGORIES.find((c) => c.id === specialist.category);
-  const waUrl = buildWhatsAppUrl(specialist.whatsapp, specialist.name, locale);
+  const displayName = getSpecialistDisplayName(specialist, locale);
+  const displayCompanyName = getSpecialistCompanyName(specialist, locale);
+  const waUrl = buildWhatsAppUrl(specialist.whatsapp, displayName, locale);
 
   const title = locale === 'ru' ? specialist.title_ru : specialist.title_es;
   const description = locale === 'ru' ? specialist.description_ru : specialist.description_es;
@@ -78,7 +80,7 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
           <div className="relative shrink-0 h-20 w-20 sm:h-24 sm:w-24">
             <img
               src={specialist.avatar}
-              alt={specialist.name}
+              alt={displayName}
               className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl object-cover object-top ring-2 ring-slate-100 dark:ring-slate-800 shadow-xs cursor-pointer hover:opacity-95 transition"
               loading="lazy"
               onClick={() => onSelect(specialist)}
@@ -128,10 +130,10 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
               onClick={() => onSelect(specialist)}
               className="mt-1.5 font-bold text-lg sm:text-xl text-slate-900 group-hover:text-sky-600 transition-colors cursor-pointer dark:text-white leading-tight"
             >
-              {specialist.name}
-              {specialist.companyName && (
+              {displayName}
+              {displayCompanyName && (
                 <span className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 ml-1.5">
-                  • {specialist.companyName}
+                  • {displayCompanyName}
                 </span>
               )}
             </h3>
@@ -202,7 +204,7 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
                     <img
                       key={idx}
                       src={img}
-                      alt={`${specialist.name} work ${idx + 1}`}
+                      alt={`${displayName} work ${idx + 1}`}
                       className="h-16 w-20 sm:h-20 sm:w-24 rounded-xl object-cover shrink-0 border border-slate-200/90 dark:border-slate-700 cursor-pointer hover:opacity-90 hover:scale-102 transition shadow-2xs"
                       onClick={(e) => {
                         e.stopPropagation();

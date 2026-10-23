@@ -98,8 +98,10 @@ export interface Specialist {
   contractorId?: string; // e.g. '0001/001', '0154'
   slug: string;
   name: string;
+  name_es?: string;
   isCompany: boolean;
   companyName?: string;
+  companyName_es?: string;
   title_ru: string;
   title_es: string;
   category: CategoryId;

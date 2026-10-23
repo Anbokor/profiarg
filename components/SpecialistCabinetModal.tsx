@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Locale, Order, SpecialistCabinetState, Specialist, OrderStatus, Review } from '@/types';
 import { translations } from '@/lib/translations';
 import { CATEGORIES } from '@/data/categories';
+import { getSpecialistDisplayName, getSpecialistCompanyName } from '@/lib/utils';
 import {
   getStoredSpecialists,
   loginSpecialist,
@@ -414,13 +415,13 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
               <div className="flex items-center gap-3.5 min-w-0">
                 <img
                   src={activeSpecialist.avatar}
-                  alt={activeSpecialist.name}
+                  alt={getSpecialistDisplayName(activeSpecialist, locale)}
                   className="h-14 w-14 rounded-2xl object-cover border-2 border-white dark:border-slate-700 shadow-md shrink-0"
                 />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">
-                      {activeSpecialist.name}
+                      {getSpecialistDisplayName(activeSpecialist, locale)}
                     </h3>
                     {activeSpecialist.isVerified && (
                       <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:border-emerald-800 dark:text-emerald-300">

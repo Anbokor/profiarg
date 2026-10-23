@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Locale, ViewMode, Specialist } from '@/types';
 import { translations } from '@/lib/translations';
+import { getSpecialistDisplayName } from '@/lib/utils';
 import {
   Briefcase,
   UserPlus,
@@ -157,11 +158,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <>
                   <img
                     src={loggedInSpecialist.avatar}
-                    alt={loggedInSpecialist.name}
+                    alt={getSpecialistDisplayName(loggedInSpecialist, locale)}
                     className="h-5 w-5 rounded-full object-cover border border-sky-400"
                   />
                   <span className="hidden md:inline max-w-[120px] truncate">
-                    {loggedInSpecialist.name}
+                    {getSpecialistDisplayName(loggedInSpecialist, locale)}
                   </span>
                 </>
               ) : (
@@ -189,7 +190,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </p>
                   <p className="text-xs text-slate-800 dark:text-slate-200 font-semibold mt-0.5 truncate">
                     {loggedInSpecialist
-                      ? loggedInSpecialist.name
+                      ? getSpecialistDisplayName(loggedInSpecialist, locale)
                       : (locale === 'ru' ? 'Личный кабинет и анкета мастера' : 'Panel de control y registro')}
                   </p>
                 </div>

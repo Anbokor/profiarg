@@ -13,7 +13,11 @@ import {
   addReviewToSpecialist,
 } from '@/lib/storage';
 import { CATEGORIES } from '@/data/categories';
-import { buildWhatsAppUrl } from '@/lib/utils';
+import {
+  buildWhatsAppUrl,
+  getSpecialistDisplayName,
+  getSpecialistCompanyName,
+} from '@/lib/utils';
 import { translations } from '@/lib/translations';
 import {
   ArrowLeft,
@@ -194,7 +198,9 @@ export default function SpecialistPage() {
 
   const t = translations[locale];
   const category = CATEGORIES.find((c) => c.id === specialist.category);
-  const waUrl = buildWhatsAppUrl(specialist.whatsapp, specialist.name, locale);
+  const displayName = getSpecialistDisplayName(specialist, locale);
+  const displayCompanyName = getSpecialistCompanyName(specialist, locale);
+  const waUrl = buildWhatsAppUrl(specialist.whatsapp, displayName, locale);
   const title = locale === 'ru' ? specialist.title_ru : specialist.title_es;
   const description = locale === 'ru' ? specialist.description_ru : specialist.description_es;
   const workingHours = locale === 'ru' ? specialist.workingHours_ru : specialist.workingHours_es;
@@ -298,7 +304,7 @@ export default function SpecialistPage() {
               <div className="relative shrink-0 h-20 w-20 sm:h-24 sm:w-24">
                 <img
                   src={specialist.avatar}
-                  alt={specialist.name}
+                  alt={displayName}
                   className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-2 border-white/90 object-cover object-top shadow-2xl ring-2 ring-slate-800"
                 />
                 {specialist.isVerified && (
@@ -329,10 +335,10 @@ export default function SpecialistPage() {
                   </span>
                 </div>
                 <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
-                  <span>{specialist.name}</span>
-                  {specialist.companyName && (
+                  <span>{displayName}</span>
+                  {displayCompanyName && (
                     <span className="text-sm sm:text-lg font-semibold text-sky-300 hidden sm:inline-flex items-center gap-1">
-                      • {specialist.companyName}
+                      • {displayCompanyName}
                     </span>
                   )}
                 </h1>

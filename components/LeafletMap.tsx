@@ -4,7 +4,13 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { Specialist, Locale } from '@/types';
 import { CATEGORIES } from '@/data/categories';
 import { translations } from '@/lib/translations';
-import { buildWhatsAppUrl, escapeHtml, sanitizeUrl } from '@/lib/utils';
+import {
+  buildWhatsAppUrl,
+  escapeHtml,
+  sanitizeUrl,
+  getSpecialistDisplayName,
+  getSpecialistCompanyName,
+} from '@/lib/utils';
 import {
   Navigation,
   ZoomIn,
@@ -318,7 +324,9 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         let marker = markersRef.current.get(specialist.id);
 
         // Build rich popup content with full exact street address and XSS sanitization
-        const waUrl = buildWhatsAppUrl(specialist.whatsapp, specialist.name, locale);
+        const displayName = getSpecialistDisplayName(specialist, locale);
+        const displayCompanyName = getSpecialistCompanyName(specialist, locale);
+        const waUrl = buildWhatsAppUrl(specialist.whatsapp, displayName, locale);
         const title = locale === 'ru' ? specialist.title_ru : specialist.title_es;
         const categoryTitle = locale === 'ru' ? category?.title_ru : category?.title_es;
 
@@ -326,7 +334,8 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
           specialist.avatar,
           'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
         );
-        const safeName = escapeHtml(specialist.name);
+        const safeName = escapeHtml(displayName);
+        const safeCompanyName = displayCompanyName ? escapeHtml(displayCompanyName) : '';
         const safeTitle = escapeHtml(title);
         const safeCategoryTitle = escapeHtml(categoryTitle || '');
         const safeBarrio = escapeHtml(specialist.barrio || '');
@@ -343,7 +352,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
                   ${safeCategoryTitle}
                 </span>
                 <div style="font-weight: 700; font-size: 13px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                  ${safeName}
+                  ${safeName}${safeCompanyName ? ` • ${safeCompanyName}` : ''}
                 </div>
               </div>
             </div>
