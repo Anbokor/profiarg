@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { Specialist, Locale, CategoryId, Review, Order, OrderStatus, SpecialistCabinetState } from '@/types';
 import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
 import { SpecialistCard } from '@/components/SpecialistCard';
-import { LeafletMap } from '@/components/LeafletMap';
 import { SpecialistDetailModal } from '@/components/SpecialistDetailModal';
 import { AddSpecialistModal } from '@/components/AddSpecialistModal';
 import { SpecialistCabinetModal } from '@/components/SpecialistCabinetModal';
@@ -15,6 +15,21 @@ import { CategoryDrilldownHeader } from '@/components/CategoryDrilldownHeader';
 import { CATEGORIES } from '@/data/categories';
 import { SEED_SPECIALISTS } from '@/data/seedData';
 import { SEED_ORDERS } from '@/data/seedOrders';
+
+const LeafletMap = dynamic(
+  () => import('@/components/LeafletMap').then((mod) => mod.LeafletMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full flex items-center justify-center bg-slate-100 dark:bg-slate-900 text-slate-400 animate-pulse">
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-7 h-7 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-medium text-slate-500">Загрузка интерактивной карты...</span>
+        </div>
+      </div>
+    ),
+  }
+);
 import {
   getStoredSpecialists,
   saveCustomSpecialist,

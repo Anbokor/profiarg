@@ -182,10 +182,12 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
       }
     });
 
+    const activeMarkers = markersRef.current;
+
     return () => {
       isMounted = false;
-      markersRef.current.forEach((m) => m.remove());
-      markersRef.current.clear();
+      activeMarkers.forEach((m) => m.remove());
+      activeMarkers.clear();
       if (userMarkerRef.current) {
         userMarkerRef.current.remove();
         userMarkerRef.current = null;
@@ -434,7 +436,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
       // Auto-center map on current specialist(s)
       centerMapOnSpecialists(activeSpecialists, selectedSpecialist);
     });
-  }, [specialists, selectedSpecialist, isMapReady, locale, activeBarrioFilter, centerMapOnSpecialists]);
+  }, [specialists, selectedSpecialist, isMapReady, locale, activeBarrioFilter, centerMapOnSpecialists, t.viewDetails]);
 
   // Geolocation button handler ("Рядом со мной")
   const handleLocateMe = () => {

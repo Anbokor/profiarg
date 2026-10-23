@@ -53,6 +53,21 @@ export default function RootLayout({
         <link rel="icon" href="/logo-icon.png" type="image/png" sizes="272x272" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Quatro Clicks',
+              alternateName: 'Quatro Clicks Argentina',
+              url: 'https://quatroclicks.com',
+              description:
+                'Интерактивная карта и каталог специалистов и бизнеса в Аргентине (Буэнос-Айрес)',
+              inLanguage: ['ru', 'es'],
+            }),
+          }}
+        />
       </head>
       <body className="min-h-screen bg-slate-50 antialiased dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
         {children}
