@@ -27,37 +27,38 @@ export const Footer: React.FC<FooterProps> = ({
 
   return (
     <footer className="border-t border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950 py-6 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-4">
-        {/* Left: Brand logo & concise mission */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
-          <div
-            onClick={() => {
-              if (onNavigateToCatalog) onNavigateToCatalog();
-              else if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="inline-flex items-center gap-2 cursor-pointer select-none group"
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
+      <div className="mx-auto max-w-7xl flex flex-col gap-5">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          {/* Left: Brand logo & concise mission */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left shrink-0">
+            <div
+              onClick={() => {
                 if (onNavigateToCatalog) onNavigateToCatalog();
                 else if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
-          >
-            <img
-              src="/logo-horizontal.png"
-              alt="Quatro Clicks — Servicios y Mapa"
-              className="h-8 sm:h-9 w-auto object-contain block dark:hidden group-hover:opacity-90 transition-opacity"
-            />
-            <img
-              src="/logo-dark.png"
-              alt="Quatro Clicks — Servicios y Mapa"
-              className="h-8 sm:h-9 w-auto object-contain hidden dark:block group-hover:opacity-90 transition-opacity"
-            />
-            <span className="sr-only">Quatro Clicks</span>
-          </div>
+              }}
+              className="inline-flex items-center gap-2 cursor-pointer select-none group shrink-0"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  if (onNavigateToCatalog) onNavigateToCatalog();
+                  else if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+            >
+              <img
+                src="/logo-horizontal.png"
+                alt="Quatro Clicks — Servicios y Mapa"
+                className="h-9 sm:h-10 w-auto object-contain block dark:hidden group-hover:opacity-90 transition-opacity shrink-0"
+              />
+              <img
+                src="/logo-dark.png"
+                alt="Quatro Clicks — Servicios y Mapa"
+                className="h-9 sm:h-10 w-auto object-contain hidden dark:block group-hover:opacity-90 transition-opacity shrink-0"
+              />
+              <span className="sr-only">Quatro Clicks</span>
+            </div>
           <span className="hidden sm:inline text-slate-300 dark:text-slate-700">|</span>
           <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md">
             {t.footerText || t.heroSubtitle}
@@ -132,16 +133,17 @@ export const Footer: React.FC<FooterProps> = ({
             © {new Date().getFullYear()} Quatro Clicks
           </span>
         </div>
-
-        {/* Informational Platform Disclaimer */}
-        <div className="w-full pt-4 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-center">
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-4xl mx-auto leading-relaxed">
-            {locale === 'ru'
-              ? 'Дисклеймер: Quatro Clicks является исключительно информационным сервисом для поиска специалистов. Сервис не является стороной сделок, не участвует в расчетах и не несет ответственности за договоренности сторон, исполнение и качество оказываемых услуг.'
-              : 'Descargo de responsabilidad: Quatro Clicks es exclusivamente una plataforma informativa de contacto entre usuarios y profesionales. La plataforma no es parte de las operaciones, no interviene en pagos ni asume responsabilidad por acuerdos, ejecución o calidad de los servicios prestados.'}
-          </p>
-        </div>
       </div>
-    </footer>
-  );
+
+      {/* Bottom Row: Informational Platform Disclaimer */}
+      <div className="w-full pt-3 border-t border-slate-100 dark:border-slate-800/80 text-center">
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-4xl mx-auto leading-relaxed">
+          {locale === 'ru'
+            ? 'Дисклеймер: Quatro Clicks является исключительно информационным сервисом для поиска специалистов. Сервис не является стороной сделок, не участвует в расчетах и не несет ответственности за договоренности сторон, исполнение и качество оказываемых услуг.'
+            : 'Descargo de responsabilidad: Quatro Clicks es exclusivamente una plataforma informativa de contacto entre usuarios y profesionales. La plataforma no es parte de las operaciones, no interviene en pagos ni asume responsabilidad por acuerdos, ejecución o calidad de los servicios prestados.'}
+        </p>
+      </div>
+    </div>
+  </footer>
+);
 };

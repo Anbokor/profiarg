@@ -150,21 +150,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
-          {/* Prominent Supply-Side Action Button */}
-          {onOpenAddModal && (
-            <button
-              type="button"
-              onClick={onOpenAddModal}
-              className="inline-flex items-center gap-1.5 rounded-full border-2 border-emerald-500 hover:border-emerald-600 dark:border-emerald-500 bg-white dark:bg-slate-800 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/30 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-emerald-800 dark:text-emerald-200 shadow-xs transition active:scale-95 cursor-pointer ring-1 ring-emerald-500/20 shrink-0"
-              title={locale === 'ru' ? 'Предложить услугу' : 'Ofrecer servicio'}
-            >
-              <PlusCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
-              <span className="hidden sm:inline">
-                {locale === 'ru' ? 'Предложить услугу' : 'Ofrecer servicio'}
-              </span>
-            </button>
-          )}
-
           {/* Single Unified Account Trigger & Menu */}
           <div className="relative" ref={masterMenuRef}>
             <button

@@ -1298,8 +1298,9 @@ assert(
 );
 
 assert(
-  refreshedNavbar.includes('PlusCircle') && refreshedNavbar.includes('Предложить услугу'),
-  "Navbar.tsx provides a single supply-side action button (+ Предложить услугу)"
+  !refreshedNavbar.includes("title={locale === 'ru' ? 'Предложить услугу'") &&
+  drilldownHeaderContent.includes('onAddServiceInCategory'),
+  "Navbar.tsx eliminates redundant 'Предложить услугу' button in favor of clean single profile access and in-category buttons"
 );
 
 // Summary
