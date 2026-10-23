@@ -13,6 +13,9 @@ import {
   getLoggedInSpecialist,
   getAllReviewsForSpecialist,
   updateReviewStatus,
+  getStoredDeals,
+  getSpecialistListings,
+  completeDealWithFee,
 } from '@/lib/storage';
 import {
   X,
@@ -28,6 +31,10 @@ import {
   Coins,
   AlertTriangle,
   LogOut,
+  Layers,
+  ShieldCheck,
+  MessageCircle,
+  PlusCircle,
   UserPlus,
   Phone,
   MapPin,
@@ -101,7 +108,7 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
   }, [propSpecialists]);
 
   // Review Moderation & Link generation states
-  const [activeCabinetTab, setActiveCabinetTab] = useState<'deals' | 'reviews'>('deals');
+  const [activeCabinetTab, setActiveCabinetTab] = useState<'deals' | 'services' | 'reviews'>('deals');
   const [specialistReviews, setSpecialistReviews] = useState<Review[]>([]);
   const [copiedReviewDealId, setCopiedReviewDealId] = useState<string | null>(null);
 
@@ -118,6 +125,16 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
   }, [isOpen, propLoggedInSpecialist]);
 
   const activeSpecialist = propLoggedInSpecialist !== undefined ? propLoggedInSpecialist : internalSpecialist;
+
+  const myListings = useMemo(() => {
+    if (!activeSpecialist) return [];
+    return getSpecialistListings(activeSpecialist.id);
+  }, [activeSpecialist]);
+
+  const specialistDeals = useMemo(() => {
+    if (!activeSpecialist) return [];
+    return getStoredDeals().filter((d) => d.specialistId === activeSpecialist.id);
+  }, [activeSpecialist]);
 
   const handleModerateReview = (reviewId: string, status: 'approved' | 'rejected') => {
     if (!activeSpecialist) return;
@@ -498,6 +515,22 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
                     {specialistReviews.filter((r) => r.status === 'pending').length}
                   </span>
                 )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveCabinetTab('services')}
+                className={`inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition cursor-pointer ${
+                  activeCabinetTab === 'services'
+                    ? 'bg-sky-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                <Layers className="h-4 w-4" />
+                <span>{locale === 'ru' ? 'Мои услуги и категории' : 'Mis servicios'}</span>
+                <span className="rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-2 py-0.2 text-[10px] font-bold">
+                  {myListings.length}
+                </span>
               </button>
             </div>
 
@@ -918,6 +951,81 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
               </div>
             )}
 
+            {/* Section: Incoming Leads & Direct Deals (#QC-XXXX) */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-sky-600" />
+                  <span>{locale === 'ru' ? 'Входящие сделки и лиды (Quatro Clicks)' : 'Tratos y consultas directas'}</span>
+                  <span className="rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 text-[11px] font-bold px-2 py-0.2">
+                    {specialistDeals.length}
+                  </span>
+                </h3>
+              </div>
+
+              {specialistDeals.length > 0 ? (
+                <div className="divide-y divide-slate-100 dark:divide-slate-800 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 overflow-hidden">
+                  {specialistDeals.map((deal) => (
+                    <div key={deal.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono text-xs font-black text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950 px-2 py-0.5 rounded-md">
+                            #{deal.id}
+                          </span>
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">
+                            {deal.serviceTitle}
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            deal.status === 'completed'
+                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                              : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                          }`}>
+                            {deal.status === 'completed' ? (locale === 'ru' ? 'Завершена' : 'Completado') : (locale === 'ru' ? 'В обсуждении' : 'En curso')}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {locale === 'ru' ? 'Клиент:' : 'Cliente:'} {deal.customerName} {deal.customerPhone ? `(${deal.customerPhone})` : ''} • {new Date(deal.createdAt).toLocaleDateString(locale === 'ru' ? 'ru-RU' : 'es-AR')}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {deal.status !== 'completed' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              completeDealWithFee(deal.id, 50000, 'ARS');
+                              if (typeof window !== 'undefined') window.location.reload();
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 shadow-xs transition cursor-pointer"
+                          >
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            <span>{locale === 'ru' ? 'Завершить сделку' : 'Cerrar trato'}</span>
+                          </button>
+                        )}
+                        <a
+                          href={`https://wa.me/${deal.customerPhone?.replace(/[^0-9]/g, '') || ''}?text=${encodeURIComponent(
+                            locale === 'ru'
+                              ? `Здравствуйте, ${deal.customerName}! По поводу сделки #${deal.id}...`
+                              : `Hola ${deal.customerName}, sobre el trato #${deal.id}...`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 px-3 py-1.5 text-xs font-bold hover:bg-emerald-100 transition"
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" />
+                          <span>WhatsApp</span>
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-slate-200 dark:border-slate-800 p-4 text-center text-xs text-slate-500">
+                  {locale === 'ru' ? 'Входящих прямых сделок пока нет' : 'Aún no hay tratos directos entrantes'}
+                </div>
+              )}
+            </div>
+
             {/* Section: Orders in Progress */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -1054,6 +1162,96 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
               )}
             </div>
           </>
+        ) : activeCabinetTab === 'services' ? (
+          /* ========================================================================= */
+          /* SERVICES TAB: Multi-listing across categories                            */
+          /* ========================================================================= */
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Layers className="h-4 w-4 text-sky-600" />
+                  <span>{locale === 'ru' ? 'Мои услуги и категории (Мульти-листинг)' : 'Mis servicios y categorías'}</span>
+                  <span className="rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold px-2 py-0.5">
+                    {myListings.length}
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  {locale === 'ru'
+                    ? 'Ваш единый профиль мастера с единым депозитом и верификацией DNI может публиковать целевые услуги в разных разделах.'
+                    : 'Tu perfil único con saldo y verificación DNI puede publicar servicios específicos en distintas categorías.'}
+                </p>
+              </div>
+
+              {onOpenAddSpecialist && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenAddSpecialist();
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white px-3.5 py-2 text-xs font-bold transition shadow-xs cursor-pointer shrink-0"
+                >
+                  <PlusCircle className="h-4 w-4" />
+                  <span>{locale === 'ru' ? '+ Добавить услугу в новую категорию' : '+ Agregar servicio a otra categoría'}</span>
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              {myListings.map((listing) => {
+                const catObj = CATEGORIES.find((c) => c.id === listing.category);
+                return (
+                  <div
+                    key={listing.id}
+                    className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                  >
+                    <div className="flex items-start gap-3">
+                      <img
+                        src={listing.avatar}
+                        alt=""
+                        className="w-12 h-12 rounded-xl object-cover object-top border border-slate-200 dark:border-slate-700 shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span
+                            className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-md"
+                            style={{
+                              backgroundColor: `${catObj?.color || '#0284c7'}15`,
+                              color: catObj?.color || '#0284c7',
+                            }}
+                          >
+                            {catObj ? (locale === 'ru' ? catObj.title_ru : catObj.title_es) : listing.category}
+                          </span>
+                          <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-md">
+                            ✓ {locale === 'ru' ? 'Активно в каталоге' : 'Activo en catálogo'}
+                          </span>
+                        </div>
+                        <h4 className="mt-1 text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                          {listing.title_ru}
+                        </h4>
+                        <p className="text-[11px] text-slate-500">
+                          {listing.barrio} • {listing.subcategories.join(', ')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end sm:self-auto">
+                      <a
+                        href={`/specialist/${listing.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 transition"
+                      >
+                        <span>{t.viewDetails}</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         ) : (
               /* ========================================================================= */
               /* REVIEW MODERATION TAB (Review approvals, verified deals, status badges)  */

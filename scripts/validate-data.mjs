@@ -41,6 +41,7 @@ const filesToCheck = [
   'components/CreateOrderModal.tsx',
   'components/OrdersBoard.tsx',
   'components/SpecialistCabinetModal.tsx',
+  'components/CustomerCabinetModal.tsx',
   'components/CategoryDirectory.tsx',
   'components/CategoryDrilldownHeader.tsx',
   'data/seedOrders.ts',
@@ -673,8 +674,8 @@ assert(
 );
 const specialistCardContent = readFileSync(resolve(process.cwd(), 'components/SpecialistCard.tsx'), 'utf8');
 assert(
-  specialistCardContent.includes('specialist.phone'),
-  "SpecialistCard provides direct telephone calling channel"
+  !specialistCardContent.includes('href={`tel:') && specialistCardContent.includes('onInitiateDeal'),
+  "SpecialistCard eliminates unmonitored telephone calling in favor of tracked deal initiation (onInitiateDeal)"
 );
 assert(
   specialistCardContent.includes('granularLanguages'),
@@ -1194,9 +1195,85 @@ assert(
   "AddSpecialistModal.tsx automatically transliterates Cyrillic names into Latin on input"
 );
 
+// TEST 20: Customer & Specialist Accounts, Tracked Deals, Multi-Listing & DNI Verification
+console.log('\n20. Validating Customer & Specialist Accounts, Tracked Deals, Multi-Listing & DNI Verification:');
+const customerModalContent = readFileSync(resolve(process.cwd(), 'components/CustomerCabinetModal.tsx'), 'utf8');
+const specCabinetModalContent = readFileSync(resolve(process.cwd(), 'components/SpecialistCabinetModal.tsx'), 'utf8');
 
+assert(
+  typesContent.includes('export type DealStatus =') &&
+  typesContent.includes('export interface Deal') &&
+  typesContent.includes('export interface CustomerAccount'),
+  "types/index.ts exports DealStatus, Deal, and CustomerAccount interfaces"
+);
 
+assert(
+  typesContent.includes('accountId?: string;') &&
+  typesContent.includes('dniVerified?: boolean;') &&
+  typesContent.includes('dniVerificationType?:'),
+  "types/index.ts defines accountId, dniVerified, and dniVerificationType in Specialist interface"
+);
 
+assert(
+  utilsContent.includes('validateArgentineDni') &&
+  utilsContent.includes('verifyCuilModulo11'),
+  "lib/utils.ts exports algorithmic validateArgentineDni and verifyCuilModulo11"
+);
+
+assert(
+  utilsContent.includes('dealId') && utilsContent.includes('quatroclicks.com/deal/'),
+  "lib/utils.ts buildWhatsAppUrl formats tracked deal link with QC-XXXX ID"
+);
+
+assert(
+  storageContent.includes('createTrackedDeal') &&
+  storageContent.includes('completeDealWithFee') &&
+  storageContent.includes('getCurrentCustomer') &&
+  storageContent.includes('updateCustomerProfile') &&
+  storageContent.includes('getSpecialistListings'),
+  "lib/storage.ts exports createTrackedDeal, completeDealWithFee, customer auth and multi-listing utilities"
+);
+
+assert(
+  customerModalContent.includes('onCompleteDeal') &&
+  customerModalContent.includes('onOpenReviewForDeal') &&
+  customerModalContent.includes('onUpdateCustomer'),
+  "CustomerCabinetModal.tsx provides deal completion, verified review trigger, and customer profile editing"
+);
+
+assert(
+  drilldownHeaderContent.includes('onAddServiceInCategory') &&
+  drilldownHeaderContent.includes('PlusCircle'),
+  "CategoryDrilldownHeader.tsx features '+ Предложить услугу в этой категории' button"
+);
+
+assert(
+  specCabinetModalContent.includes("'services'") &&
+  specCabinetModalContent.includes('getSpecialistListings') &&
+  specCabinetModalContent.includes('QC-'),
+  "SpecialistCabinetModal.tsx implements multi-listing services tab and tracked deals"
+);
+
+assert(
+  addModalContent.includes('currentStep') &&
+  addModalContent.includes('validateArgentineDni') &&
+  addModalContent.includes('loggedInSpecialist'),
+  "AddSpecialistModal.tsx implements 3-step wizard with live DNI validation and master account inheritance"
+);
+
+assert(
+  navbarContent.includes('onOpenCustomerCabinet') &&
+  navbarContent.includes('activeDealsCount'),
+  "Navbar.tsx provides Customer Cabinet button with active deals count badge"
+);
+
+assert(
+  pageContent.includes('handleInitiateDeal') &&
+  pageContent.includes('handleCompleteDeal') &&
+  pageContent.includes('handleAddServiceInCategory') &&
+  pageContent.includes('CustomerCabinetModal'),
+  "app/page.tsx coordinates tracked deal flow, customer cabinet, and in-category service creation"
+);
 
 // Summary
 console.log('\n========================================================');

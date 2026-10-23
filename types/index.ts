@@ -143,6 +143,9 @@ export interface Specialist {
   reviews: Review[];
   isFeatured?: boolean;
   createdAt?: string;
+  accountId?: string; // Links multiple category listings to single master specialist account
+  dniVerified?: boolean;
+  dniVerificationType?: 'native' | 'foreign' | 'cuit';
 }
 
 export interface FilterState {
@@ -191,3 +194,35 @@ export interface SpecialistCabinetState {
   savedVsTraditionalUsd: number;
   completedOrdersCount: number;
 }
+
+export type DealStatus = 'in_discussion' | 'in_progress' | 'completed' | 'cancelled';
+
+export interface Deal {
+  id: string; // e.g. "QC-7419"
+  specialistId: string;
+  specialistName: string;
+  specialistPhone: string;
+  serviceTitle: string;
+  category: CategoryId;
+  subcategory?: string;
+  customerId?: string;
+  customerName: string;
+  customerPhone?: string;
+  status: DealStatus;
+  amount?: number;
+  currency?: 'ARS' | 'USD';
+  commissionAmount?: number;
+  createdAt: string;
+  completedAt?: string;
+  reviewId?: string;
+}
+
+export interface CustomerAccount {
+  id: string;
+  name: string;
+  phone: string;
+  whatsapp: string;
+  telegram?: string;
+  favorites: string[];
+}
+

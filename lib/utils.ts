@@ -20,7 +20,13 @@ export function formatCurrency(price: number | null, currency: Currency, locale:
   return `${prefix}$${price.toLocaleString('es-AR')} ARS`;
 }
 
-export function buildWhatsAppUrl(phone: string, specialistName: string, locale: Locale): string {
+export function buildWhatsAppUrl(
+  phone: string,
+  specialistName: string,
+  locale: Locale,
+  dealId?: string,
+  serviceTitle?: string
+): string {
   // Sanitize phone number (keep only digits)
   let cleanPhone = phone.replace(/[^0-9]/g, '');
 
@@ -38,12 +44,98 @@ export function buildWhatsAppUrl(phone: string, specialistName: string, locale: 
     cleanPhone = '549' + cleanPhone;
   }
 
-  const text =
-    locale === 'ru'
-      ? `Здравствуйте, ${specialistName}! Нашёл вашу анкету на платформе Quatro Clicks. Подскажите, пожалуйста, по поводу ваших услуг...`
-      : `Hola ${specialistName}, encontré tu perfil en Quatro Clicks. Quisiera consultar sobre tus servicios...`;
+  let text = '';
+  if (dealId) {
+    text =
+      locale === 'ru'
+        ? `Здравствуйте, ${specialistName}! Пишу с Quatro Clicks по услуге «${serviceTitle || 'Услуги'}» (Сделка #${dealId}). Ссылка на сделку: https://quatroclicks.com/deal/${dealId}. Подскажите, пожалуйста...`
+        : `Hola ${specialistName}! Te escribo desde Quatro Clicks por el servicio «${serviceTitle || 'Servicios'}» (Trato #${dealId}). Enlace del trato: https://quatroclicks.com/deal/${dealId}. Quisiera consultar...`;
+  } else {
+    text =
+      locale === 'ru'
+        ? `Здравствуйте, ${specialistName}! Нашёл вашу анкету на платформе Quatro Clicks. Подскажите, пожалуйста, по поводу ваших услуг...`
+        : `Hola ${specialistName}, encontré tu perfil en Quatro Clicks. Quisiera consultar sobre tus servicios...`;
+  }
 
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
+}
+
+export interface DniValidationResult {
+  isValid: boolean;
+  type: 'native' | 'foreign' | 'cuit' | 'invalid';
+  formatted: string;
+  cleanDigits: string;
+  description_ru: string;
+  description_es: string;
+}
+
+export function verifyCuilModulo11(cuit: string): boolean {
+  if (cuit.length !== 11) return false;
+  const multipliers = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+  let sum = 0;
+  for (let i = 0; i < 10; i++) {
+    sum += parseInt(cuit[i], 10) * multipliers[i];
+  }
+  const remainder = 11 - (sum % 11);
+  let expectedDigit = remainder;
+  if (remainder === 11) expectedDigit = 0;
+  if (remainder === 10) expectedDigit = 9;
+
+  return parseInt(cuit[10], 10) === expectedDigit;
+}
+
+export function validateArgentineDni(input: string): DniValidationResult {
+  const clean = input.replace(/[^0-9]/g, '');
+
+  // 11 digits: CUIT / CUIL format (e.g. 20-XXXXXXXX-Z)
+  if (clean.length === 11) {
+    const isModuloValid = verifyCuilModulo11(clean);
+    const formatted = `${clean.slice(0, 2)}-${clean.slice(2, 10)}-${clean.slice(10)}`;
+    return {
+      isValid: isModuloValid,
+      type: isModuloValid ? 'cuit' : 'invalid',
+      formatted,
+      cleanDigits: clean,
+      description_ru: isModuloValid ? 'Действительный налоговый CUIT/CUIL' : 'Неверная контрольная сумма CUIT',
+      description_es: isModuloValid ? 'CUIT/CUIL fiscal válido' : 'Dígito verificador de CUIT inválido',
+    };
+  }
+
+  // 7 or 8 digits: DNI format (e.g. XX.XXX.XXX or X.XXX.XXX)
+  if (clean.length >= 7 && clean.length <= 8) {
+    const num = parseInt(clean, 10);
+    const isForeign = num >= 90_000_000 && num <= 96_999_999;
+    const isNative = num >= 1_000_000 && num < 90_000_000;
+
+    let formatted = '';
+    if (clean.length === 8) {
+      formatted = `${clean.slice(0, 2)}.${clean.slice(2, 5)}.${clean.slice(5)}`;
+    } else {
+      formatted = `${clean.slice(0, 1)}.${clean.slice(1, 4)}.${clean.slice(4)}`;
+    }
+
+    return {
+      isValid: isNative || isForeign,
+      type: isForeign ? 'foreign' : isNative ? 'native' : 'invalid',
+      formatted,
+      cleanDigits: clean,
+      description_ru: isForeign
+        ? 'DNI Extranjero (ВНЖ/ПМЖ в Аргентине)'
+        : 'DNI Nativo (Гражданин Аргентины)',
+      description_es: isForeign
+        ? 'DNI Extranjero (Residencia en Argentina)'
+        : 'DNI Nativo (Ciudadano argentino)',
+    };
+  }
+
+  return {
+    isValid: false,
+    type: 'invalid',
+    formatted: input,
+    cleanDigits: clean,
+    description_ru: 'Требуется 7–8 цифр DNI или 11 цифр CUIT',
+    description_es: 'Se requieren 7–8 dígitos de DNI u 11 de CUIT',
+  };
 }
 
 export function generateSlug(name: string): string {

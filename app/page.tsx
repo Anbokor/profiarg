@@ -9,6 +9,7 @@ import { SpecialistCard } from '@/components/SpecialistCard';
 import { SpecialistDetailModal } from '@/components/SpecialistDetailModal';
 import { AddSpecialistModal } from '@/components/AddSpecialistModal';
 import { SpecialistCabinetModal } from '@/components/SpecialistCabinetModal';
+import { CustomerCabinetModal } from '@/components/CustomerCabinetModal';
 import { Footer } from '@/components/Footer';
 import { CategoryDirectory } from '@/components/CategoryDirectory';
 import { CategoryDrilldownHeader } from '@/components/CategoryDrilldownHeader';
@@ -46,7 +47,14 @@ import {
   getLoggedInSpecialist,
   loginSpecialist,
   logoutSpecialist,
+  getStoredDeals,
+  createTrackedDeal,
+  completeDealWithFee,
+  getCurrentCustomer,
+  updateCustomerProfile,
 } from '@/lib/storage';
+import { buildWhatsAppUrl, getSpecialistDisplayName } from '@/lib/utils';
+import { Deal, CustomerAccount } from '@/types';
 import { translations } from '@/lib/translations';
 import { Frown, ArrowLeft, Search, X, MapPin } from 'lucide-react';
 
@@ -82,7 +90,12 @@ export default function Home() {
   const [reviewInitialTab, setReviewInitialTab] = useState<'overview' | 'reviews'>('overview');
   const [focusedSpecialist, setFocusedSpecialist] = useState<Specialist | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [initialAddCategory, setInitialAddCategory] = useState<CategoryId | undefined>(undefined);
+  const [initialAddSubcategory, setInitialAddSubcategory] = useState<string | undefined>(undefined);
   const [isCabinetModalOpen, setIsCabinetModalOpen] = useState(false);
+  const [isCustomerCabinetOpen, setIsCustomerCabinetOpen] = useState(false);
+  const [currentCustomer, setCurrentCustomer] = useState<CustomerAccount | null>(null);
+  const [deals, setDeals] = useState<Deal[]>([]);
   const [orderToComplete, setOrderToComplete] = useState<Order | null>(null);
   const [loggedInSpecialist, setLoggedInSpecialist] = useState<Specialist | null>(null);
 
@@ -94,6 +107,8 @@ export default function Home() {
     setSpecialists(getStoredSpecialists());
     setOrders(getStoredOrders());
     setFavorites(getFavorites());
+    setCurrentCustomer(getCurrentCustomer());
+    setDeals(getStoredDeals());
 
     const activeSpec = getLoggedInSpecialist();
     if (activeSpec) {
@@ -254,6 +269,67 @@ export default function Home() {
     } else {
       pushNavState({ specialistId: null });
     }
+  };
+
+  const handleInitiateDeal = (specialist: Specialist, serviceTitle?: string) => {
+    const newDeal = createTrackedDeal({
+      specialistId: specialist.id,
+      specialistName: specialist.name,
+      specialistPhone: specialist.whatsapp || specialist.phone || '',
+      serviceTitle: serviceTitle || specialist.title_ru,
+      category: specialist.category,
+      subcategory: specialist.subcategories?.[0],
+      customerId: currentCustomer?.id,
+      customerName: currentCustomer?.name,
+      customerPhone: currentCustomer?.phone,
+    });
+
+    setDeals(getStoredDeals());
+
+    const displayName = getSpecialistDisplayName(specialist, locale);
+    const waUrl = buildWhatsAppUrl(
+      specialist.whatsapp,
+      displayName,
+      locale,
+      newDeal.id,
+      serviceTitle || specialist.title_ru
+    );
+
+    if (typeof window !== 'undefined') {
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleCompleteDeal = (dealId: string, finalSum: number, currency: 'ARS' | 'USD') => {
+    completeDealWithFee(dealId, finalSum, currency);
+    setDeals(getStoredDeals());
+    if (loggedInSpecialist) {
+      setCabinetState(getSpecialistCabinetState(loggedInSpecialist.id));
+    } else {
+      setCabinetState(getSpecialistCabinetState());
+    }
+  };
+
+  const handleOpenReviewForDeal = (deal: Deal) => {
+    setIsCustomerCabinetOpen(false);
+    const found = specialists.find((s) => s.id === deal.specialistId);
+    if (found) {
+      setActiveSpecialist(found);
+      setReviewDealId(deal.id);
+      setReviewInitialTab('reviews');
+      pushNavState({ specialistId: found.id });
+    }
+  };
+
+  const handleUpdateCustomer = (data: Partial<CustomerAccount>) => {
+    const updated = updateCustomerProfile(data);
+    setCurrentCustomer(updated);
+  };
+
+  const handleAddServiceInCategory = (catId: CategoryId, sub?: string) => {
+    setInitialAddCategory(catId);
+    setInitialAddSubcategory(sub);
+    setIsAddModalOpen(true);
   };
 
   const handleSelectCategory = (catId: CategoryId) => {
@@ -481,6 +557,8 @@ export default function Home() {
         favoritesOnly={favoritesOnly}
         setFavoritesOnly={setFavoritesOnly}
         onOpenCabinet={() => setIsCabinetModalOpen(true)}
+        onOpenCustomerCabinet={() => setIsCustomerCabinetOpen(true)}
+        activeDealsCount={deals.filter((d) => d.status !== 'completed').length}
         loggedInSpecialist={loggedInSpecialist}
         onLogoutSpecialist={handleLogoutSpecialist}
         onGoHome={handleBackToCategories}
@@ -558,6 +636,12 @@ export default function Home() {
               specialistsCount={filteredSpecialists.length}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
+              onAddServiceInCategory={() =>
+                handleAddServiceInCategory(
+                  activeCategory.id,
+                  selectedSubcategory !== 'all' ? selectedSubcategory : undefined
+                )
+              }
             />
           ) : (
             /* Search across categories banner */
@@ -682,6 +766,7 @@ export default function Home() {
                         window.scrollTo({ top: 180, behavior: 'smooth' });
                       }
                     }}
+                    onInitiateDeal={handleInitiateDeal}
                     isFavorite={favorites.includes(specialist.id)}
                     onToggleFavorite={handleToggleFavorite}
                     isSelected={(activeSpecialist?.id || focusedSpecialist?.id) === specialist.id}
@@ -749,14 +834,22 @@ export default function Home() {
             window.scrollTo({ top: 180, behavior: 'smooth' });
           }
         }}
+        onInitiateDeal={handleInitiateDeal}
       />
 
       {/* Add Specialist Modal Form */}
       <AddSpecialistModal
         isOpen={isAddModalOpen}
         locale={locale}
-        onClose={() => setIsAddModalOpen(false)}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setInitialAddCategory(undefined);
+          setInitialAddSubcategory(undefined);
+        }}
         onSave={handleAddSpecialist}
+        initialCategory={initialAddCategory}
+        initialSubcategory={initialAddSubcategory}
+        loggedInSpecialist={loggedInSpecialist}
       />
 
       {/* Specialist Cabinet Modal */}
@@ -778,6 +871,25 @@ export default function Home() {
         loggedInSpecialist={loggedInSpecialist}
         onLoginSpecialist={handleLoginSpecialist}
         onLogoutSpecialist={handleLogoutSpecialist}
+      />
+
+      {/* Customer Cabinet Modal */}
+      <CustomerCabinetModal
+        isOpen={isCustomerCabinetOpen}
+        onClose={() => setIsCustomerCabinetOpen(false)}
+        locale={locale}
+        deals={deals}
+        favorites={favorites}
+        specialists={specialists}
+        currentCustomer={currentCustomer}
+        onUpdateCustomer={handleUpdateCustomer}
+        onCompleteDeal={handleCompleteDeal}
+        onOpenReviewForDeal={handleOpenReviewForDeal}
+        onSelectSpecialist={(spec) => {
+          setIsCustomerCabinetOpen(false);
+          handleOpenSpecialist(spec);
+        }}
+        onToggleFavorite={handleToggleFavorite}
       />
     </div>
   );

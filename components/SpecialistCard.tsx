@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   MessageCircle,
   Heart,
-  Phone,
   ArrowRight,
 } from 'lucide-react';
 
@@ -21,6 +20,7 @@ interface SpecialistCardProps {
   onSelect: (specialist: Specialist) => void;
   onSelectPhoto?: (specialist: Specialist, photoUrl: string) => void;
   onFocusMap?: (specialist: Specialist) => void;
+  onInitiateDeal?: (specialist: Specialist) => void;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
   isSelected?: boolean;
@@ -32,6 +32,7 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
   onSelect,
   onSelectPhoto,
   onFocusMap,
+  onInitiateDeal,
   isFavorite,
   onToggleFavorite,
   isSelected,
@@ -207,31 +208,23 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
             <Heart className={`h-5 w-5 ${isFavorite ? 'fill-rose-500 text-rose-500' : ''}`} />
           </button>
 
-          {/* Direct Telephone Call Button */}
-          {specialist.phone && (
-            <a
-              href={`tel:${specialist.phone}`}
-              onClick={(e) => e.stopPropagation()}
-              className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 transition shadow-xs"
-              title={t.phoneDirect || 'Позвонить'}
-              aria-label={t.phoneDirect || 'Позвонить'}
-            >
-              <Phone className="h-5 w-5" />
-            </a>
-          )}
-
-          {/* WhatsApp Direct Action (Prominent) */}
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-3.5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-white shadow-xs transition active:scale-95"
-            title="WhatsApp"
+          {/* WhatsApp Tracked Deal Action (Variant A - Secure initiation) */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onInitiateDeal) {
+                onInitiateDeal(specialist);
+              } else {
+                window.open(waUrl, '_blank', 'noopener,noreferrer');
+              }
+            }}
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-white shadow-xs transition active:scale-95 cursor-pointer"
+            title={locale === 'ru' ? 'Начать сделку в WhatsApp' : 'Iniciar trato por WhatsApp'}
           >
             <MessageCircle className="h-4.5 w-4.5" />
-            <span className="md:hidden">WhatsApp</span>
-          </a>
+            <span className="inline">WhatsApp</span>
+          </button>
 
           {/* View Profile Button */}
           <button

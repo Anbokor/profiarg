@@ -70,6 +70,7 @@ interface SpecialistDetailModalProps {
   initialPhoto?: string | null;
   onClearPhoto?: () => void;
   onFocusMap?: (specialist: Specialist) => void;
+  onInitiateDeal?: (specialist: Specialist) => void;
 }
 
 export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
@@ -84,6 +85,7 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
   initialPhoto = null,
   onClearPhoto,
   onFocusMap,
+  onInitiateDeal,
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'reviews'>(initialTab);
   const [newReviewAuthor, setNewReviewAuthor] = useState('');
@@ -303,28 +305,22 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
               </div>
             </div>
 
-            {/* Direct WhatsApp CTA */}
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <a
-                href={waUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-emerald-500 active:scale-95 transition"
+            {/* Tracked Deal Action CTAs (Variant A) */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => {
+                  if (onInitiateDeal) {
+                    onInitiateDeal(specialist);
+                  } else {
+                    window.open(waUrl, '_blank', 'noopener,noreferrer');
+                  }
+                }}
+                className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-emerald-500 active:scale-95 transition cursor-pointer"
               >
                 <MessageCircle className="h-5 w-5" />
-                <span>{t.contactWhatsApp}</span>
-              </a>
-
-              {specialist.phone && (
-                <a
-                  href={`tel:${specialist.phone}`}
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 transition"
-                  title={t.phoneDirect}
-                >
-                  <Phone className="h-4 w-4 text-emerald-600" />
-                  <span className="hidden sm:inline">{specialist.phone}</span>
-                </a>
-              )}
+                <span>{locale === 'ru' ? 'Начать сделку в WhatsApp' : 'Iniciar trato en WhatsApp'}</span>
+              </button>
 
               {specialist.telegram && (
                 <a

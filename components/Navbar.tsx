@@ -9,6 +9,7 @@ import {
   UserPlus,
   ChevronDown,
   LogOut,
+  User,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -25,6 +26,8 @@ interface NavbarProps {
   openOrdersCount?: number;
   onOpenCreateOrder?: () => void;
   onOpenCabinet?: () => void;
+  onOpenCustomerCabinet?: () => void;
+  activeDealsCount?: number;
   loggedInSpecialist?: Specialist | null;
   onLogoutSpecialist?: () => void;
   onGoHome?: () => void;
@@ -42,6 +45,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   openOrdersCount = 0,
   onOpenCreateOrder,
   onOpenCabinet,
+  onOpenCustomerCabinet,
+  activeDealsCount = 0,
   loggedInSpecialist,
   onLogoutSpecialist,
   onGoHome,
@@ -142,6 +147,26 @@ export const Navbar: React.FC<NavbarProps> = ({
               ES
             </button>
           </div>
+
+          {/* Customer Cabinet Button (Мои сделки) */}
+          {onOpenCustomerCabinet && (
+            <button
+              type="button"
+              onClick={onOpenCustomerCabinet}
+              className="relative inline-flex items-center gap-1.5 rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 hover:border-sky-500 hover:text-sky-600 transition shadow-xs cursor-pointer"
+              title={locale === 'ru' ? 'Кабинет заказчика (Мои сделки)' : 'Panel del cliente (Mis tratos)'}
+            >
+              <User className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+              <span className="hidden sm:inline">
+                {locale === 'ru' ? 'Мои сделки' : 'Mis tratos'}
+              </span>
+              {activeDealsCount > 0 && (
+                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-600 px-1 text-[10px] font-bold text-white">
+                  {activeDealsCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Unified Clean "Для мастеров" / "Для бизнеса" Dropdown Menu with Red Accent Border */}
           <div className="relative" ref={masterMenuRef}>

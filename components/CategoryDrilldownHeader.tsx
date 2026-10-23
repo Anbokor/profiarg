@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   Search,
   X,
+  PlusCircle,
   HardHat,
   Sparkles,
   Truck,
@@ -36,6 +37,7 @@ interface CategoryDrilldownHeaderProps {
   specialistsCount: number;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  onAddServiceInCategory?: () => void;
 }
 
 const getCategoryIcon = (iconName: string, className = 'w-6 h-6') => {
@@ -68,6 +70,7 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
   specialistsCount,
   searchQuery,
   setSearchQuery,
+  onAddServiceInCategory,
 }) => {
   const t = translations[locale];
   const categoryIndex = CATEGORIES.findIndex((c) => c.id === category.id);
@@ -176,9 +179,25 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
             </div>
           </div>
 
-          {/* Quick Search inside this category */}
-          <div className="w-full lg:w-72 flex-shrink-0">
-            <div className="relative flex items-center">
+          {/* Actions: Add Service in this category & Quick Search */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto flex-shrink-0">
+            {onAddServiceInCategory && (
+              <button
+                type="button"
+                onClick={onAddServiceInCategory}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white px-3.5 py-2 text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer shrink-0"
+                title={
+                  locale === 'ru'
+                    ? `Предложить услугу в разделе «${category.title_ru}»`
+                    : `Ofrecer servicio en «${category.title_es}»`
+                }
+              >
+                <PlusCircle className="w-4 h-4" />
+                <span>{locale === 'ru' ? '+ Предложить услугу в этой категории' : '+ Ofrecer servicio aquí'}</span>
+              </button>
+            )}
+
+            <div className="relative flex items-center w-full lg:w-64">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                 <Search className="h-4 w-4 text-sky-600" />
               </div>

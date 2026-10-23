@@ -1,4 +1,13 @@
-import { Specialist, Review, Order, OrderStatus, SpecialistCabinetState } from '@/types';
+import {
+  Specialist,
+  Review,
+  Order,
+  OrderStatus,
+  SpecialistCabinetState,
+  Deal,
+  DealStatus,
+  CustomerAccount,
+} from '@/types';
 import { SEED_SPECIALISTS } from '@/data/seedData';
 import { SEED_ORDERS } from '@/data/seedOrders';
 
@@ -8,6 +17,52 @@ const CUSTOM_REVIEWS_KEY = 'quatroclicks_custom_reviews';
 const LOCALE_KEY = 'quatroclicks_locale';
 const ORDERS_KEY = 'quatroclicks_orders_list';
 const SPECIALIST_CABINET_KEY = 'quatroclicks_specialist_cabinet';
+const DEALS_KEY = 'quatroclicks_deals_list';
+const CURRENT_CUSTOMER_KEY = 'quatroclicks_current_customer';
+
+export const SEED_DEALS: Deal[] = [
+  {
+    id: 'QC-4821',
+    specialistId: 'spec-3', // Alexander Romanov
+    specialistName: 'Александр Романов',
+    specialistPhone: '+5491133867500',
+    serviceTitle: 'Монтаж окон и дверей',
+    category: 'repair_construction',
+    subcategory: 'Окна',
+    customerId: 'cust-1',
+    customerName: 'Екатерина Смирнова',
+    customerPhone: '+5491122334455',
+    status: 'completed',
+    amount: 85000,
+    currency: 'ARS',
+    commissionAmount: 850,
+    createdAt: '2026-10-18T14:20:00.000Z',
+    completedAt: '2026-10-21T16:45:00.000Z',
+  },
+  {
+    id: 'QC-7193',
+    specialistId: 'spec-3',
+    specialistName: 'Александр Романов',
+    specialistPhone: '+5491133867500',
+    serviceTitle: 'Замена стеклопакета в Палермо',
+    category: 'repair_construction',
+    subcategory: 'Окна',
+    customerId: 'cust-1',
+    customerName: 'Екатерина Смирнова',
+    customerPhone: '+5491122334455',
+    status: 'in_progress',
+    createdAt: '2026-10-23T11:15:00.000Z',
+  },
+];
+
+export const DEFAULT_CUSTOMER: CustomerAccount = {
+  id: 'cust-1',
+  name: 'Екатерина Смирнова',
+  phone: '+54 9 11 2233-4455',
+  whatsapp: '+5491122334455',
+  telegram: 'ekaterina_caba',
+  favorites: ['spec-3', 'spec-1'],
+};
 
 export function getStoredSpecialists(): Specialist[] {
   if (typeof window === 'undefined') {
@@ -513,4 +568,242 @@ export function topUpSpecialistDeposit(
   }
 
   return updated;
+}
+
+// =========================================================================
+// TRACKED DEALS & COMMISSION PIPELINE (Variant A)
+// =========================================================================
+
+export function getStoredDeals(): Deal[] {
+  if (typeof window === 'undefined') return SEED_DEALS;
+  try {
+    const raw = localStorage.getItem(DEALS_KEY);
+    if (!raw) {
+      localStorage.setItem(DEALS_KEY, JSON.stringify(SEED_DEALS));
+      return SEED_DEALS;
+    }
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error('Error reading deals from storage', e);
+    return SEED_DEALS;
+  }
+}
+
+export function createTrackedDeal(dealData: {
+  specialistId: string;
+  specialistName: string;
+  specialistPhone: string;
+  serviceTitle: string;
+  category: any;
+  subcategory?: string;
+  customerId?: string;
+  customerName?: string;
+  customerPhone?: string;
+}): Deal {
+  const existing = getStoredDeals();
+  // Generate random 4-digit unique deal ID: QC-XXXX
+  let randomNum = Math.floor(1000 + Math.random() * 9000);
+  let id = `QC-${randomNum}`;
+  while (existing.some((d) => d.id === id)) {
+    randomNum = Math.floor(1000 + Math.random() * 9000);
+    id = `QC-${randomNum}`;
+  }
+
+  const customer = getCurrentCustomer();
+
+  const newDeal: Deal = {
+    id,
+    specialistId: dealData.specialistId,
+    specialistName: dealData.specialistName,
+    specialistPhone: dealData.specialistPhone,
+    serviceTitle: dealData.serviceTitle || 'Услуги мастера',
+    category: dealData.category,
+    subcategory: dealData.subcategory,
+    customerId: dealData.customerId || customer?.id || 'guest',
+    customerName: dealData.customerName || customer?.name || 'Клиент Quatro Clicks',
+    customerPhone: dealData.customerPhone || customer?.whatsapp || '',
+    status: 'in_discussion',
+    createdAt: new Date().toISOString(),
+  };
+
+  const updated = [newDeal, ...existing];
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(DEALS_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error saving new deal', e);
+    }
+  }
+
+  return newDeal;
+}
+
+export function updateDealStatus(dealId: string, status: DealStatus): Deal | null {
+  const deals = getStoredDeals();
+  let target: Deal | null = null;
+  const updated = deals.map((d) => {
+    if (d.id === dealId) {
+      target = { ...d, status };
+      return target;
+    }
+    return d;
+  });
+
+  if (typeof window !== 'undefined' && target) {
+    try {
+      localStorage.setItem(DEALS_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error updating deal status', e);
+    }
+  }
+
+  return target;
+}
+
+export function completeDealWithFee(
+  dealId: string,
+  finalSum: number,
+  currency: 'ARS' | 'USD' = 'ARS'
+): Deal | null {
+  const deals = getStoredDeals();
+  let target: Deal | null = null;
+  const commission = Math.round(finalSum * 0.01 * 100) / 100; // 1%
+
+  const updated = deals.map((d) => {
+    if (d.id === dealId) {
+      target = {
+        ...d,
+        status: 'completed' as DealStatus,
+        amount: finalSum,
+        currency,
+        commissionAmount: commission,
+        completedAt: new Date().toISOString(),
+      };
+      return target;
+    }
+    return d;
+  });
+
+  if (typeof window !== 'undefined' && target) {
+    try {
+      localStorage.setItem(DEALS_KEY, JSON.stringify(updated));
+
+      // Deduct fee from specialist deposit
+      const specId = (target as Deal).specialistId;
+      const cabinetState = getSpecialistCabinetState(specId);
+      const newBalanceArs =
+        currency === 'ARS'
+          ? Math.max(0, cabinetState.balanceArs - commission)
+          : cabinetState.balanceArs;
+      const newBalanceUsd =
+        currency === 'USD'
+          ? Math.max(0, cabinetState.balanceUsd - commission)
+          : cabinetState.balanceUsd;
+
+      const updatedCabinet: SpecialistCabinetState = {
+        ...cabinetState,
+        balanceArs: newBalanceArs,
+        balanceUsd: newBalanceUsd,
+        totalVolumeArs:
+          currency === 'ARS' ? cabinetState.totalVolumeArs + finalSum : cabinetState.totalVolumeArs,
+        totalVolumeUsd:
+          currency === 'USD' ? cabinetState.totalVolumeUsd + finalSum : cabinetState.totalVolumeUsd,
+        totalCommissionPaidArs:
+          currency === 'ARS'
+            ? cabinetState.totalCommissionPaidArs + commission
+            : cabinetState.totalCommissionPaidArs,
+        totalCommissionPaidUsd:
+          currency === 'USD'
+            ? cabinetState.totalCommissionPaidUsd + commission
+            : cabinetState.totalCommissionPaidUsd,
+        completedOrdersCount: cabinetState.completedOrdersCount + 1,
+      };
+
+      const key = specId ? `quatroclicks_specialist_cabinet_${specId}` : SPECIALIST_CABINET_KEY;
+      localStorage.setItem(key, JSON.stringify(updatedCabinet));
+    } catch (e) {
+      console.error('Error completing deal', e);
+    }
+  }
+
+  return target;
+}
+
+// =========================================================================
+// CUSTOMER ACCOUNT MANAGEMENT
+// =========================================================================
+
+export function getCurrentCustomer(): CustomerAccount | null {
+  if (typeof window === 'undefined') return DEFAULT_CUSTOMER;
+  try {
+    const raw = localStorage.getItem(CURRENT_CUSTOMER_KEY);
+    if (!raw) {
+      localStorage.setItem(CURRENT_CUSTOMER_KEY, JSON.stringify(DEFAULT_CUSTOMER));
+      return DEFAULT_CUSTOMER;
+    }
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error('Error reading current customer', e);
+    return DEFAULT_CUSTOMER;
+  }
+}
+
+export function loginCustomer(phoneOrTelegram: string, name?: string): CustomerAccount {
+  const current = getCurrentCustomer() || DEFAULT_CUSTOMER;
+  const isTg = phoneOrTelegram.startsWith('@') || !phoneOrTelegram.replace(/[^0-9]/g, '');
+  const updated: CustomerAccount = {
+    ...current,
+    id: `cust-${Date.now().toString().slice(-4)}`,
+    name: name?.trim() || current.name || 'Пользователь Quatro Clicks',
+    phone: isTg ? current.phone : phoneOrTelegram,
+    whatsapp: isTg ? current.whatsapp : phoneOrTelegram.replace(/[^0-9]/g, ''),
+    telegram: isTg ? phoneOrTelegram.replace('@', '') : current.telegram,
+  };
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(CURRENT_CUSTOMER_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error saving customer session', e);
+    }
+  }
+
+  return updated;
+}
+
+export function logoutCustomer(): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(CURRENT_CUSTOMER_KEY);
+    } catch (e) {
+      console.error('Error logging out customer', e);
+    }
+  }
+}
+
+export function updateCustomerProfile(data: Partial<CustomerAccount>): CustomerAccount {
+  const current = getCurrentCustomer() || DEFAULT_CUSTOMER;
+  const updated: CustomerAccount = { ...current, ...data };
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(CURRENT_CUSTOMER_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error updating customer profile', e);
+    }
+  }
+  return updated;
+}
+
+// =========================================================================
+// MULTI-LISTING: SPECIALIST OFFERINGS ACROSS CATEGORIES
+// =========================================================================
+
+export function getSpecialistListings(accountIdOrSpecialistId: string): Specialist[] {
+  const all = getStoredSpecialists();
+  return all.filter(
+    (s) =>
+      s.id === accountIdOrSpecialistId ||
+      s.accountId === accountIdOrSpecialistId ||
+      (s.phone && all.find((m) => m.id === accountIdOrSpecialistId)?.phone === s.phone)
+  );
 }
