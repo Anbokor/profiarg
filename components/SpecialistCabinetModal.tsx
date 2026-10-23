@@ -62,6 +62,7 @@ interface SpecialistCabinetModalProps {
   loggedInSpecialist?: Specialist | null;
   onLoginSpecialist?: (specialist: Specialist) => void;
   onLogoutSpecialist?: () => void;
+  onSwitchToCustomer?: () => void;
 }
 
 export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
@@ -80,6 +81,7 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
   loggedInSpecialist: propLoggedInSpecialist,
   onLoginSpecialist,
   onLogoutSpecialist,
+  onSwitchToCustomer,
 }) => {
   const t = translations[locale];
 
@@ -262,16 +264,32 @@ export const SpecialistCabinetModal: React.FC<SpecialistCabinetModalProps> = ({
         className="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[94vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
+        {/* Modal Header with Role Switcher */}
         <div className="flex items-start justify-between border-b border-slate-200/80 px-6 py-4.5 dark:border-slate-800 bg-gradient-to-r from-sky-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
           <div className="flex items-center gap-3">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-600 to-sky-500 text-white shadow-md">
               <Briefcase className="h-5 w-5" />
             </span>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
-                {activeSpecialist ? t.cabinetTitle : t.cabinetAuthTitle}
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                  {activeSpecialist ? t.cabinetTitle : t.cabinetAuthTitle}
+                </h2>
+                {onSwitchToCustomer && (
+                  <div className="flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200 dark:border-slate-700">
+                    <button
+                      type="button"
+                      onClick={onSwitchToCustomer}
+                      className="rounded-lg px-2.5 py-0.5 text-[11px] font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition cursor-pointer"
+                    >
+                      🛍️ {locale === 'ru' ? 'Заказчик' : 'Cliente'}
+                    </button>
+                    <span className="rounded-lg bg-white dark:bg-slate-700 px-2.5 py-0.5 text-[11px] font-bold text-sky-700 dark:text-sky-300 shadow-2xs">
+                      🛠️ {locale === 'ru' ? 'Мастер' : 'Profesional'}
+                    </span>
+                  </div>
+                )}
+              </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
                 {activeSpecialist ? t.cabinetSubtitle : t.cabinetAuthSubtitle}
               </p>

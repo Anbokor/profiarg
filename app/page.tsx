@@ -871,6 +871,10 @@ export default function Home() {
         loggedInSpecialist={loggedInSpecialist}
         onLoginSpecialist={handleLoginSpecialist}
         onLogoutSpecialist={handleLogoutSpecialist}
+        onSwitchToCustomer={() => {
+          setIsCabinetModalOpen(false);
+          setIsCustomerCabinetOpen(true);
+        }}
       />
 
       {/* Customer Cabinet Modal */}
@@ -890,6 +894,10 @@ export default function Home() {
           handleOpenSpecialist(spec);
         }}
         onToggleFavorite={handleToggleFavorite}
+        onSwitchToSpecialist={() => {
+          setIsCustomerCabinetOpen(false);
+          setIsCabinetModalOpen(true);
+        }}
       />
     </div>
   );

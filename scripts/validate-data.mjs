@@ -1275,6 +1275,33 @@ assert(
   "app/page.tsx coordinates tracked deal flow, customer cabinet, and in-category service creation"
 );
 
+// TEST 21: Legal Disclaimer & Unified Single-Account UX
+console.log('\n21. Validating Legal Disclaimer & Unified Single-Account UX:');
+const refreshedFooter = readFileSync(resolve(process.cwd(), 'components/Footer.tsx'), 'utf8');
+const refreshedCustomerModal = readFileSync(resolve(process.cwd(), 'components/CustomerCabinetModal.tsx'), 'utf8');
+const refreshedSpecModal = readFileSync(resolve(process.cwd(), 'components/SpecialistCabinetModal.tsx'), 'utf8');
+const refreshedNavbar = readFileSync(resolve(process.cwd(), 'components/Navbar.tsx'), 'utf8');
+
+assert(
+  refreshedFooter.includes('Дисклеймер') && refreshedFooter.includes('Descargo de responsabilidad'),
+  "Footer.tsx includes explicit legal disclaimer disclaiming liability for contracts/quality"
+);
+
+assert(
+  !refreshedCustomerModal.includes('гарантия Quatro Clicks') && !refreshedCustomerModal.includes('trato protegido'),
+  "CustomerCabinetModal.tsx removes misleading guarantee claims in favor of direct contact registration"
+);
+
+assert(
+  refreshedCustomerModal.includes('onSwitchToSpecialist') && refreshedSpecModal.includes('onSwitchToCustomer'),
+  "Customer and Specialist cabinets implement 1-click seamless role switcher (Заказчик / Мастер)"
+);
+
+assert(
+  refreshedNavbar.includes('PlusCircle') && refreshedNavbar.includes('Предложить услугу'),
+  "Navbar.tsx provides a single supply-side action button (+ Предложить услугу)"
+);
+
 // Summary
 console.log('\n========================================================');
 console.log(`Total tests: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests}`);

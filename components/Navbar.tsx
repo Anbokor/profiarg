@@ -10,6 +10,8 @@ import {
   ChevronDown,
   LogOut,
   User,
+  PlusCircle,
+  ShoppingBag,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -148,32 +150,27 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
-          {/* Customer Cabinet Button (Мои сделки) */}
-          {onOpenCustomerCabinet && (
+          {/* Prominent Supply-Side Action Button */}
+          {onOpenAddModal && (
             <button
               type="button"
-              onClick={onOpenCustomerCabinet}
-              className="relative inline-flex items-center gap-1.5 rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 hover:border-sky-500 hover:text-sky-600 transition shadow-xs cursor-pointer"
-              title={locale === 'ru' ? 'Кабинет заказчика (Мои сделки)' : 'Panel del cliente (Mis tratos)'}
+              onClick={onOpenAddModal}
+              className="inline-flex items-center gap-1.5 rounded-full border-2 border-emerald-500 hover:border-emerald-600 dark:border-emerald-500 bg-white dark:bg-slate-800 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/30 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-emerald-800 dark:text-emerald-200 shadow-xs transition active:scale-95 cursor-pointer ring-1 ring-emerald-500/20 shrink-0"
+              title={locale === 'ru' ? 'Предложить услугу' : 'Ofrecer servicio'}
             >
-              <User className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+              <PlusCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
               <span className="hidden sm:inline">
-                {locale === 'ru' ? 'Мои сделки' : 'Mis tratos'}
+                {locale === 'ru' ? 'Предложить услугу' : 'Ofrecer servicio'}
               </span>
-              {activeDealsCount > 0 && (
-                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-600 px-1 text-[10px] font-bold text-white">
-                  {activeDealsCount}
-                </span>
-              )}
             </button>
           )}
 
-          {/* Unified Clean "Для мастеров" / "Для бизнеса" Dropdown Menu with Red Accent Border */}
+          {/* Single Unified Account Trigger & Menu */}
           <div className="relative" ref={masterMenuRef}>
             <button
               type="button"
               onClick={() => setIsMasterMenuOpen(!isMasterMenuOpen)}
-              className="inline-flex items-center gap-1.5 rounded-full border-2 border-red-500 hover:border-red-600 dark:border-red-500 bg-white dark:bg-slate-800 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 hover:bg-red-50/20 dark:hover:bg-red-950/20 shadow-xs transition active:scale-95 cursor-pointer ring-1 ring-red-500/20"
+              className="relative inline-flex items-center gap-2 rounded-full border-2 border-red-500 hover:border-red-600 dark:border-red-500 bg-white dark:bg-slate-800 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 hover:bg-red-50/20 dark:hover:bg-red-950/20 shadow-xs transition active:scale-95 cursor-pointer ring-1 ring-red-500/20"
               aria-expanded={isMasterMenuOpen}
               aria-haspopup="true"
               aria-label={locale === 'ru' ? 'Для мастеров' : 'Para profesionales'}
@@ -184,7 +181,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <img
                     src={loggedInSpecialist.avatar}
                     alt={getSpecialistDisplayName(loggedInSpecialist, locale)}
-                    className="h-5 w-5 rounded-full object-cover border border-sky-400"
+                    className="h-5 w-5 rounded-full object-cover border border-sky-400 shrink-0"
                   />
                   <span className="hidden md:inline max-w-[120px] truncate">
                     {getSpecialistDisplayName(loggedInSpecialist, locale)}
@@ -192,12 +189,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </>
               ) : (
                 <>
-                  <Briefcase className="h-4 w-4 text-red-600 dark:text-red-400" />
-                  <span className="hidden md:inline">
-                    {locale === 'ru' ? 'Вход для мастеров' : 'Para profesionales'}
+                  <User className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                  <span className="hidden sm:inline">
+                    {locale === 'ru' ? 'Личный кабинет' : 'Mi cuenta'}
                   </span>
                 </>
               )}
+
+              {activeDealsCount > 0 && (
+                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-600 px-1 text-[10px] font-bold text-white">
+                  {activeDealsCount}
+                </span>
+              )}
+
               <ChevronDown
                 className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${
                   isMasterMenuOpen ? 'rotate-180' : ''
@@ -206,21 +210,70 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             {isMasterMenuOpen && (
-              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl py-2 z-50 animate-fade-in divide-y divide-slate-100 dark:divide-slate-800">
-                <div className="px-4 py-2">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    {loggedInSpecialist
-                      ? (locale === 'ru' ? 'Вы авторизованы' : 'Sesión activa')
-                      : (locale === 'ru' ? 'Специалистам' : 'Profesionales')}
-                  </p>
-                  <p className="text-xs text-slate-800 dark:text-slate-200 font-semibold mt-0.5 truncate">
-                    {loggedInSpecialist
-                      ? getSpecialistDisplayName(loggedInSpecialist, locale)
-                      : (locale === 'ru' ? 'Личный кабинет и анкета мастера' : 'Panel de control y registro')}
-                  </p>
+              <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl py-2 z-50 animate-fade-in divide-y divide-slate-100 dark:divide-slate-800">
+                {/* Account Header */}
+                <div className="px-4 py-2.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-950 flex items-center justify-center text-sky-700 dark:text-sky-300 font-bold shrink-0">
+                      {loggedInSpecialist?.avatar ? (
+                        <img
+                          src={loggedInSpecialist.avatar}
+                          alt=""
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <User className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                      )}
+                    </div>
+                    <div className="truncate">
+                      <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                        {loggedInSpecialist
+                          ? getSpecialistDisplayName(loggedInSpecialist, locale)
+                          : (locale === 'ru' ? 'Единый профиль' : 'Mi cuenta')}
+                      </div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                        {loggedInSpecialist
+                          ? (locale === 'ru' ? 'Специалист платформы' : 'Profesional verificado')
+                          : (locale === 'ru' ? 'Заказчик и исполнитель' : 'Cliente y profesional')}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
+                {/* Section 1: КАК ЗАКАЗЧИК */}
                 <div className="py-1">
+                  <div className="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    🛍️ {locale === 'ru' ? 'Заказчик' : 'Cliente'}
+                  </div>
+                  {onOpenCustomerCabinet && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMasterMenuOpen(false);
+                        onOpenCustomerCabinet();
+                      }}
+                      className="w-full flex items-center justify-between px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-sky-50/70 dark:hover:bg-sky-950/40 transition text-left group"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <ShoppingBag className="w-4 h-4 text-sky-600" />
+                        <span className="font-semibold">{locale === 'ru' ? 'Мои сделки' : 'Mis tratos'}</span>
+                      </div>
+                      {activeDealsCount > 0 ? (
+                        <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-600 px-1 text-[10px] font-bold text-white">
+                          {activeDealsCount}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-slate-400">#QC</span>
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Section 2: КАК СПЕЦИАЛИСТ */}
+                <div className="py-1">
+                  <div className="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    🛠️ {locale === 'ru' ? 'Специалист' : 'Profesional'}
+                  </div>
                   {onOpenCabinet && (
                     <button
                       type="button"
@@ -228,68 +281,53 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setIsMasterMenuOpen(false);
                         onOpenCabinet();
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-sky-50/70 dark:hover:bg-sky-950/40 transition text-left group"
+                      className="w-full flex items-center justify-between px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-amber-50/70 dark:hover:bg-amber-950/40 transition text-left group"
                     >
-                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 group-hover:scale-105 transition-transform">
-                        <Briefcase className="h-4 w-4" />
+                      <div className="flex items-center gap-2.5">
+                        <Briefcase className="w-4 h-4 text-amber-600" />
+                        <span className="font-semibold">{t.specialistCabinetTab}</span>
                       </div>
-                      <div>
-                        <div className="font-bold text-slate-900 dark:text-white">
-                          {t.specialistCabinetTab}
-                        </div>
-                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                          {locale === 'ru' ? 'Баланс депозита и учёт сделок' : 'Saldo de depósito y control'}
-                        </div>
-                      </div>
+                      {loggedInSpecialist ? (
+                        <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.5 rounded">
+                          PRO
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {locale === 'ru' ? 'Вход для мастеров' : 'Acceso'}
+                        </span>
+                      )}
                     </button>
                   )}
 
-                  {!loggedInSpecialist ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMasterMenuOpen(false);
+                      onOpenAddModal();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50/70 dark:hover:bg-emerald-950/40 transition text-left font-semibold"
+                  >
+                    <PlusCircle className="w-4 h-4 text-emerald-600" />
+                    <span>{locale === 'ru' ? '+ Добавить услугу' : '+ Publicar servicio'}</span>
+                  </button>
+                </div>
+
+                {/* Section 3: Logout if specialist */}
+                {loggedInSpecialist && onLogoutSpecialist && (
+                  <div className="py-1">
                     <button
                       type="button"
                       onClick={() => {
                         setIsMasterMenuOpen(false);
-                        onOpenAddModal();
+                        onLogoutSpecialist();
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-emerald-50/70 dark:hover:bg-emerald-950/40 transition text-left group"
+                      className="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50/70 dark:hover:bg-rose-950/40 transition text-left font-semibold"
                     >
-                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 group-hover:scale-105 transition-transform">
-                        <UserPlus className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 dark:text-white">
-                          {locale === 'ru' ? 'Стать исполнителем' : 'Registrar mi perfil'}
-                        </div>
-                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                          {t.addBusinessButton}
-                        </div>
-                      </div>
+                      <LogOut className="w-4 h-4" />
+                      <span>{t.cabinetLogoutBtn}</span>
                     </button>
-                  ) : (
-                    onLogoutSpecialist && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsMasterMenuOpen(false);
-                          onLogoutSpecialist();
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-rose-600 hover:bg-rose-50/70 dark:hover:bg-rose-950/40 transition text-left group"
-                      >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 group-hover:scale-105 transition-transform">
-                          <LogOut className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <div className="font-bold">
-                            {t.cabinetLogoutBtn}
-                          </div>
-                          <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                            {locale === 'ru' ? 'Завершить сеанс мастера' : 'Cerrar sesión'}
-                          </div>
-                        </div>
-                      </button>
-                    )
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

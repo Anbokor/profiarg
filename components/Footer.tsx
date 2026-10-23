@@ -132,6 +132,15 @@ export const Footer: React.FC<FooterProps> = ({
             © {new Date().getFullYear()} Quatro Clicks
           </span>
         </div>
+
+        {/* Informational Platform Disclaimer */}
+        <div className="w-full pt-4 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-center">
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-4xl mx-auto leading-relaxed">
+            {locale === 'ru'
+              ? 'Дисклеймер: Quatro Clicks является исключительно информационным сервисом для поиска специалистов. Сервис не является стороной сделок, не участвует в расчетах и не несет ответственности за договоренности сторон, исполнение и качество оказываемых услуг.'
+              : 'Descargo de responsabilidad: Quatro Clicks es exclusivamente una plataforma informativa de contacto entre usuarios y profesionales. La plataforma no es parte de las operaciones, no interviene en pagos ni asume responsabilidad por acuerdos, ejecución o calidad de los servicios prestados.'}
+          </p>
+        </div>
       </div>
     </footer>
   );

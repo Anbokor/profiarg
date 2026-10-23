@@ -35,6 +35,7 @@ interface CustomerCabinetModalProps {
   onOpenReviewForDeal: (deal: Deal) => void;
   onSelectSpecialist: (specialist: Specialist) => void;
   onToggleFavorite: (id: string) => void;
+  onSwitchToSpecialist?: () => void;
 }
 
 export const CustomerCabinetModal: React.FC<CustomerCabinetModalProps> = ({
@@ -50,6 +51,7 @@ export const CustomerCabinetModal: React.FC<CustomerCabinetModalProps> = ({
   onOpenReviewForDeal,
   onSelectSpecialist,
   onToggleFavorite,
+  onSwitchToSpecialist,
 }) => {
   const t = translations[locale];
   const [activeTab, setActiveTab] = useState<'deals' | 'favorites' | 'profile'>('deals');
@@ -96,7 +98,7 @@ export const CustomerCabinetModal: React.FC<CustomerCabinetModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
       <div className="relative w-full max-w-2xl rounded-2xl bg-white shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800 my-6 overflow-hidden">
         
-        {/* Header */}
+        {/* Header with Role Switcher */}
         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-xs dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-100 text-sky-600 dark:bg-sky-950 dark:text-sky-400">
@@ -107,9 +109,20 @@ export const CustomerCabinetModal: React.FC<CustomerCabinetModalProps> = ({
                 <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                   {locale === 'ru' ? 'Кабинет Заказчика' : 'Panel del Cliente'}
                 </h2>
-                <span className="rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 px-2 py-0.5 text-[10px] font-bold">
-                  {locale === 'ru' ? 'Заказчик' : 'Cliente'}
-                </span>
+                {onSwitchToSpecialist && (
+                  <div className="flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200 dark:border-slate-700">
+                    <span className="rounded-lg bg-white dark:bg-slate-700 px-2.5 py-0.5 text-[11px] font-bold text-sky-700 dark:text-sky-300 shadow-2xs">
+                      🛍️ {locale === 'ru' ? 'Заказчик' : 'Cliente'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={onSwitchToSpecialist}
+                      className="rounded-lg px-2.5 py-0.5 text-[11px] font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition cursor-pointer"
+                    >
+                      🛠️ {locale === 'ru' ? 'Мастер' : 'Profesional'}
+                    </button>
+                  </div>
+                )}
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 {currentCustomer?.name || (locale === 'ru' ? 'Управление сделками и избранным' : 'Gestión de tratos y favoritos')}
@@ -180,16 +193,16 @@ export const CustomerCabinetModal: React.FC<CustomerCabinetModalProps> = ({
           {/* TAB 1: МОИ СДЕЛКИ */}
           {activeTab === 'deals' && (
             <div className="flex flex-col gap-4">
-              <div className="rounded-xl border border-sky-200 bg-sky-50 dark:border-sky-800/80 dark:bg-sky-950/40 p-3 flex items-start gap-2.5 text-xs text-sky-900 dark:text-sky-200">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60 p-3.5 flex items-start gap-3 text-xs text-slate-800 dark:text-slate-200 shadow-2xs">
                 <ShieldCheck className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="font-bold">
-                    {locale === 'ru' ? 'Контроль и гарантия Quatro Clicks' : 'Control y garantía de Quatro Clicks'}
+                  <strong className="font-bold text-slate-900 dark:text-white">
+                    {locale === 'ru' ? 'Прямой контакт и фиксация сделки #QC' : 'Contacto directo y registro de trato #QC'}
                   </strong>
-                  <p className="mt-0.5 text-[11px] text-sky-800 dark:text-sky-300 leading-relaxed">
+                  <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                     {locale === 'ru'
-                      ? 'Все обращения к мастерам фиксируются под уникальным номером #QC. После выполнения работы подтвердите сумму сделки, чтобы оставить проверенный отзыв.'
-                      : 'Cada contacto se registra con un código único #QC. Al finalizar el trabajo, confirmá el monto para publicar tu reseña verificada.'}
+                      ? 'Quatro Clicks — открытая информационная площадка для прямого контакта. Платформа не является стороной сделок, не устанавливает цены и не несет ответственности за договоренности, сроки и качество работ. Номер #QC служит для удобства прямого общения и публикации проверенных отзывов.'
+                      : 'Quatro Clicks es una plataforma informativa de contacto directo. La plataforma no interviene en las contrataciones ni asume responsabilidad por acuerdos, plazos o calidad de los servicios. El código #QC facilita el contacto y la publicación de reseñas verificadas.'}
                   </p>
                 </div>
               </div>
@@ -200,7 +213,7 @@ export const CustomerCabinetModal: React.FC<CustomerCabinetModalProps> = ({
                   <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
                     {locale === 'ru'
                       ? 'У вас пока нет открытых сделок. Нажмите «WhatsApp» на карточке любого специалиста, чтобы зафиксировать сделку.'
-                      : 'Aún no tenés tratos abiertos. Tocá WhatsApp en cualquier tarjeta para iniciar un trato protegido.'}
+                      : 'Aún no tenés tratos abiertos. Tocá WhatsApp en cualquier tarjeta para iniciar contacto directo.'}
                   </p>
                 </div>
               ) : (
