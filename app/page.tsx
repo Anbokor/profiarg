@@ -705,26 +705,11 @@ export default function Home() {
 
           {/* Main Content Area: Single Spacious Column for Specialist Cards */}
           <main className="flex-1 mx-auto max-w-4xl w-full px-4 sm:px-6 lg:px-8 py-6">
-            {/* Header Action Bar: Count and Toggle Map Button */}
-            <div className="flex items-center justify-between gap-3 mb-4">
-              <span className="text-sm font-bold text-slate-900 dark:text-white">
-                {locale === 'ru' ? 'Специалисты' : 'Especialistas'} ({filteredSpecialists.length})
+            {/* Header Action Bar: Count */}
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <span className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                {locale === 'ru' ? 'Специалисты в Буэнос-Айресе' : 'Especialistas en Buenos Aires'} ({filteredSpecialists.length})
               </span>
-
-              {filteredSpecialists.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setShowCategoryMap(!showCategoryMap)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-2xs transition cursor-pointer"
-                >
-                  <MapPin className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-                  <span>
-                    {showCategoryMap
-                      ? (locale === 'ru' ? 'Скрыть карту' : 'Ocultar mapa')
-                      : (locale === 'ru' ? '🗺️ Показать на карте' : '🗺️ Ver en el mapa')}
-                  </span>
-                </button>
-              )}
             </div>
 
             {/* Top Bright Call-to-Action: Post an Ad in this Category */}
@@ -897,7 +882,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Floating Vertical Map Button (Right Edge) */}
+      {/* Floating High-Visibility Vertical Map Tab (Anchored right beside cards on desktop, edge-docked on smaller screens) */}
       {activeCategory && filteredSpecialists.length > 0 && (
         <button
           type="button"
@@ -915,23 +900,42 @@ export default function Home() {
               }, 50);
             }
           }}
-          className={`fixed right-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-2 rounded-l-2xl border-y border-l py-3.5 sm:py-4 px-2 sm:px-2.5 shadow-xl transition-all active:scale-95 cursor-pointer backdrop-blur-md ${
+          className={`fixed z-40 right-0 xl:right-[max(0.5rem,calc((100vw-56rem)/2-5rem))] top-1/2 -translate-y-1/2 flex flex-col items-center gap-2.5 rounded-l-2xl border-l-2 border-y-2 py-5 px-3 sm:px-3.5 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer select-none group shadow-2xl ${
             showCategoryMap
-              ? 'bg-sky-600 text-white border-sky-500 shadow-sky-600/30'
-              : 'bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-700 hover:bg-sky-50 dark:hover:bg-slate-800 hover:text-sky-600 shadow-slate-900/10'
+              ? 'bg-gradient-to-b from-rose-600 via-rose-700 to-red-800 text-white border-rose-400/50 shadow-[-6px_8px_28px_rgba(225,29,72,0.5)]'
+              : 'bg-gradient-to-b from-sky-600 via-sky-700 to-blue-800 text-white border-sky-400/50 shadow-[-6px_8px_30px_rgba(2,132,199,0.55)]'
           }`}
-          title={showCategoryMap ? (locale === 'ru' ? 'Скрыть карту' : 'Ocultar mapa') : (locale === 'ru' ? 'Открыть карту' : 'Ver mapa')}
+          title={showCategoryMap ? (locale === 'ru' ? 'Скрыть интерактивную карту' : 'Ocultar mapa interactivo') : (locale === 'ru' ? 'Открыть карту специалистов' : 'Ver mapa de especialistas')}
           aria-label={showCategoryMap ? (locale === 'ru' ? 'Скрыть карту' : 'Ocultar mapa') : (locale === 'ru' ? 'Открыть карту' : 'Ver mapa')}
         >
-          <MapPin className={`h-4 w-4 sm:h-5 sm:w-5 ${showCategoryMap ? 'text-white' : 'text-sky-600 dark:text-sky-400'}`} />
-          <span
-            className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest"
-            style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-          >
-            {showCategoryMap
-              ? (locale === 'ru' ? 'Скрыть' : 'Ocultar')
-              : (locale === 'ru' ? 'Карта' : 'Mapa')}
-          </span>
+          {/* Prominent White Contrast Icon Badge with Glow */}
+          <div className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white shadow-md transition-transform group-hover:scale-110 ${
+            showCategoryMap ? 'text-rose-700' : 'text-sky-700'
+          }`}>
+            <MapPin className="h-5 w-5 sm:h-6 sm:w-6 stroke-[2.5]" />
+          </div>
+
+          {/* Large Vertical Bold Typography */}
+          <div className="flex flex-col items-center py-1">
+            <span
+              className="text-xs sm:text-sm font-black tracking-widest uppercase drop-shadow-sm text-white"
+              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+            >
+              {showCategoryMap
+                ? (locale === 'ru' ? 'С К Р Ы Т Ь' : 'C E R R A R')
+                : (locale === 'ru' ? 'К А Р Т А' : 'M A P A')}
+            </span>
+          </div>
+
+          {/* Pulsing Signal Dot */}
+          <div className="relative flex h-2.5 w-2.5 items-center justify-center">
+            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+              showCategoryMap ? 'bg-amber-300' : 'bg-emerald-300'
+            }`} />
+            <span className={`relative inline-flex rounded-full h-2 w-2 ${
+              showCategoryMap ? 'bg-amber-200' : 'bg-emerald-400'
+            }`} />
+          </div>
         </button>
       )}
 

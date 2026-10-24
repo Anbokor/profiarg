@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   Search,
   X,
-  PlusCircle,
   HardHat,
   Sparkles,
   Truck,
@@ -179,50 +178,32 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
             </div>
           </div>
 
-          {/* Actions: Add Service in this category & Quick Search */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto flex-shrink-0">
-            {onAddServiceInCategory && (
+          {/* Quick Search */}
+          <div className="relative flex items-center w-full lg:w-72 flex-shrink-0">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <Search className="h-4 w-4 text-sky-600" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={
+                locale === 'ru'
+                  ? `Поиск в «${category.title_ru}»...`
+                  : `Buscar en «${category.title_es}»...`
+              }
+              className="block w-full rounded-xl border-0 py-2.5 pl-9 pr-9 text-xs sm:text-sm text-slate-900 shadow-xs ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-sky-500 dark:bg-slate-800 dark:text-white dark:ring-slate-700 transition"
+            />
+            {searchQuery && (
               <button
                 type="button"
-                onClick={onAddServiceInCategory}
-                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer shrink-0"
-                title={
-                  locale === 'ru'
-                    ? `Разместить объявление в разделе «${category.title_ru}»`
-                    : `Publicar anuncio en «${category.title_es}»`
-                }
+                onClick={() => setSearchQuery('')}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                aria-label={locale === 'ru' ? 'Очистить поиск' : 'Borrar búsqueda'}
               >
-                <PlusCircle className="w-4 h-4 stroke-[2.5]" />
-                <span>{locale === 'ru' ? '+ Предложить услугу в этой категории' : '+ Ofrecer servicio aquí'}</span>
+                <X className="h-4 w-4" />
               </button>
             )}
-
-            <div className="relative flex items-center w-full lg:w-64">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <Search className="h-4 w-4 text-sky-600" />
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={
-                  locale === 'ru'
-                    ? `Поиск в «${category.title_ru}»...`
-                    : `Buscar en «${category.title_es}»...`
-                }
-                className="block w-full rounded-xl border-0 py-2 pl-9 pr-9 text-xs sm:text-sm text-slate-900 shadow-xs ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-sky-500 dark:bg-slate-800 dark:text-white dark:ring-slate-700 transition"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:hover:text-white"
-                  aria-label={locale === 'ru' ? 'Очистить поиск' : 'Borrar búsqueda'}
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
           </div>
         </div>
       </div>

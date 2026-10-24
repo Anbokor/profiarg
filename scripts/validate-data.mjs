@@ -1250,9 +1250,10 @@ assert(
 );
 
 assert(
-  drilldownHeaderContent.includes('onAddServiceInCategory') &&
-  drilldownHeaderContent.includes('PlusCircle'),
-  "CategoryDrilldownHeader.tsx features '+ Предложить услугу в этой категории' button"
+  !drilldownHeaderContent.includes('PlusCircle') &&
+  pageContent.includes('Разместить объявление в') &&
+  pageContent.includes('Работаете в сфере'),
+  "In-category ad placement is cleaned out of header and prominently rendered at start and end of specialist cards list"
 );
 
 assert(
@@ -1307,8 +1308,8 @@ assert(
 
 assert(
   !refreshedNavbar.includes("title={locale === 'ru' ? 'Предложить услугу'") &&
-  drilldownHeaderContent.includes('onAddServiceInCategory'),
-  "Navbar.tsx eliminates redundant 'Предложить услугу' button in favor of clean single profile access and in-category buttons"
+  !pageContent.includes('🗺️ Показать на карте'),
+  "Navbar and app/page.tsx eliminate redundant old 'Предложить услугу' and duplicate map buttons"
 );
 
 // TEST 22: Prominent Ad Placement & Vertical Floating Map Button
@@ -1318,8 +1319,8 @@ assert(
   "app/page.tsx features prominent ad placement buttons at top and bottom of specialist cards list"
 );
 assert(
-  pageContent.includes('fixed right-0') && pageContent.includes("writingMode: 'vertical-rl'"),
-  "app/page.tsx renders vertical floating map button at the right edge of viewport"
+  pageContent.includes('fixed z-40 right-0') && pageContent.includes("writingMode: 'vertical-rl'") && pageContent.includes('from-sky-600'),
+  "app/page.tsx renders high-visibility vertical floating map tab with gradient and large typography"
 );
 
 // Summary
