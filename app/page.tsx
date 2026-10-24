@@ -56,7 +56,7 @@ import {
 import { buildWhatsAppUrl, getSpecialistDisplayName } from '@/lib/utils';
 import { Deal, CustomerAccount } from '@/types';
 import { translations } from '@/lib/translations';
-import { Frown, ArrowLeft, Search, X, MapPin } from 'lucide-react';
+import { Frown, ArrowLeft, Search, X, MapPin, PlusCircle } from 'lucide-react';
 
 export default function Home() {
   const [locale, setLocaleState] = useState<Locale>('ru');
@@ -727,9 +727,47 @@ export default function Home() {
               )}
             </div>
 
+            {/* Top Bright Call-to-Action: Post an Ad in this Category */}
+            {activeCategory && (
+              <button
+                type="button"
+                onClick={() =>
+                  handleAddServiceInCategory(
+                    activeCategory.id,
+                    selectedSubcategory !== 'all' ? selectedSubcategory : undefined
+                  )
+                }
+                className="w-full mb-4 flex items-center justify-between gap-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 sm:px-5 sm:py-3.5 font-bold shadow-sm transition active:scale-[0.99] cursor-pointer"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 text-white shrink-0">
+                    <PlusCircle className="h-5 w-5 stroke-[2.5]" />
+                  </div>
+                  <div className="text-left min-w-0">
+                    <div className="text-xs sm:text-sm font-black leading-tight truncate">
+                      {locale === 'ru'
+                        ? `+ Разместить объявление в «${activeCategory.title_ru}»`
+                        : `+ Publicar anuncio en «${activeCategory.title_es}»`}
+                    </div>
+                    <div className="text-[11px] sm:text-xs text-emerald-100 font-medium">
+                      {locale === 'ru'
+                        ? 'Бесплатно • Прямой контакт с клиентами через WhatsApp'
+                        : 'Gratis • Contacto directo con clientes por WhatsApp'}
+                    </div>
+                  </div>
+                </div>
+                <div className="inline-flex items-center gap-1 rounded-xl bg-white/20 px-3 py-1.5 text-xs font-black uppercase tracking-wider shrink-0 hidden sm:inline-flex">
+                  {locale === 'ru' ? 'Подать заявку' : 'Publicar'} →
+                </div>
+              </button>
+            )}
+
             {/* Compact Map (Reduced vertical height, opened by button) */}
             {showCategoryMap && filteredSpecialists.length > 0 && (
-              <div className="relative isolate z-0 h-64 sm:h-72 w-full rounded-2xl mb-6 shadow-sm overflow-hidden border border-slate-200 dark:border-slate-800">
+              <div
+                id="category-map-section"
+                className="relative isolate z-0 h-64 sm:h-72 w-full rounded-2xl mb-6 shadow-sm overflow-hidden border border-slate-200 dark:border-slate-800"
+              >
                 <LeafletMap
                   specialists={filteredSpecialists}
                   locale={locale}
@@ -763,7 +801,14 @@ export default function Home() {
                       setFocusedSpecialist(spec);
                       setShowCategoryMap(true);
                       if (typeof window !== 'undefined') {
-                        window.scrollTo({ top: 180, behavior: 'smooth' });
+                        setTimeout(() => {
+                          const mapEl = document.getElementById('category-map-section');
+                          if (mapEl) {
+                            mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          } else {
+                            window.scrollTo({ top: 180, behavior: 'smooth' });
+                          }
+                        }, 50);
                       }
                     }}
                     onInitiateDeal={handleInitiateDeal}
@@ -772,6 +817,42 @@ export default function Home() {
                     isSelected={(activeSpecialist?.id || focusedSpecialist?.id) === specialist.id}
                   />
                 ))}
+
+                {/* Bottom Call-to-Action Invitation Card for Contractors */}
+                {activeCategory && (
+                  <div className="mt-8 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/70 p-6 sm:p-7 text-center dark:border-emerald-800/80 dark:bg-emerald-950/30">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white mb-3 shadow-xs">
+                      <PlusCircle className="h-6 w-6 stroke-[2.5]" />
+                    </div>
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                      {locale === 'ru'
+                        ? `Работаете в сфере «${activeCategory.title_ru}»?`
+                        : `¿Ofrecés servicios de «${activeCategory.title_es}»?`}
+                    </h3>
+                    <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
+                      {locale === 'ru'
+                        ? 'Разместите свою анкету бесплатно и получайте прямые заявки от заказчиков в Буэнос-Айресе напрямую в WhatsApp.'
+                        : 'Publicá tu anuncio gratis y recibí consultas de clientes en Buenos Aires directamente por WhatsApp.'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleAddServiceInCategory(
+                          activeCategory.id,
+                          selectedSubcategory !== 'all' ? selectedSubcategory : undefined
+                        )
+                      }
+                      className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 text-xs sm:text-sm font-extrabold shadow-md transition active:scale-95 cursor-pointer"
+                    >
+                      <PlusCircle className="w-4 h-4 stroke-[2.5]" />
+                      <span>
+                        {locale === 'ru'
+                          ? 'Разместить объявление бесплатно'
+                          : 'Publicar anuncio gratis'}
+                      </span>
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-10 text-center bg-white dark:bg-slate-900">
@@ -783,16 +864,75 @@ export default function Home() {
                       : 'Aún no tenés favoritos guardados. Tocá el corazón en cualquier tarjeta para guardarlo.'
                     : t.noResults}
                 </p>
-                <button
-                  onClick={handleResetFilters}
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-sky-50 px-3.5 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 cursor-pointer"
-                >
-                  {t.resetFilters}
-                </button>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-4">
+                  <button
+                    onClick={handleResetFilters}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-sky-50 px-3.5 py-2 text-xs font-semibold text-sky-700 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 cursor-pointer"
+                  >
+                    {t.resetFilters}
+                  </button>
+                  {activeCategory && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleAddServiceInCategory(
+                          activeCategory.id,
+                          selectedSubcategory !== 'all' ? selectedSubcategory : undefined
+                        )
+                      }
+                      className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-bold shadow-xs transition cursor-pointer"
+                    >
+                      <PlusCircle className="w-3.5 h-3.5" />
+                      <span>
+                        {locale === 'ru'
+                          ? 'Разместить объявление первым'
+                          : 'Publicar el primer anuncio'}
+                      </span>
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </main>
         </div>
+      )}
+
+      {/* Floating Vertical Map Button (Right Edge) */}
+      {activeCategory && filteredSpecialists.length > 0 && (
+        <button
+          type="button"
+          onClick={() => {
+            const nextState = !showCategoryMap;
+            setShowCategoryMap(nextState);
+            if (nextState && typeof window !== 'undefined') {
+              setTimeout(() => {
+                const mapEl = document.getElementById('category-map-section');
+                if (mapEl) {
+                  mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                  window.scrollTo({ top: 180, behavior: 'smooth' });
+                }
+              }, 50);
+            }
+          }}
+          className={`fixed right-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-2 rounded-l-2xl border-y border-l py-3.5 sm:py-4 px-2 sm:px-2.5 shadow-xl transition-all active:scale-95 cursor-pointer backdrop-blur-md ${
+            showCategoryMap
+              ? 'bg-sky-600 text-white border-sky-500 shadow-sky-600/30'
+              : 'bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-700 hover:bg-sky-50 dark:hover:bg-slate-800 hover:text-sky-600 shadow-slate-900/10'
+          }`}
+          title={showCategoryMap ? (locale === 'ru' ? 'Скрыть карту' : 'Ocultar mapa') : (locale === 'ru' ? 'Открыть карту' : 'Ver mapa')}
+          aria-label={showCategoryMap ? (locale === 'ru' ? 'Скрыть карту' : 'Ocultar mapa') : (locale === 'ru' ? 'Открыть карту' : 'Ver mapa')}
+        >
+          <MapPin className={`h-4 w-4 sm:h-5 sm:w-5 ${showCategoryMap ? 'text-white' : 'text-sky-600 dark:text-sky-400'}`} />
+          <span
+            className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest"
+            style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+          >
+            {showCategoryMap
+              ? (locale === 'ru' ? 'Скрыть' : 'Ocultar')
+              : (locale === 'ru' ? 'Карта' : 'Mapa')}
+          </span>
+        </button>
       )}
 
       {/* Footer */}

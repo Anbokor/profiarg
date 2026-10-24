@@ -185,14 +185,14 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
               <button
                 type="button"
                 onClick={onAddServiceInCategory}
-                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white px-3.5 py-2 text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer shrink-0"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer shrink-0"
                 title={
                   locale === 'ru'
-                    ? `Предложить услугу в разделе «${category.title_ru}»`
-                    : `Ofrecer servicio en «${category.title_es}»`
+                    ? `Разместить объявление в разделе «${category.title_ru}»`
+                    : `Publicar anuncio en «${category.title_es}»`
                 }
               >
-                <PlusCircle className="w-4 h-4" />
+                <PlusCircle className="w-4 h-4 stroke-[2.5]" />
                 <span>{locale === 'ru' ? '+ Предложить услугу в этой категории' : '+ Ofrecer servicio aquí'}</span>
               </button>
             )}

@@ -1311,6 +1311,17 @@ assert(
   "Navbar.tsx eliminates redundant 'Предложить услугу' button in favor of clean single profile access and in-category buttons"
 );
 
+// TEST 22: Prominent Ad Placement & Vertical Floating Map Button
+console.log('\n22. Validating Prominent In-Category Ad Buttons & Vertical Floating Map Button:');
+assert(
+  pageContent.includes('Разместить объявление в') && pageContent.includes('Работаете в сфере'),
+  "app/page.tsx features prominent ad placement buttons at top and bottom of specialist cards list"
+);
+assert(
+  pageContent.includes('fixed right-0') && pageContent.includes("writingMode: 'vertical-rl'"),
+  "app/page.tsx renders vertical floating map button at the right edge of viewport"
+);
+
 // Summary
 console.log('\n========================================================');
 console.log(`Total tests: ${totalTests} | Passed: ${passedTests} | Failed: ${failedTests}`);
