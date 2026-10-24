@@ -335,16 +335,17 @@ export default function SpecialistPage() {
                     {specialist.experienceYears} {t.yearsInArg}
                   </span>
                 </div>
-                <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
-                  <span>{displayName}</span>
+                <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white leading-tight">
+                  {title}
+                </h1>
+                <p className="text-sm sm:text-base text-slate-200 font-medium mt-1">
+                  {locale === 'ru' ? 'Исполнитель:' : 'Profesional:'}{' '}
+                  <span className="font-bold text-white">{displayName}</span>
                   {displayCompanyName && (
-                    <span className="text-sm sm:text-lg font-semibold text-sky-300 hidden sm:inline-flex items-center gap-1">
+                    <span className="text-slate-300 ml-1">
                       • {displayCompanyName}
                     </span>
                   )}
-                </h1>
-                <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 mt-0.5 font-medium leading-snug">
-                  {title}
                 </p>
               </div>
             </div>
@@ -405,31 +406,15 @@ export default function SpecialistPage() {
               </div>
             </div>
 
-            {/* Communication & Advantage badges */}
-            <div className="flex flex-wrap items-center gap-2 text-xs">
-              {specialist.responseTime && (
-                <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 px-3 py-1 font-semibold text-emerald-800 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-300">
-                  <Clock className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>{locale === 'ru' ? `Отвечаю в течение: ${specialist.responseTime}` : `Responde en: ${specialist.responseTime}`}</span>
-                </span>
-              )}
-              {specialist.workingHoursComm && (
-                <span className="inline-flex items-center gap-1.5 rounded-xl bg-sky-50 border border-sky-200/80 px-3 py-1 font-semibold text-sky-800 dark:bg-sky-950/50 dark:border-sky-800 dark:text-sky-300">
-                  <span>{locale === 'ru' ? `Часы для связи: ${specialist.workingHoursComm}` : `Horario de contacto: ${specialist.workingHoursComm}`}</span>
-                </span>
-              )}
-              {specialist.preferredContactMethod && (
-                <span className="inline-flex items-center gap-1.5 rounded-xl bg-amber-50 border border-amber-200/80 px-3 py-1 font-semibold text-amber-900 dark:bg-amber-950/50 dark:border-amber-800 dark:text-amber-200">
-                  <span>{locale === 'ru' ? `Связь: ${specialist.preferredContactMethod.toUpperCase()}` : `Canal: ${specialist.preferredContactMethod.toUpperCase()}`}</span>
-                </span>
-              )}
-              {specialist.isVerified && (
+            {/* Verification Badge (if verified) */}
+            {specialist.isVerified && (
+              <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="inline-flex items-center gap-1.5 rounded-xl bg-purple-50 border border-purple-200/80 px-3 py-1 font-semibold text-purple-800 dark:bg-purple-950/50 dark:border-purple-800 dark:text-purple-300">
                   <ShieldCheck className="h-3.5 w-3.5 text-purple-600" />
                   <span>{t.verifiedDniBadge}</span>
                 </span>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Navigation Tabs (Overview / Reviews) */}
             <div className="flex border-b border-slate-200 dark:border-slate-800">
@@ -467,26 +452,6 @@ export default function SpecialistPage() {
                   </p>
                 </div>
 
-                {/* Contractor Advantages */}
-                {specialist.advantages && specialist.advantages.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
-                      {t.advantagesLabel}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {specialist.advantages.map((adv, idx) => (
-                        <span
-                          key={idx}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-sky-50 border border-sky-200/80 px-3 py-1.5 text-xs font-semibold text-sky-800 dark:bg-sky-950/50 dark:border-sky-800 dark:text-sky-200 shadow-2xs"
-                        >
-                          <Check className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
-                          <span>{adv}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* Subcategories tags */}
                 {specialist.subcategories && specialist.subcategories.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
@@ -520,17 +485,9 @@ export default function SpecialistPage() {
                   </div>
                 </div>
 
-                {/* Info Grid */}
+                {/* Location & Languages */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
-                    <Clock className="h-5 w-5 text-sky-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="block text-xs font-semibold text-slate-400">{t.workingHours}</span>
-                      <span className="text-xs font-medium text-slate-700 dark:text-slate-200">{workingHours}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40">
+                  <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40 sm:col-span-1">
                     <MapPin className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
                       <span className="block text-xs font-semibold text-slate-400">{t.address}</span>
@@ -539,7 +496,7 @@ export default function SpecialistPage() {
                   </div>
 
                   {/* Languages with Granular Levels */}
-                  <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40 sm:col-span-2">
+                  <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40 sm:col-span-1">
                     <Languages className="h-5 w-5 text-purple-600 shrink-0 mt-0.5" />
                     <div className="w-full">
                       <span className="block text-xs font-semibold text-slate-400 mb-1.5">{t.languages}</span>
@@ -552,12 +509,12 @@ export default function SpecialistPage() {
                           )}
                           {specialist.granularLanguages.spanish && (
                             <span className="rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">
-                              🇦🇷 {t.langSpanish} ({specialist.granularLanguages.spanish === 'fluent' ? t.levelFluent : specialist.granularLanguages.spanish === 'good' ? t.levelGood : t.levelWithTranslator})
+                              🇦🇷 {t.langSpanish}
                             </span>
                           )}
                           {specialist.granularLanguages.english && (
                             <span className="rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200">
-                              🇬🇧 {t.langEnglish} ({specialist.granularLanguages.english === 'fluent' ? t.levelFluent : specialist.granularLanguages.english === 'good' ? t.levelGood : t.levelWithTranslator})
+                              🇬🇧 {t.langEnglish}
                             </span>
                           )}
                           {specialist.granularLanguages.portuguese && (
@@ -571,18 +528,6 @@ export default function SpecialistPage() {
                           {specialist.languages.map((l) => (l === 'ru' ? 'Русский' : l === 'es' ? 'Español' : 'English')).join(', ')}
                         </span>
                       )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-800/40 sm:col-span-2">
-                    <Briefcase className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="block text-xs font-semibold text-slate-400">{t.workFormat}</span>
-                      <span className="text-xs font-medium text-slate-700 dark:text-slate-200">
-                        {specialist.formats
-                          .map((f) => (f === 'office' ? t.officeFormat : f === 'home_visit' ? t.homeVisitFormat : t.onlineFormat))
-                          .join(', ')}
-                      </span>
                     </div>
                   </div>
                 </div>

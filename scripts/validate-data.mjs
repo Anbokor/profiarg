@@ -952,8 +952,8 @@ assert(
   "SpecialistCard displays 3 hierarchical header badges matching sketch"
 );
 assert(
-  !specialistCardContent.includes('slice(0, 4)') && !specialistCardContent.includes('specialist.description_ru'),
-  "SpecialistCard cleans out portfolio gallery and description block for concise scannable list display"
+  !specialistCardContent.includes('slice(0, 4)') && specialistCardContent.includes('description') && !specialistCardContent.includes('responseTime'),
+  "SpecialistCard prioritizes work description upfront and cleans out portfolio gallery and condition clutter"
 );
 assert(
   specialistCardContent.includes('md:flex-col'),
@@ -990,6 +990,14 @@ assert(
 assert(
   !addSpecialistModalContent.includes('servicePrice') && !addSpecialistModalContent.includes('primaryService') && !addSpecialistModalContent.includes('priceCurrency'),
   "AddSpecialistModal completely eliminates price and currency inputs in line with client ТЗ"
+);
+assert(
+  !addSpecialistModalContent.includes('workFormat') && !addSpecialistModalContent.includes('workingHoursCommLabel') && !addSpecialistModalContent.includes('responseTimeLabel'),
+  "AddSpecialistModal purges working format, working hours and response time fields for maximum domestic simplicity"
+);
+assert(
+  specialistCardContent.includes('specialist.title_ru') && specialistDetailContent.includes('specialist.title_ru') && !specialistDetailContent.includes('specialist.advantages'),
+  "SpecialistCard and SpecialistDetailModal prioritize work description/title upfront and completely purge advantages clutter"
 );
 
 assert(

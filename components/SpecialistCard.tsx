@@ -44,6 +44,7 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
   const waUrl = buildWhatsAppUrl(specialist.whatsapp, displayName, locale);
 
   const title = locale === 'ru' ? specialist.title_ru : specialist.title_es;
+  const description = locale === 'ru' ? specialist.description_ru : specialist.description_es;
 
   // Determine Category, Group, Subcategory tags for header matching sketch: [Рем] [Усл] [Двери]
   const categoryBadgeTitle = locale === 'ru'
@@ -125,32 +126,36 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
               )}
             </div>
 
-            {/* Contractor Name & Company Name */}
+            {/* PRIMARY HEADLINE: Service & Work Title (First & Prominent) */}
             <h3
               onClick={() => onSelect(specialist)}
-              className="mt-1.5 font-bold text-lg sm:text-xl text-slate-900 group-hover:text-sky-600 transition-colors cursor-pointer dark:text-white leading-tight"
+              className="mt-2 font-black text-lg sm:text-xl text-slate-900 group-hover:text-sky-600 transition-colors cursor-pointer dark:text-white leading-snug"
             >
-              {displayName}
-              {displayCompanyName && (
-                <span className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 ml-1.5">
-                  • {displayCompanyName}
-                </span>
-              )}
+              {title}
             </h3>
 
-            {/* Subtitle / Primary Specialization */}
-            <p className="text-xs sm:text-sm font-semibold text-sky-700 dark:text-sky-300 mt-0.5 leading-snug">
-              {title}
+            {/* PRIMARY FOCUS: Work Description upfront */}
+            <p
+              onClick={() => onSelect(specialist)}
+              className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed cursor-pointer"
+            >
+              {description}
             </p>
 
-            {/* Meta Pill: Rating • Barrio • Response Time • Languages */}
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 px-3 py-1 text-xs text-slate-700 dark:text-slate-300 flex-wrap shadow-2xs">
-              <div className="flex items-center gap-1 font-bold text-slate-900 dark:text-white">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                <span>{specialist.rating.toFixed(1)}</span>
-                <span className="font-normal text-slate-400">({specialist.reviewsCount})</span>
-              </div>
+            {/* SECONDARY ROW: Specialist Name + Location + Rating + Languages (No conditions clutter) */}
+            <div className="mt-2.5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
+              <span className="font-medium text-slate-700 dark:text-slate-300">
+                {locale === 'ru' ? 'Исполнитель:' : 'Profesional:'}{' '}
+                <strong className="font-bold text-slate-900 dark:text-white">{displayName}</strong>
+                {displayCompanyName && (
+                  <span className="text-slate-500 dark:text-slate-400 font-normal ml-1">
+                    ({displayCompanyName})
+                  </span>
+                )}
+              </span>
+
               <span className="text-slate-300 dark:text-slate-600">•</span>
+
               <button
                 type="button"
                 onClick={(e) => {
@@ -158,29 +163,31 @@ export const SpecialistCard: React.FC<SpecialistCardProps> = ({
                   onFocusMap?.(specialist);
                 }}
                 title={specialist.addressLine ? `${specialist.addressLine} • ${locale === 'ru' ? 'Показать на карте' : 'Ver en el mapa'}` : (locale === 'ru' ? 'Показать на карте' : 'Ver en el mapa')}
-                className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium hover:text-sky-600 dark:hover:text-sky-400 transition cursor-pointer"
+                className="inline-flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium hover:text-sky-600 dark:hover:text-sky-400 transition cursor-pointer"
               >
-                <MapPin className="h-3 w-3 text-sky-500" />
+                <MapPin className="h-3 w-3 text-sky-500 shrink-0" />
                 <span>{specialist.barrio}</span>
               </button>
-              {specialist.responseTime && (
-                <>
-                  <span className="text-slate-300 dark:text-slate-600">•</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                    ~{specialist.responseTime}
-                  </span>
-                </>
-              )}
+
               <span className="text-slate-300 dark:text-slate-600">•</span>
+
+              <div className="inline-flex items-center gap-1 font-bold text-slate-900 dark:text-white">
+                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400 shrink-0" />
+                <span>{specialist.rating.toFixed(1)}</span>
+                <span className="font-normal text-slate-400">({specialist.reviewsCount})</span>
+              </div>
+
+              <span className="text-slate-300 dark:text-slate-600">•</span>
+
               {specialist.granularLanguages ? (
-                <span className="flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
                   {specialist.granularLanguages.russian && <span>RU</span>}
                   {specialist.granularLanguages.spanish && <span>AR</span>}
                   {specialist.granularLanguages.english && <span>GB</span>}
                   {specialist.granularLanguages.portuguese && <span>BR</span>}
                 </span>
               ) : specialist.languages && (
-                <span className="flex items-center gap-1 text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase text-slate-600 dark:text-slate-400">
                   {specialist.languages.join(' ')}
                 </span>
               )}

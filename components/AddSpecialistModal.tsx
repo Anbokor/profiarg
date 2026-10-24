@@ -9,22 +9,12 @@ import { generateSlug, transliterateCyrillic, validateArgentineDni } from '@/lib
 import {
   X,
   PlusCircle,
-  Lock,
-  Clock,
-  Sparkles,
-  Phone,
-  Globe,
   Camera,
-  Briefcase,
   Check,
-  ChevronRight,
-  ChevronLeft,
   ShieldCheck,
   UserCheck,
-  MapPin,
   Upload,
   MessageCircle,
-  Building,
   CheckCircle2,
 } from 'lucide-react';
 
@@ -218,14 +208,6 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
       setSelectedSubcategories(catObj.subcategories.slice(0, 3));
     } else {
       setSelectedSubcategories([newCat]);
-    }
-  };
-
-  const handleToggleFormat = (fmt: WorkFormat) => {
-    if (format.includes(fmt)) {
-      if (format.length > 1) setFormat(format.filter((f) => f !== fmt));
-    } else {
-      setFormat([...format, fmt]);
     }
   };
 
@@ -490,6 +472,30 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
               />
             </div>
 
+            {/* Work Description (Full Width) */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
+                {t.formDesc} *
+              </label>
+              <textarea
+                rows={3}
+                required
+                value={descriptionRu}
+                onChange={(e) => setDescriptionRu(e.target.value)}
+                placeholder={
+                  locale === 'ru'
+                    ? 'Опишите что вы делаете, опыт, оборудование (например: Уборка квартир любой сложности, мытье окон, выезд во все районы...)'
+                    : 'Describí qué hacés, experiencia y herramientas (ej: Limpieza profunda de departamentos, lavado de ventanas, voy a cualquier barrio...)'
+                }
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                {locale === 'ru'
+                  ? 'Главный текст, который увидят заказчики на первом месте в объявлении'
+                  : 'Texto principal que verán los clientes en primer lugar'}
+              </p>
+            </div>
+
             {/* Performed Works (Full Width Vertical Checklist + Add Custom Work) */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
@@ -738,74 +744,6 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
               </p>
             </div>
 
-            {/* Work Formats (3 Full-Width Vertical Option Cards) */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
-                {t.workFormat}
-              </label>
-              <div className="flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleToggleFormat('office')}
-                  className={`w-full flex items-center justify-between rounded-xl border p-3 text-xs sm:text-sm font-semibold transition cursor-pointer text-left ${
-                    format.includes('office')
-                      ? 'border-sky-500 bg-sky-50 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 shadow-2xs'
-                      : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Building className="w-4 h-4 text-sky-600 shrink-0" />
-                    <span>{t.officeFormat}</span>
-                  </div>
-                  <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 ${
-                    format.includes('office') ? 'bg-sky-600 border-sky-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
-                  }`}>
-                    {format.includes('office') && <Check className="h-3 w-3 stroke-[3]" />}
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleToggleFormat('home_visit')}
-                  className={`w-full flex items-center justify-between rounded-xl border p-3 text-xs sm:text-sm font-semibold transition cursor-pointer text-left ${
-                    format.includes('home_visit')
-                      ? 'border-sky-500 bg-sky-50 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 shadow-2xs'
-                      : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Briefcase className="w-4 h-4 text-sky-600 shrink-0" />
-                    <span>{t.homeVisitFormat}</span>
-                  </div>
-                  <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 ${
-                    format.includes('home_visit') ? 'bg-sky-600 border-sky-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
-                  }`}>
-                    {format.includes('home_visit') && <Check className="h-3 w-3 stroke-[3]" />}
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleToggleFormat('online')}
-                  className={`w-full flex items-center justify-between rounded-xl border p-3 text-xs sm:text-sm font-semibold transition cursor-pointer text-left ${
-                    format.includes('online')
-                      ? 'border-sky-500 bg-sky-50 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 shadow-2xs'
-                      : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Globe className="w-4 h-4 text-sky-600 shrink-0" />
-                    <span>{t.onlineFormat}</span>
-                  </div>
-                  <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 ${
-                    format.includes('online') ? 'bg-sky-600 border-sky-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
-                  }`}>
-                    {format.includes('online') && <Check className="h-3 w-3 stroke-[3]" />}
-                  </div>
-                </button>
-              </div>
-            </div>
-
             {/* WhatsApp (Primary Channel with Prominent Callout) */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
@@ -848,34 +786,6 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
               </div>
-            </div>
-
-            {/* Working Hours (Full Width) */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
-                {t.workingHoursCommLabel}
-              </label>
-              <input
-                type="text"
-                value={workingHoursComm}
-                onChange={(e) => setWorkingHoursComm(e.target.value)}
-                placeholder="8-17"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              />
-            </div>
-
-            {/* Response Time (Full Width Stacked Underneath) */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
-                {t.responseTimeLabel}
-              </label>
-              <input
-                type="text"
-                value={responseTime}
-                onChange={(e) => setResponseTime(e.target.value)}
-                placeholder="1 час"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              />
             </div>
           </div>
 
@@ -988,40 +898,19 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
             )}
           </div>
 
-          {/* SECTION 5: О СЕБЕ И ЯЗЫКИ */}
+          {/* SECTION 5: ЯЗЫКИ ОБЩЕНИЯ */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 text-xs font-black">
                 5
               </span>
               <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
-                {locale === 'ru' ? 'Опыт и языки общения' : 'Experiencia e idiomas'}
+                {locale === 'ru' ? 'Языки общения' : 'Idiomas'}
               </h3>
-            </div>
-
-            {/* Bio / Description (Full Width) */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
-                {t.formDesc} *
-              </label>
-              <textarea
-                rows={3}
-                value={descriptionRu}
-                onChange={(e) => setDescriptionRu(e.target.value)}
-                placeholder={
-                  locale === 'ru'
-                    ? 'Опишите ваш опыт, подход к работе и оборудование...'
-                    : 'Describí tu experiencia y enfoque de trabajo...'
-                }
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              />
             </div>
 
             {/* Languages (3 Full-Width Vertical Option Cards) */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
-                {locale === 'ru' ? 'Языки общения' : 'Idiomas'}
-              </label>
               <div className="flex flex-col gap-2">
                 <button
                   type="button"
@@ -1091,7 +980,7 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
             {/* Live Preview Card Snippet */}
             <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-3 bg-slate-50/50 dark:bg-slate-800/40">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
-                {locale === 'ru' ? 'Предпросмотр карточки' : 'Vista previa'}
+                {locale === 'ru' ? 'Предпросмотр объявления' : 'Vista previa del anuncio'}
               </span>
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-xl bg-slate-200 dark:bg-slate-700 overflow-hidden shrink-0">
@@ -1103,10 +992,10 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
-                    {name || (locale === 'ru' ? 'Имя специалиста' : 'Nombre')}
+                    {titleRu || (locale === 'ru' ? 'Название услуги' : 'Título del servicio')}
                   </h4>
-                  <p className="text-[11px] text-sky-600 dark:text-sky-400 font-medium truncate">
-                    {titleRu || (locale === 'ru' ? 'Специализация' : 'Especialidad')} • {barrio}
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
+                    {(locale === 'ru' ? 'Исполнитель: ' : 'Profesional: ') + (name || (locale === 'ru' ? 'Имя мастера' : 'Nombre'))} • {barrio}
                   </p>
                 </div>
               </div>
