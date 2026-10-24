@@ -28,27 +28,6 @@ interface AddSpecialistModalProps {
   loggedInSpecialist?: Specialist | null;
 }
 
-const COMMON_WORKS_RU = [
-  'Замер и консультация',
-  'Монтаж окон и дверей',
-  'Регулировка и ремонт фурнитуры',
-  'Замена стеклопакетов',
-  'Установка откосов и подоконников',
-  'Москитные сетки',
-  'Герметизация швов',
-  'Остекление балконов',
-];
-
-const COMMON_WORKS_ES = [
-  'Medición y asesoramiento',
-  'Instalación de aberturas',
-  'Ajuste y reparación de herrajes',
-  'Cambio de termopaneles (DVH)',
-  'Colocación de contramarquillos',
-  'Mosquiteros a medida',
-  'Sellado térmico y acústico',
-  'Cerramientos de balcones',
-];
 
 export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
   isOpen,
@@ -75,8 +54,8 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
   const [companyNameEs, setCompanyNameEs] = useState('');
   const [titleRu, setTitleRu] = useState('');
   const [category, setCategory] = useState<CategoryId>(initialCategory || 'repair_construction');
-  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>(
-    initialSubcategory ? [initialSubcategory] : ['Бетонные работы, кладка']
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>(
+    initialSubcategory || 'Бетонные работы, кладка'
   );
   const [avatarUrl, setAvatarUrl] = useState('');
 
@@ -84,13 +63,8 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
   const [privateDni, setPrivateDni] = useState('');
   const [privateDniPhoto, setPrivateDniPhoto] = useState('');
 
-  // Description & Performed Works (Выполняемые работы)
+  // Description of services & experience
   const [descriptionRu, setDescriptionRu] = useState('');
-  const [selectedWorks, setSelectedWorks] = useState<string[]>([
-    locale === 'ru' ? 'Замер и консультация' : 'Medición y asesoramiento',
-    locale === 'ru' ? 'Монтаж окон и дверей' : 'Instalación de aberturas',
-  ]);
-  const [customWork, setCustomWork] = useState('');
 
   // Contacts
   const [barrio, setBarrio] = useState(BARRIOS[0].name);
@@ -123,10 +97,10 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
     if (initialCategory) {
       setCategory(initialCategory);
       const catObj = CATEGORIES.find((c) => c.id === initialCategory);
-      if (initialSubcategory) {
-        setSelectedSubcategories([initialSubcategory]);
+      if (initialSubcategory && catObj?.subcategories.includes(initialSubcategory)) {
+        setSelectedSubcategory(initialSubcategory);
       } else if (catObj && catObj.subcategories.length > 0) {
-        setSelectedSubcategories([catObj.subcategories[0]]);
+        setSelectedSubcategory(catObj.subcategories[0]);
       }
     }
   }, [initialCategory, initialSubcategory]);
@@ -172,42 +146,13 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleToggleWork = (work: string) => {
-    if (selectedWorks.includes(work)) {
-      setSelectedWorks(selectedWorks.filter((w) => w !== work));
-    } else {
-      setSelectedWorks([...selectedWorks, work]);
-    }
-  };
-
-  const handleAddCustomWork = () => {
-    if (!customWork.trim()) return;
-    if (!selectedWorks.includes(customWork.trim())) {
-      setSelectedWorks([...selectedWorks, customWork.trim()]);
-    }
-    setCustomWork('');
-  };
-
-  const selectedAdvantages = selectedWorks;
-  const handleToggleAdvantage = handleToggleWork;
-
-  const handleToggleSubcategory = (sub: string) => {
-    if (selectedSubcategories.includes(sub)) {
-      if (selectedSubcategories.length > 1) {
-        setSelectedSubcategories(selectedSubcategories.filter((s) => s !== sub));
-      }
-    } else {
-      setSelectedSubcategories([...selectedSubcategories, sub]);
-    }
-  };
-
   const handleCategoryChange = (newCat: CategoryId) => {
     setCategory(newCat);
     const catObj = CATEGORIES.find((c) => c.id === newCat);
     if (catObj && catObj.subcategories.length > 0) {
-      setSelectedSubcategories(catObj.subcategories.slice(0, 3));
+      setSelectedSubcategory(catObj.subcategories[0]);
     } else {
-      setSelectedSubcategories([newCat]);
+      setSelectedSubcategory('');
     }
   };
 
@@ -264,7 +209,7 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
       title_ru: titleRu.trim() || (locale === 'ru' ? 'Частный специалист' : 'Profesional independiente'),
       title_es: titleRu.trim() || 'Profesional independiente',
       category,
-      subcategories: selectedSubcategories.length > 0 ? selectedSubcategories : [category],
+      subcategories: selectedSubcategory ? [selectedSubcategory] : [category],
       avatar:
         avatarUrl.trim() ||
         'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
@@ -282,7 +227,7 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
         english: langEnLevel !== 'none' ? langEnLevel : undefined,
         portuguese: langPt,
       },
-      advantages: selectedAdvantages,
+      advantages: [],
       responseTime: responseTime.trim() || '1 час',
       workingHoursComm: workingHoursComm.trim() || '8-17',
       preferredContactMethod: preferredMethod,
@@ -304,23 +249,15 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
       formats: format,
       description_ru: descriptionRu.trim() || 'Информация обновляется специалистом.',
       description_es: descriptionRu.trim() || 'Servicios profesionales en Buenos Aires.',
-      services: selectedWorks.length > 0
-        ? selectedWorks.map((work, idx) => ({
-            id: `srv-${Date.now()}-${idx}`,
-            title_ru: work,
-            title_es: work,
-            price: null,
-            currency: 'a_convenir' as const,
-          }))
-        : [
-            {
-              id: `srv-default`,
-              title_ru: 'Консультация',
-              title_es: 'Consulta inicial',
-              price: null,
-              currency: 'a_convenir' as const,
-            },
-          ],
+      services: [
+        {
+          id: `srv-${Date.now()}`,
+          title_ru: titleRu.trim() || (locale === 'ru' ? 'Услуга' : 'Servicio'),
+          title_es: titleRu.trim() || 'Servicio',
+          price: null,
+          currency: 'a_convenir' as const,
+        },
+      ],
       gallery: galleryItems,
       workingHours_ru: `Пн-Пт: ${workingHoursComm} (по договоренности)`,
       workingHours_es: `Lun-Vie: ${workingHoursComm}`,
@@ -344,7 +281,6 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
     onClose();
   };
 
-  const sampleWorks = locale === 'ru' ? COMMON_WORKS_RU : COMMON_WORKS_ES;
   const currentCategoryObj = CATEGORIES.find((c) => c.id === category);
 
   return (
@@ -424,36 +360,28 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
               </select>
             </div>
 
-            {/* Subcategories selector (Full Width Vertical Flow) */}
+            {/* Subcategories single select (Full Width) */}
             {currentCategoryObj && currentCategoryObj.subcategories.length > 0 && (
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
-                  {t.subcategoriesLabel} *
+                  {locale === 'ru' ? 'Специализация (подкатегория)' : 'Especialidad / Subcategoría'} *
                 </label>
-                <div className="flex flex-col gap-1.5">
-                  {currentCategoryObj.subcategories.map((sub) => {
-                    const isSelected = selectedSubcategories.includes(sub);
-                    return (
-                      <button
-                        type="button"
-                        key={sub}
-                        onClick={() => handleToggleSubcategory(sub)}
-                        className={`w-full flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold transition text-left border cursor-pointer ${
-                          isSelected
-                            ? 'bg-sky-50 border-sky-400 text-sky-800 dark:bg-sky-950/60 dark:border-sky-600 dark:text-sky-200 shadow-2xs'
-                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'
-                        }`}
-                      >
-                        <span>{sub}</span>
-                        <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 ${
-                          isSelected ? 'bg-sky-600 border-sky-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
-                        }`}>
-                          {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                <select
+                  value={selectedSubcategory}
+                  onChange={(e) => setSelectedSubcategory(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white font-medium cursor-pointer"
+                >
+                  {currentCategoryObj.subcategories.map((sub) => (
+                    <option key={sub} value={sub}>
+                      {sub}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {locale === 'ru'
+                    ? 'Одна анкета создается под одну сферу услуг. Чтобы разместить объявление в других сферах, вы сможете добавить еще анкеты из личного кабинета.'
+                    : 'Cada anuncio se enfoca en un solo rubro. Para ofrecer servicios en otros rubros, podés añadir más anuncios desde tu panel.'}
+                </p>
               </div>
             )}
 
@@ -475,16 +403,16 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
             {/* Work Description (Full Width) */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
-                {t.formDesc} *
+                {locale === 'ru' ? 'Подробное описание услуг и опыта работы' : 'Descripción detallada de servicios y experiencia'} *
               </label>
               <textarea
-                rows={3}
+                rows={4}
                 required
                 value={descriptionRu}
                 onChange={(e) => setDescriptionRu(e.target.value)}
                 placeholder={
                   locale === 'ru'
-                    ? 'Опишите что вы делаете, опыт, оборудование (например: Уборка квартир любой сложности, мытье окон, выезд во все районы...)'
+                    ? 'Опишите что вы делаете, опыт, используемые средства и инструменты (например: Уборка квартир любой сложности, мытье окон, выезд во все районы...)'
                     : 'Describí qué hacés, experiencia y herramientas (ej: Limpieza profunda de departamentos, lavado de ventanas, voy a cualquier barrio...)'
                 }
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -494,61 +422,6 @@ export const AddSpecialistModal: React.FC<AddSpecialistModalProps> = ({
                   ? 'Главный текст, который увидят заказчики на первом месте в объявлении'
                   : 'Texto principal que verán los clientes en primer lugar'}
               </p>
-            </div>
-
-            {/* Performed Works (Full Width Vertical Checklist + Add Custom Work) */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
-                {t.performedWorks}
-              </label>
-              <div className="flex flex-col gap-1.5 mb-1">
-                {sampleWorks.map((work) => {
-                  const isSelected = selectedWorks.includes(work);
-                  return (
-                    <button
-                      type="button"
-                      key={work}
-                      onClick={() => handleToggleWork(work)}
-                      className={`w-full flex items-center justify-between rounded-xl px-3.5 py-2 text-xs sm:text-sm font-medium transition text-left border cursor-pointer ${
-                        isSelected
-                          ? 'bg-sky-50 border-sky-400 text-sky-800 dark:bg-sky-950/60 dark:border-sky-600 dark:text-sky-200 shadow-2xs'
-                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'
-                      }`}
-                    >
-                      <span>{work}</span>
-                      <div className={`h-4 w-4 rounded-md border flex items-center justify-center shrink-0 ${
-                        isSelected ? 'bg-sky-600 border-sky-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
-                      }`}>
-                        {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Add Custom Work (Stacked Vertically) */}
-              <div className="flex flex-col gap-1.5 pt-1">
-                <input
-                  type="text"
-                  value={customWork}
-                  onChange={(e) => setCustomWork(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddCustomWork();
-                    }
-                  }}
-                  placeholder={locale === 'ru' ? 'Добавить свою работу...' : 'Agregar trabajo personalizado...'}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-sky-500 focus:bg-white focus:outline-hidden dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddCustomWork}
-                  className="w-full rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 transition text-center cursor-pointer"
-                >
-                  + {locale === 'ru' ? 'Добавить в список выполняемых работ' : 'Añadir al listado de trabajos'}
-                </button>
-              </div>
             </div>
           </div>
 

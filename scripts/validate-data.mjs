@@ -664,8 +664,8 @@ assert(
   "AddSpecialistModal supports contractor identification architecture"
 );
 assert(
-  addSpecialistModalContent.includes('handleToggleSubcategory') || addSpecialistModalContent.includes('selectedSubcategories'),
-  "AddSpecialistModal supports granular subcategory selection during contractor registration"
+  addSpecialistModalContent.includes('selectedSubcategory'),
+  "AddSpecialistModal supports focused single subcategory selection during contractor registration"
 );
 const packageJsonContent = readFileSync(resolve(process.cwd(), 'package.json'), 'utf8');
 assert(
@@ -984,8 +984,8 @@ assert(
   "AddSpecialistModal renders concise single vertical column layout ('в столбик')"
 );
 assert(
-  addSpecialistModalContent.includes('COMMON_WORKS_RU') && addSpecialistModalContent.includes('COMMON_WORKS_ES'),
-  "AddSpecialistModal replaces advantages with selectable performed works ('Выполняемые работы')"
+  !addSpecialistModalContent.includes('COMMON_WORKS_RU') && !addSpecialistModalContent.includes('sampleWorks') && addSpecialistModalContent.includes('selectedSubcategory'),
+  "AddSpecialistModal purges 'Выполняемые работы' checklist in favor of concise Title, Description and Single Subcategory"
 );
 assert(
   !addSpecialistModalContent.includes('servicePrice') && !addSpecialistModalContent.includes('primaryService') && !addSpecialistModalContent.includes('priceCurrency'),
@@ -1042,8 +1042,8 @@ assert(
   "SpecialistDetailModal and SpecialistPage have 0 occurrences of formatCurrency (100% price-free)"
 );
 assert(
-  specialistDetailContent.includes('Выполняемые работы и услуги') && specialistPageContent.includes('Выполняемые работы и услуги'),
-  "Specialist profiles render 'Выполняемые работы и услуги' without price tags"
+  !specialistDetailContent.includes('Выполняемые работы и услуги') && !specialistPageContent.includes('Выполняемые работы и услуги'),
+  "Specialist profiles purge redundant 'Выполняемые работы и услуги' block in favor of concise Title and Description"
 );
 assert(
   seedContent.includes('crop=faces') && seedContent.includes('w=400&h=400'),

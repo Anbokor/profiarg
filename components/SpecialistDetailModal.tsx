@@ -397,28 +397,6 @@ export const SpecialistDetailModal: React.FC<SpecialistDetailModalProps> = ({
                 </div>
               )}
 
-              {/* Performed Works & Services (Strictly NO PRICES) */}
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                  {locale === 'ru' ? 'Выполняемые работы и услуги' : 'Trabajos y servicios realizados'}
-                </h3>
-                <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-                  {specialist.services.map((srv) => (
-                    <div
-                      key={srv.id}
-                      className="flex items-center p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                        <span className="font-semibold text-sm text-slate-900 dark:text-white">
-                          {locale === 'ru' ? srv.title_ru : srv.title_es}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               {/* Location & Languages */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {/* Address */}
