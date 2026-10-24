@@ -138,11 +138,11 @@ export const CategoryDrilldownHeader: React.FC<CategoryDrilldownHeaderProps> = (
             <button
               type="button"
               onClick={onBackToSubsections || onBackToGroups || onBackToCategories}
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-red-500 hover:border-red-600 dark:border-red-500 bg-white dark:bg-slate-800 px-4 py-2 text-xs sm:text-sm font-black text-red-600 dark:text-red-400 hover:bg-red-50/70 dark:hover:bg-red-950/40 shadow-xs transition-all active:scale-95 cursor-pointer ring-2 ring-red-500/20 shrink-0"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-red-500 hover:border-red-600 dark:border-red-500 bg-white dark:bg-slate-800 px-3 sm:px-4 py-2 text-xs sm:text-sm font-black text-red-600 dark:text-red-400 hover:bg-red-50/70 dark:hover:bg-red-950/40 shadow-xs transition-all active:scale-95 cursor-pointer ring-2 ring-red-500/20 shrink-0 w-[96px] sm:w-[108px]"
               title={locale === 'ru' ? 'Назад к разделам' : 'Volver al catálogo'}
             >
-              <ArrowLeft className="w-4 h-4 stroke-[2.5] text-red-600 dark:text-red-400" />
-              <span>{locale === 'ru' ? 'Назад' : 'Volver'}</span>
+              <ArrowLeft className="w-4 h-4 stroke-[2.5] text-red-600 dark:text-red-400 shrink-0" />
+              <span className="inline-block text-center">{locale === 'ru' ? 'Назад' : 'Volver'}</span>
             </button>
 
             {/* Category Icon */}
