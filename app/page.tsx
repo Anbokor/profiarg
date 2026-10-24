@@ -882,7 +882,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Floating High-Visibility Vertical Map Tab (Firmly docked to the right screen edge) */}
+      {/* Floating High-Visibility Vertical Map Tab (Firmly docked to right screen edge, strictly fixed dimensions) */}
       {activeCategory && filteredSpecialists.length > 0 && (
         <button
           type="button"
@@ -900,7 +900,7 @@ export default function Home() {
               }, 50);
             }
           }}
-          className={`fixed z-40 right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2.5 rounded-l-2xl border-l-2 border-y-2 border-r-0 py-5 px-3 sm:px-3.5 transition-all duration-200 hover:-translate-x-1.5 active:scale-95 cursor-pointer select-none group shadow-2xl ${
+          className={`fixed z-40 right-0 top-1/2 -translate-y-1/2 w-[54px] sm:w-[58px] h-[188px] sm:h-[196px] flex flex-col items-center justify-between rounded-l-2xl border-l-2 border-y-2 border-r-0 py-4 px-2 sm:px-2.5 transition-all duration-200 hover:-translate-x-1.5 active:scale-95 cursor-pointer select-none group shadow-2xl ${
             showCategoryMap
               ? 'bg-gradient-to-b from-rose-600 via-rose-700 to-red-800 text-white border-rose-400/50 shadow-[-6px_8px_28px_rgba(225,29,72,0.5)]'
               : 'bg-gradient-to-b from-sky-600 via-sky-700 to-blue-800 text-white border-sky-400/50 shadow-[-6px_8px_30px_rgba(2,132,199,0.55)]'
@@ -908,17 +908,17 @@ export default function Home() {
           title={showCategoryMap ? (locale === 'ru' ? 'Скрыть интерактивную карту' : 'Ocultar mapa interactivo') : (locale === 'ru' ? 'Открыть карту специалистов' : 'Ver mapa de especialistas')}
           aria-label={showCategoryMap ? (locale === 'ru' ? 'Скрыть карту' : 'Ocultar mapa') : (locale === 'ru' ? 'Открыть карту' : 'Ver mapa')}
         >
-          {/* Prominent White Contrast Icon Badge with Glow */}
-          <div className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white shadow-md transition-transform group-hover:scale-110 ${
+          {/* Prominent White Contrast Icon Badge with Glow (Fixed Size) */}
+          <div className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white shadow-md transition-transform group-hover:scale-110 shrink-0 ${
             showCategoryMap ? 'text-rose-700' : 'text-sky-700'
           }`}>
             <MapPin className="h-5 w-5 sm:h-6 sm:w-6 stroke-[2.5]" />
           </div>
 
-          {/* Large Vertical Bold Typography */}
-          <div className="flex flex-col items-center py-1">
+          {/* Large Vertical Bold Typography (Fixed Height Container to prevent resizing) */}
+          <div className="flex h-[96px] sm:h-[102px] items-center justify-center shrink-0 w-full overflow-hidden">
             <span
-              className="text-xs sm:text-sm font-black tracking-widest uppercase drop-shadow-sm text-white"
+              className="text-xs sm:text-sm font-black tracking-widest uppercase drop-shadow-sm text-white select-none"
               style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
             >
               {showCategoryMap
@@ -927,8 +927,8 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Pulsing Signal Dot */}
-          <div className="relative flex h-2.5 w-2.5 items-center justify-center">
+          {/* Pulsing Signal Dot (Fixed Size) */}
+          <div className="relative flex h-2.5 w-2.5 items-center justify-center shrink-0 mb-0.5">
             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
               showCategoryMap ? 'bg-amber-300' : 'bg-emerald-300'
             }`} />
