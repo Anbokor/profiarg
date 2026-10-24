@@ -882,7 +882,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Floating High-Visibility Vertical Map Tab (Anchored right beside cards on desktop, edge-docked on smaller screens) */}
+      {/* Floating High-Visibility Vertical Map Tab (Firmly docked to the right screen edge) */}
       {activeCategory && filteredSpecialists.length > 0 && (
         <button
           type="button"
@@ -900,7 +900,7 @@ export default function Home() {
               }, 50);
             }
           }}
-          className={`fixed z-40 right-0 xl:right-[max(0.5rem,calc((100vw-56rem)/2-5rem))] top-1/2 -translate-y-1/2 flex flex-col items-center gap-2.5 rounded-l-2xl border-l-2 border-y-2 py-5 px-3 sm:px-3.5 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer select-none group shadow-2xl ${
+          className={`fixed z-40 right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2.5 rounded-l-2xl border-l-2 border-y-2 border-r-0 py-5 px-3 sm:px-3.5 transition-all duration-200 hover:-translate-x-1.5 active:scale-95 cursor-pointer select-none group shadow-2xl ${
             showCategoryMap
               ? 'bg-gradient-to-b from-rose-600 via-rose-700 to-red-800 text-white border-rose-400/50 shadow-[-6px_8px_28px_rgba(225,29,72,0.5)]'
               : 'bg-gradient-to-b from-sky-600 via-sky-700 to-blue-800 text-white border-sky-400/50 shadow-[-6px_8px_30px_rgba(2,132,199,0.55)]'
